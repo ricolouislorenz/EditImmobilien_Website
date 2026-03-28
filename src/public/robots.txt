@@ -1,0 +1,11 @@
+# Edit Immobilien - Robots.txt
+# Immobilienmakler Hamburg & Umgebung
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://edit-immobilien.de/sitemap.xml
+
+# Crawl-delay (optional, für höfliches Crawling)
+Crawl-delay: 1

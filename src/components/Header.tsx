@@ -1,0 +1,85 @@
+import { Button } from "./ui/button";
+import { Home, Menu, X } from "lucide-react";
+import { useState } from "react";
+
+export function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setMobileMenuOpen(false);
+    }
+  };
+
+  return (
+    <header className="fixed top-0 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur-sm z-50 border-b border-white/10">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection("home")}>
+            <Home className="w-6 h-6 text-[#808FA6]" />
+            <span className="text-white">EDIT Immobilien</span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#A2694A] transition-colors">
+              Immobilien
+            </button>
+            <button onClick={() => scrollToSection("leistungen")} className="text-gray-300 hover:text-[#A2694A] transition-colors">
+              Leistungen
+            </button>
+            <button onClick={() => scrollToSection("uber-uns")} className="text-gray-300 hover:text-[#A2694A] transition-colors">
+              Über uns
+            </button>
+            <button onClick={() => scrollToSection("ratgeber")} className="text-gray-300 hover:text-[#A2694A] transition-colors">
+              Ratgeber
+            </button>
+            <button onClick={() => scrollToSection("kontakt")} className="text-gray-300 hover:text-[#A2694A] transition-colors">
+              Kontakt
+            </button>
+          </nav>
+
+          <div className="hidden md:block">
+            <Button onClick={() => scrollToSection("kontakt")}>
+              Beratung anfragen
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-white"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden flex flex-col gap-4 mt-4 pb-4">
+            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#A2694A] transition-colors text-left">
+              Immobilien
+            </button>
+            <button onClick={() => scrollToSection("leistungen")} className="text-gray-300 hover:text-[#A2694A] transition-colors text-left">
+              Leistungen
+            </button>
+            <button onClick={() => scrollToSection("uber-uns")} className="text-gray-300 hover:text-[#A2694A] transition-colors text-left">
+              Über uns
+            </button>
+            <button onClick={() => scrollToSection("ratgeber")} className="text-gray-300 hover:text-[#A2694A] transition-colors text-left">
+              Ratgeber
+            </button>
+            <button onClick={() => scrollToSection("kontakt")} className="text-gray-300 hover:text-[#A2694A] transition-colors text-left">
+              Kontakt
+            </button>
+            <Button onClick={() => scrollToSection("kontakt")} className="w-full">
+              Beratung anfragen
+            </Button>
+          </nav>
+        )}
+      </div>
+    </header>
+  );
+}

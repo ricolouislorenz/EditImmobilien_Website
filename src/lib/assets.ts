@@ -6,35 +6,63 @@
  *   2. Hier als Konstante eintragen
  *   3. In der Komponente aus dieser Datei importieren – nie Pfade direkt im JSX
  *
- * Bild ersetzen (z. B. Logo):
- *   – Gleicher Dateiname → einfach Datei überschreiben, kein Code nötig
+ * Bild ersetzen:
+ *   – Gleicher Dateiname → Datei einfach überschreiben, kein Code nötig
  *   – Anderer Dateiname → Pfad hier anpassen, Änderung wirkt überall
  */
 
+// Basis-URL aus Vite-Konfiguration (z. B. /EditImmobilien_Website/ in Produktion)
+const base = import.meta.env.BASE_URL;
+
+/** Hilfsfunktion: lokale public/images/-Pfade korrekt mit BASE_URL prefixen */
+function publicImage(filename: string): string {
+  return `${base}images/${filename}`;
+}
+
 // ─── Marke ───────────────────────────────────────────────────────────────────
 
-/** Logo in der Navbar. Ersetzen: public/images/logo.svg überschreiben. */
-export const LOGO = "/images/logo.svg";
+/** Logo in der Navbar. Ersetzen: public/images/logo.png überschreiben. */
+export const LOGO = publicImage("logo.png");
 
 // ─── Hero ────────────────────────────────────────────────────────────────────
 
 /**
  * Hintergrundbild im Hero-Bereich.
- * Eigenes Bild: public/images/hero-bg.jpg ablegen und Pfad hier anpassen.
+ * Eigenes Bild unter public/images/hero-bg.jpg ablegen → Wert auf publicImage("hero-bg.jpg") setzen.
+ * Empfohlene Größe: mind. 1920×1080px
  */
-export const HERO_BG =
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob3VzZSUyMGV4dGVyaW9yfGVufDF8fHx8MTc2MzE2NDczM3ww&ixlib=rb-4.1.0&q=80&w=1080";
+export const HERO_BG = publicImage("hero-bg.png");
 
-// ─── About / Team ────────────────────────────────────────────────────────────
+// ─── Team ────────────────────────────────────────────────────────────────────
 
 /**
- * Team-Foto in der Über-uns-Sektion.
- * Eigenes Bild: public/images/team.jpg ablegen und Wert auf "/images/team.jpg" setzen.
+ * Gruppen-Teamfoto (Über-uns-Sektion).
+ * Platzhalter liegt unter public/images/team.svg.
+ * Echtes Bild: public/images/team.jpg ablegen → Wert auf publicImage("team.jpg") setzen.
+ * Empfohlene Größe: 800×600px
  */
-export const ABOUT_TEAM_IMAGE = "https://placehold.co/800x600?text=Team+Foto";
+export const TEAM_FOTO = publicImage("team.jpg");
 
-// ─── Weitere Slots (auskommentiert bis Dateien vorliegen) ────────────────────
+/**
+ * Porträtfoto Timo.
+ * Platzhalter liegt unter public/images/team-timo.svg.
+ * Echtes Bild: public/images/team-timo.jpg ablegen → Wert auf publicImage("team-timo.jpg") setzen.
+ * Empfohlene Größe: 400×500px
+ */
+export const TEAM_TIMO = publicImage("team-timo.svg");
 
-// export const TEAM_FOTO_PERSON_1 = "/images/team-max.jpg";
-// export const TEAM_FOTO_PERSON_2 = "/images/team-anna.jpg";
-// export const PARTNER_LOGO_1     = "/images/partner-sparkasse.svg";
+/**
+ * Porträtfoto Sarah.
+ * Platzhalter liegt unter public/images/team-sarah.svg.
+ * Echtes Bild: public/images/team-sarah.jpg ablegen → Wert auf publicImage("team-sarah.jpg") setzen.
+ * Empfohlene Größe: 400×500px
+ */
+export const TEAM_SARAH = publicImage("team-sarah.svg");
+
+// ─── Immobilien ──────────────────────────────────────────────────────────────
+
+/**
+ * Platzhalterbild für Immobilien ohne eigenes Foto.
+ * Liegt unter public/images/property-placeholder.svg.
+ */
+export const PROPERTY_PLACEHOLDER = publicImage("property-placeholder.svg");

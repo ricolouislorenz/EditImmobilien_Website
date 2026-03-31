@@ -23,11 +23,11 @@ export function Hero() {
           alt="Modernes Einfamilienhaus in Hamburg - Edit Immobilien vermittelt Traumhäuser in Hamburg, Wedel, Holm und Umgebung"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#C2A878]/90 to-[#C2A878]/50"></div>
+        <div className="absolute inset-0 bg-black/30"></div>
       </div>
       
       <div className="relative z-10 container mx-auto px-4 text-white">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl bg-black/60 backdrop-blur-sm rounded-2xl p-8 md:p-10">
           <h1 className="text-white mb-6">
             Immobilienmakler Hamburg - Ihr Traumhaus in Hamburg & Umgebung
           </h1>

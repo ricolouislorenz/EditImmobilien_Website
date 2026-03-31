@@ -1,5 +1,5 @@
 import { Award, Users, TrendingUp } from "lucide-react";
-import { ABOUT_TEAM_IMAGE } from "@/lib/assets";
+import { TEAM_FOTO } from "@/lib/assets";
 
 const features = [
   {
@@ -53,7 +53,7 @@ export function AboutSection() {
               <div className="absolute -inset-1 bg-gradient-to-r from-[#C2A878] to-[#6B4F3A] rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
               <div className="relative">
                 <img
-                  src={ABOUT_TEAM_IMAGE}
+                  src={TEAM_FOTO}
                   alt="Edit Immobilien Team" 
                   className="w-full rounded-xl border-2 border-[#C2A878]/30 shadow-2xl"
                 />

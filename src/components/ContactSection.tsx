@@ -5,7 +5,7 @@ import { Label } from "./ui/label";
 import { Mail, Phone, MapPin, Calendar } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-const teamPhoto = "https://placehold.co/800x400?text=Team+Foto";
+import { TEAM_FOTO } from "@/lib/assets";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
@@ -132,7 +132,7 @@ export function ContactSection() {
             {/* Team Photo - Ihre Ansprechpartner */}
             <div className="bg-[#1a1a1a] rounded-xl border border-white/10 overflow-hidden">
               <img 
-                src={teamPhoto} 
+                src={TEAM_FOTO}
                 alt="Edit Immobilien Team" 
                 className="w-full h-auto"
               />

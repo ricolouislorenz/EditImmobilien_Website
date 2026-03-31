@@ -9,10 +9,8 @@ import { Footer } from "./components/Footer";
 import { Toaster } from "./components/ui/sonner";
 import { SEOHead, StructuredData } from "./components/SEOHead";
 import { ImmobilienwertRechner } from "./components/ImmobilienwertRechner";
-import { WhatsAppButton } from "./components/WhatsAppButton";
-import { TestimonialsSection } from "./components/TestimonialsSection";
-import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { DownloadsSection } from "./components/DownloadsSection";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import { CookieBanner } from "./components/CookieBanner";
 import { AdminApp } from "./admin/AdminApp";
 
@@ -27,9 +25,7 @@ function MainSite() {
         <ImmobilienwertRechner />
         <ServicesSection />
         <PropertiesSection />
-        <VerkaufsprozessTimeline />
         <AboutSection />
-        <TestimonialsSection />
         <DownloadsSection />
         <ContactSection />
       </main>

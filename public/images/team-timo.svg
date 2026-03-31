@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#E8E0D8"/>
+  <circle cx="200" cy="180" r="90" fill="#C2A878" opacity="0.4"/>
+  <rect x="100" y="270" width="200" height="160" rx="8" fill="#C2A878" opacity="0.4"/>
+  <text x="200" y="460" font-family="Georgia, serif" font-size="18" fill="#6B4F3A" text-anchor="middle">Timo · public/images/team-timo.jpg</text>
+  <text x="200" y="485" font-family="Georgia, serif" font-size="13" fill="#6B4F3A" opacity="0.7" text-anchor="middle">Empfohlen: 400×500px</text>
+</svg>

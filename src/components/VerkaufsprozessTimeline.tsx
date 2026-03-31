@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, type ReactNode } from "react";
 import {
   FileText,
   Camera,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 interface TimelineStep {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   timeline: string;
   description: string;

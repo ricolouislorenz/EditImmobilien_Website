@@ -127,6 +127,7 @@
   body {
     @apply bg-background text-foreground;
   }
+
 }
 
 /**
@@ -186,4 +187,13 @@
 
 html {
   font-size: var(--font-size);
+}
+
+/* Außerhalb von @layer → höhere Priorität als Tailwind-Preflight */
+button,
+a,
+[role="button"],
+label[for],
+select {
+  cursor: pointer;
 }

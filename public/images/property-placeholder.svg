@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <rect width="640" height="400" fill="#1a1a1a"/>
+  <path d="M260 200 L320 140 L380 200 L380 270 L260 270 Z" fill="#C2A878" opacity="0.25"/>
+  <rect x="290" y="230" width="30" height="40" fill="#C2A878" opacity="0.25"/>
+  <rect x="340" y="210" width="25" height="25" fill="#C2A878" opacity="0.15"/>
+  <text x="320" y="310" font-family="Georgia, serif" font-size="14" fill="#C2A878" opacity="0.5" text-anchor="middle">Kein Bild vorhanden</text>
+</svg>

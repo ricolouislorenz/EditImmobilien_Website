@@ -5,6 +5,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { getImageUrl } from "@/lib/supabase";
+import { PROPERTY_PLACEHOLDER } from "@/lib/assets";
 import type { Property } from "@/types";
 
 interface PropertyCardProps {
@@ -32,7 +33,7 @@ export function PropertyCard({
   onRequestExpose,
 }: PropertyCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const imageUrl = resolveImageUrl(property.images[0] ?? "");
+  const imageUrl = resolveImageUrl(property.images[0] ?? "") || PROPERTY_PLACEHOLDER;
   const areaDisplay = property.area_label ?? (property.area != null ? `${property.area} m²` : null);
 
   return (
@@ -68,7 +69,7 @@ export function PropertyCard({
         <h3 className="mb-2 text-white">{property.title}</h3>
         <div className="flex items-center gap-2 text-gray-400 mb-4">
           <MapPin className="w-4 h-4" />
-          <span>{property.location}</span>
+          <span>{property.location.replace(/(,?\s*Hamburg\s*,?\s*)/gi, "").trim()}</span>
         </div>
 
         <div className="flex items-center gap-4 mb-4 text-gray-400">

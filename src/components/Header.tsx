@@ -19,16 +19,16 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer" onClick={() => scrollToSection("home")}>
-            <img src={LOGO} alt="Edit Immobilien" className="h-10 w-auto" />
+            <img src={LOGO} alt="Edit Immobilien" className="h-10 w-auto bg-white rounded px-2 py-1" />
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors">
-              Immobilien
-            </button>
             <button onClick={() => scrollToSection("leistungen")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors">
               Leistungen
+            </button>
+            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors">
+              Immobilien
             </button>
             <button onClick={() => scrollToSection("uber-uns")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors">
               Über uns
@@ -59,11 +59,11 @@ export function Header() {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <nav className="md:hidden flex flex-col gap-4 mt-4 pb-4">
-            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors text-left">
-              Immobilien
-            </button>
             <button onClick={() => scrollToSection("leistungen")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors text-left">
               Leistungen
+            </button>
+            <button onClick={() => scrollToSection("immobilien")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors text-left">
+              Immobilien
             </button>
             <button onClick={() => scrollToSection("uber-uns")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors text-left">
               Über uns

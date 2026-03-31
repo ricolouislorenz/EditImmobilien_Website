@@ -134,11 +134,11 @@ export function DownloadsSection() {
             <FileDown className="w-5 h-5 text-[#C2A878]" />
             <span className="text-[#C2A878]">Kostenlose Ratgeber</span>
           </div>
-          
+
           <h2 className="text-white mb-4">
             Wertvolles Wissen für Ihren Immobilienverkauf
           </h2>
-          
+
           <p className="text-gray-400 max-w-2xl mx-auto">
             Laden Sie unsere kostenlosen Ratgeber herunter und profitieren Sie von unserer
             jahrelangen Erfahrung im Immobilienverkauf.

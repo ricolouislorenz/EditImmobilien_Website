@@ -68,13 +68,13 @@ export function TestimonialsSection() {
   const googleReviewUrl = "https://www.google.com/search?q=EDIT+Immobilien+by+Timo+Konrad";
 
   return (
-    <section className="py-20 bg-[#0a0a0a]">
+    <section className="py-20 bg-[#111111]">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header mit Google Badge */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#808FA6]/10 px-4 py-2 rounded-full mb-4">
-            <Star className="w-5 h-5 text-[#A2694A] fill-[#A2694A]" />
-            <span className="text-[#808FA6]">Kundenstimmen</span>
+          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-4 py-2 rounded-full mb-4">
+            <Star className="w-5 h-5 text-[#6B4F3A] fill-[#6B4F3A]" />
+            <span className="text-[#C2A878]">Kundenstimmen</span>
           </div>
           
           <h2 className="text-white mb-4">
@@ -120,7 +120,7 @@ export function TestimonialsSection() {
           {/* Navigation Buttons */}
           <button
             onClick={goToPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 bg-[#808FA6] hover:bg-[#A2694A] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-xl"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 bg-[#C2A878] hover:bg-[#6B4F3A] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-xl"
             aria-label="Vorherige Bewertung"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -128,7 +128,7 @@ export function TestimonialsSection() {
 
           <button
             onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 bg-[#808FA6] hover:bg-[#A2694A] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-xl"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 bg-[#C2A878] hover:bg-[#6B4F3A] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-xl"
             aria-label="Nächste Bewertung"
           >
             <ChevronRight className="w-6 h-6" />
@@ -145,16 +145,16 @@ export function TestimonialsSection() {
                   key={index}
                   className="w-full flex-shrink-0 px-4"
                 >
-                  <div className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-12 relative">
+                  <div className="bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-white/10 rounded-2xl p-8 md:p-12 relative">
                     {/* Quote Icon */}
-                    <Quote className="w-12 h-12 text-[#A2694A] opacity-20 absolute top-8 left-8" />
+                    <Quote className="w-12 h-12 text-[#6B4F3A] opacity-20 absolute top-8 left-8" />
 
                     {/* Stars */}
                     <div className="flex items-center gap-1 mb-6 relative z-10">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star
                           key={i}
-                          className="w-5 h-5 text-[#A2694A] fill-[#A2694A]"
+                          className="w-5 h-5 text-[#6B4F3A] fill-[#6B4F3A]"
                         />
                       ))}
                     </div>
@@ -196,7 +196,7 @@ export function TestimonialsSection() {
                 onClick={() => goToSlide(index)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "bg-[#A2694A] w-8"
+                    ? "bg-[#6B4F3A] w-8"
                     : "bg-white/20 w-2 hover:bg-white/40"
                 }`}
                 aria-label={`Gehe zu Bewertung ${index + 1}`}
@@ -214,7 +214,7 @@ export function TestimonialsSection() {
           >
             <Button
               variant="outline"
-              className="border-[#808FA6] text-[#808FA6] hover:bg-[#808FA6] hover:text-white transition-all duration-300"
+              className="border-[#C2A878] text-[#C2A878] hover:bg-[#C2A878] hover:text-white transition-all duration-300"
             >
               Alle Bewertungen auf Google ansehen
             </Button>

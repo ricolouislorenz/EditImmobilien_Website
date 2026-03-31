@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Haus-Icon -->
+  <path d="M8 24 L20 12 L32 24 L32 38 L8 38 Z" fill="#C2A878"/>
+  <rect x="14" y="28" width="7" height="10" fill="#111111"/>
+
+  <!-- Wortmarke -->
+  <text x="42" y="34" font-family="Georgia, serif" font-size="22" font-weight="600" fill="#ffffff" letter-spacing="2">EDIT</text>
+  <text x="42" y="46" font-family="Georgia, serif" font-size="10" fill="#C2A878" letter-spacing="3">IMMOBILIEN</text>
+</svg>

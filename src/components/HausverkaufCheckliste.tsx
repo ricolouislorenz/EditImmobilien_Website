@@ -169,7 +169,7 @@ export function generateHausverkaufChecklistePDF(): void {
   const drawFooter = () => {
     const pageNumber = (pdf as any).internal.getCurrentPageInfo().pageNumber;
     pdf.setFontSize(8);
-    pdf.setTextColor(128, 143, 166); // #808FA6
+    pdf.setTextColor(128, 143, 166); // #C2A878
     pdf.text(
       'EDIT Immobilien | Tel: +49 40 1234567 | kontakt@edit-immobilien.de | www.edit-immobilien.de',
       pageWidth / 2,
@@ -185,7 +185,7 @@ export function generateHausverkaufChecklistePDF(): void {
   };
 
   // Title Page
-  pdf.setFillColor(10, 10, 10); // #0a0a0a
+  pdf.setFillColor(10, 10, 10); // #111111
   pdf.rect(0, 0, pageWidth, 90, 'F');
   
   pdf.setTextColor(255, 255, 255);
@@ -197,7 +197,7 @@ export function generateHausverkaufChecklistePDF(): void {
   
   pdf.setFontSize(12);
   pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(128, 143, 166); // #808FA6
+  pdf.setTextColor(128, 143, 166); // #C2A878
   pdf.text('Ihre Checkliste für einen erfolgreichen Immobilienverkauf', pageWidth / 2, 70, { align: 'center' });
 
   yPosition = 110;
@@ -220,7 +220,7 @@ export function generateHausverkaufChecklistePDF(): void {
   yPosition += 30;
 
   // Important Note Box
-  pdf.setFillColor(128, 143, 166); // #808FA6
+  pdf.setFillColor(128, 143, 166); // #C2A878
   pdf.roundedRect(margin, yPosition, contentWidth, 18, 2, 2, 'F');
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(9);
@@ -239,7 +239,7 @@ export function generateHausverkaufChecklistePDF(): void {
     checkPageBreak(estimatedStepHeight);
 
     // Step Number Circle
-    pdf.setFillColor(162, 105, 74); // #A2694A
+    pdf.setFillColor(162, 105, 74); // #6B4F3A
     pdf.circle(margin + 8, yPosition + 8, 8, 'F');
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(14);

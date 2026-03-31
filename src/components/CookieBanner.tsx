@@ -83,15 +83,15 @@ export function CookieBanner() {
             <div className="flex items-start gap-4 md:gap-6">
               {/* Cookie Icon */}
               <div className="flex-shrink-0 hidden sm:block">
-                <div className="w-14 h-14 bg-[#808FA6]/10 rounded-full flex items-center justify-center border border-[#808FA6]/20">
-                  <Cookie className="w-7 h-7 text-[#808FA6]" />
+                <div className="w-14 h-14 bg-[#C2A878]/10 rounded-full flex items-center justify-center border border-[#C2A878]/20">
+                  <Cookie className="w-7 h-7 text-[#C2A878]" />
                 </div>
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <h3 className="text-white mb-3 flex items-center gap-2">
-                  <Cookie className="w-5 h-5 sm:hidden text-[#808FA6]" />
+                  <Cookie className="w-5 h-5 sm:hidden text-[#C2A878]" />
                   Wir respektieren Ihre Privatsphäre
                 </h3>
                 <p className="text-gray-400 mb-4 leading-relaxed">
@@ -105,7 +105,7 @@ export function CookieBanner() {
                   <Button
                     onClick={acceptAll}
                     size="lg"
-                    className="bg-[#A2694A] hover:bg-[#8B5A3C] flex-1 sm:flex-none"
+                    className="bg-[#6B4F3A] hover:bg-[#5A4230] flex-1 sm:flex-none"
                   >
                     Alle akzeptieren
                   </Button>
@@ -121,7 +121,7 @@ export function CookieBanner() {
                     onClick={() => setShowSettings(true)}
                     variant="ghost"
                     size="lg"
-                    className="text-[#808FA6] hover:text-white hover:bg-white/5 gap-2 flex-1 sm:flex-none"
+                    className="text-[#C2A878] hover:text-white hover:bg-white/5 gap-2 flex-1 sm:flex-none"
                   >
                     <Settings className="w-4 h-4" />
                     Einstellungen
@@ -132,7 +132,7 @@ export function CookieBanner() {
                 <p className="text-gray-500 text-sm mt-4">
                   Weitere Informationen finden Sie in unserer{" "}
                   <Datenschutz>
-                    <button className="text-[#808FA6] hover:text-[#A2694A] underline">
+                    <button className="text-[#C2A878] hover:text-[#6B4F3A] underline">
                       Datenschutzerklärung
                     </button>
                   </Datenschutz>
@@ -157,7 +157,7 @@ export function CookieBanner() {
         <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
-              <Shield className="w-5 h-5 text-[#808FA6]" />
+              <Shield className="w-5 h-5 text-[#C2A878]" />
               Cookie-Einstellungen
             </DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -167,13 +167,13 @@ export function CookieBanner() {
 
           <div className="space-y-6 py-4">
             {/* Necessary Cookies */}
-            <div className="flex items-start justify-between gap-4 p-4 bg-[#0a0a0a] rounded-lg border border-white/5">
+            <div className="flex items-start justify-between gap-4 p-4 bg-[#111111] rounded-lg border border-white/5">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <Label className="text-white cursor-pointer">
                     Notwendige Cookies
                   </Label>
-                  <span className="text-xs bg-[#808FA6]/20 text-[#808FA6] px-2 py-1 rounded">
+                  <span className="text-xs bg-[#C2A878]/20 text-[#C2A878] px-2 py-1 rounded">
                     Immer aktiv
                   </span>
                 </div>
@@ -190,7 +190,7 @@ export function CookieBanner() {
             </div>
 
             {/* Analytics Cookies */}
-            <div className="flex items-start justify-between gap-4 p-4 bg-[#0a0a0a] rounded-lg border border-white/5">
+            <div className="flex items-start justify-between gap-4 p-4 bg-[#111111] rounded-lg border border-white/5">
               <div className="flex-1">
                 <Label htmlFor="analytics" className="text-white cursor-pointer mb-2 block">
                   Analyse-Cookies
@@ -211,7 +211,7 @@ export function CookieBanner() {
             </div>
 
             {/* Marketing Cookies */}
-            <div className="flex items-start justify-between gap-4 p-4 bg-[#0a0a0a] rounded-lg border border-white/5">
+            <div className="flex items-start justify-between gap-4 p-4 bg-[#111111] rounded-lg border border-white/5">
               <div className="flex-1">
                 <Label htmlFor="marketing" className="text-white cursor-pointer mb-2 block">
                   Marketing-Cookies
@@ -237,7 +237,7 @@ export function CookieBanner() {
             <Button
               onClick={saveCustomPreferences}
               size="lg"
-              className="bg-[#A2694A] hover:bg-[#8B5A3C] flex-1"
+              className="bg-[#6B4F3A] hover:bg-[#5A4230] flex-1"
             >
               Auswahl speichern
             </Button>

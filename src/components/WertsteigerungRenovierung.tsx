@@ -243,7 +243,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
   const drawFooter = () => {
     const pageNumber = (pdf as any).internal.getCurrentPageInfo().pageNumber;
     pdf.setFontSize(8);
-    pdf.setTextColor(128, 143, 166); // #808FA6
+    pdf.setTextColor(128, 143, 166); // #C2A878
     pdf.text(
       'EDIT Immobilien | Tel: +49 1729037547 | kontakt@edit-immobilien.de | www.edit-immobilien.de',
       pageWidth / 2,
@@ -259,7 +259,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
   };
 
   // Title Page
-  pdf.setFillColor(10, 10, 10); // #0a0a0a
+  pdf.setFillColor(10, 10, 10); // #111111
   pdf.rect(0, 0, pageWidth, 90, 'F');
   
   pdf.setTextColor(255, 255, 255);
@@ -271,7 +271,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
   
   pdf.setFontSize(12);
   pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(128, 143, 166); // #808FA6
+  pdf.setTextColor(128, 143, 166); // #C2A878
   pdf.text('Schnelle Maßnahmen für maximale Verkaufserfolge', pageWidth / 2, 70, { align: 'center' });
 
   yPosition = 110;
@@ -294,7 +294,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
   yPosition += 30;
 
   // Important Note Box
-  pdf.setFillColor(162, 105, 74); // #A2694A
+  pdf.setFillColor(162, 105, 74); // #6B4F3A
   pdf.roundedRect(margin, yPosition, contentWidth, 25, 2, 2, 'F');
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(9);
@@ -338,7 +338,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
     pdf.roundedRect(margin, boxY, contentWidth, 28, 2, 2, 'F');
     
     // Symbol with background
-    pdf.setFillColor(162, 105, 74); // #A2694A
+    pdf.setFillColor(162, 105, 74); // #6B4F3A
     pdf.roundedRect(margin + 5, boxY + 5, 35, 18, 2, 2, 'F');
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(16);
@@ -371,7 +371,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
     checkPageBreak(totalNeeded);
 
     // Category Header
-    pdf.setFillColor(128, 143, 166); // #808FA6
+    pdf.setFillColor(128, 143, 166); // #C2A878
     pdf.roundedRect(margin, yPosition, contentWidth, 18, 2, 2, 'F');
     
     pdf.setTextColor(255, 255, 255);
@@ -519,7 +519,7 @@ export function generateWertsteigerungRenovierungPDF(): void {
   yPosition = Math.max(tipsY, photoY) + 15;
 
   // Special EDIT Feature Box
-  pdf.setFillColor(162, 105, 74); // #A2694A
+  pdf.setFillColor(162, 105, 74); // #6B4F3A
   pdf.roundedRect(margin, yPosition, contentWidth, 35, 3, 3, 'F');
   
   pdf.setTextColor(255, 255, 255);

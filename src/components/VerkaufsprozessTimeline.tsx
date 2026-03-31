@@ -113,13 +113,13 @@ export function VerkaufsprozessTimeline() {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
+    <section className="py-20 bg-gradient-to-b from-[#111111] to-[#1a1a1a]">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-[#808FA6]/10 px-4 py-2 rounded-full mb-4">
-            <FileSignature className="w-5 h-5 text-[#808FA6]" />
-            <span className="text-[#808FA6]">Ihr Weg zum Verkauf</span>
+          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-4 py-2 rounded-full mb-4">
+            <FileSignature className="w-5 h-5 text-[#C2A878]" />
+            <span className="text-[#C2A878]">Ihr Weg zum Verkauf</span>
           </div>
           <h2 className="text-white mb-4">
             So läuft Ihr Hausverkauf ab
@@ -133,7 +133,7 @@ export function VerkaufsprozessTimeline() {
         {/* Timeline */}
         <div className="relative max-w-4xl mx-auto">
           {/* Vertical Line */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#808FA6] via-[#A2694A] to-[#808FA6] opacity-30"></div>
+          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#C2A878] via-[#6B4F3A] to-[#C2A878] opacity-30"></div>
 
           {/* Steps */}
           <div className="space-y-12">
@@ -164,15 +164,15 @@ export function VerkaufsprozessTimeline() {
                       <div
                         className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center ${
                           step.highlight
-                            ? "bg-gradient-to-br from-[#A2694A] to-[#8B5A3C]"
-                            : "bg-gradient-to-br from-[#808FA6] to-[#6B7A8F]"
+                            ? "bg-gradient-to-br from-[#6B4F3A] to-[#5A4230]"
+                            : "bg-gradient-to-br from-[#C2A878] to-[#6B7A8F]"
                         } shadow-xl`}
                       >
                         <div className="text-white">{step.icon}</div>
                       </div>
 
                       {/* Connecting dot */}
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#A2694A] opacity-20 animate-pulse"></div>
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#6B4F3A] opacity-20 animate-pulse"></div>
                     </div>
                   </div>
 
@@ -181,16 +181,16 @@ export function VerkaufsprozessTimeline() {
                     <div
                       className={`${
                         step.highlight
-                          ? "bg-gradient-to-br from-[#A2694A]/20 to-[#8B5A3C]/10 border-[#A2694A]/40"
-                          : "bg-[#0a0a0a]/50 border-white/10"
-                      } border rounded-xl p-6 hover:border-[#808FA6]/50 transition-all duration-300 hover:shadow-xl`}
+                          ? "bg-gradient-to-br from-[#6B4F3A]/20 to-[#5A4230]/10 border-[#6B4F3A]/40"
+                          : "bg-[#111111]/50 border-white/10"
+                      } border rounded-xl p-6 hover:border-[#C2A878]/50 transition-all duration-300 hover:shadow-xl`}
                     >
                       {/* Timeline badge */}
                       <div
                         className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs mb-3 ${
                           step.highlight
-                            ? "bg-[#A2694A]/20 text-[#A2694A]"
-                            : "bg-[#808FA6]/20 text-[#808FA6]"
+                            ? "bg-[#6B4F3A]/20 text-[#6B4F3A]"
+                            : "bg-[#C2A878]/20 text-[#C2A878]"
                         }`}
                       >
                         <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
@@ -201,7 +201,7 @@ export function VerkaufsprozessTimeline() {
                       <h3 className="text-white mb-2 flex items-center gap-2">
                         {step.title}
                         {step.highlight && (
-                          <Sparkles className="w-5 h-5 text-[#A2694A]" />
+                          <Sparkles className="w-5 h-5 text-[#6B4F3A]" />
                         )}
                       </h3>
 
@@ -221,7 +221,7 @@ export function VerkaufsprozessTimeline() {
         <div className="text-center mt-16">
           <div className="inline-block bg-[#1a1a1a] border border-white/10 rounded-xl p-6">
             <p className="text-gray-400 mb-4">
-              Durchschnittliche Verkaufsdauer: <span className="text-[#A2694A]">8-12 Wochen</span>
+              Durchschnittliche Verkaufsdauer: <span className="text-[#6B4F3A]">8-12 Wochen</span>
             </p>
             <p className="text-sm text-gray-500">
               Jede Immobilie ist einzigartig. Wir passen den Prozess individuell an Ihre Bedürfnisse an.

@@ -4,55 +4,58 @@ import { MapPin, Bed, Bath, Maximize, FileText } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { getImageUrl } from "@/lib/supabase";
+import type { Property } from "@/types";
 
 interface PropertyCardProps {
-  id?: number;
-  image: string;
-  title: string;
-  location: string;
-  price: string;
-  bedrooms: number | string;
-  bathrooms: number | string;
-  area: number | string;
-  type: string;
+  property: Property;
   showExposeButton?: boolean;
-  onRequestExpose?: (propertyId: number, propertyTitle: string) => void;
+  onRequestExpose?: (propertyId: string, propertyTitle: string) => void;
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  active: "Aktiv",
+  sold: "Verkauft",
+  rented: "Vermietet",
+  sold_and_rented: "Verk. & Verm.",
+};
+
+function resolveImageUrl(path: string): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return getImageUrl(path);
 }
 
 export function PropertyCard({
-  id,
-  image,
-  title,
-  location,
-  price,
-  bedrooms,
-  bathrooms,
-  area,
-  type,
+  property,
   showExposeButton = false,
   onRequestExpose,
 }: PropertyCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const imageUrl = resolveImageUrl(property.images[0] ?? "");
+  const areaDisplay = property.area_label ?? (property.area != null ? `${property.area} m²` : null);
 
   return (
     <Card
-      className="overflow-hidden hover:shadow-2xl hover:shadow-[#808FA6]/20 transition-all bg-[#121212] border-white/10 hover:border-[#808FA6]"
+      className="overflow-hidden hover:shadow-2xl hover:shadow-[#C2A878]/20 transition-all bg-[#111111] border-white/10 hover:border-[#C2A878]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative h-64">
         <ImageWithFallback
-          src={image}
-          alt={title}
+          src={imageUrl}
+          alt={property.title}
           className="w-full h-full object-cover"
         />
-        <Badge className="absolute top-4 left-4 bg-[#A2694A] hover:bg-[#A2694A]">{type}</Badge>
+        <Badge className="absolute top-4 left-4 bg-[#6B4F3A] hover:bg-[#6B4F3A]">
+          {STATUS_LABELS[property.status] ?? property.status}
+        </Badge>
 
         {showExposeButton && isHovered && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center transition-all">
             <Button
-              onClick={() => id && onRequestExpose?.(id, title)}
-              className="bg-[#808FA6] hover:bg-[#808FA6]/90 gap-2"
+              onClick={() => onRequestExpose?.(property.id, property.title)}
+              className="bg-[#C2A878] hover:bg-[#C2A878]/90 gap-2"
             >
               <FileText className="w-4 h-4" />
               Exposé anfordern
@@ -60,29 +63,36 @@ export function PropertyCard({
           </div>
         )}
       </div>
+
       <CardContent className="p-6">
-        <h3 className="mb-2 text-white">{title}</h3>
+        <h3 className="mb-2 text-white">{property.title}</h3>
         <div className="flex items-center gap-2 text-gray-400 mb-4">
           <MapPin className="w-4 h-4" />
-          <span>{location}</span>
+          <span>{property.location}</span>
         </div>
+
         <div className="flex items-center gap-4 mb-4 text-gray-400">
-          <div className="flex items-center gap-1">
-            <Bed className="w-4 h-4" />
-            <span>{bedrooms}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Bath className="w-4 h-4" />
-            <span>{bathrooms}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Maximize className="w-4 h-4" />
-            <span>{area} m²</span>
-          </div>
+          {property.bedrooms != null && (
+            <div className="flex items-center gap-1">
+              <Bed className="w-4 h-4" />
+              <span>{property.bedrooms}</span>
+            </div>
+          )}
+          {property.bathrooms != null && (
+            <div className="flex items-center gap-1">
+              <Bath className="w-4 h-4" />
+              <span>{property.bathrooms}</span>
+            </div>
+          )}
+          {areaDisplay && (
+            <div className="flex items-center gap-1">
+              <Maximize className="w-4 h-4" />
+              <span>{areaDisplay}</span>
+            </div>
+          )}
         </div>
-        <div className="text-[#808FA6] font-medium">
-          {price}
-        </div>
+
+        <div className="text-[#C2A878] font-medium">{property.price}</div>
       </CardContent>
     </Card>
   );

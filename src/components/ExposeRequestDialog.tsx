@@ -17,7 +17,7 @@ interface ExposeRequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   propertyTitle: string;
-  propertyId: number;
+  propertyId: string;
 }
 
 export function ExposeRequestDialog({
@@ -97,14 +97,14 @@ export function ExposeRequestDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#121212] border-white/10 text-white sm:max-w-md">
+      <DialogContent className="bg-[#111111] border-white/10 text-white sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <FileText className="w-6 h-6 text-[#808FA6]" />
+            <FileText className="w-6 h-6 text-[#C2A878]" />
             <DialogTitle>Exposé anfordern</DialogTitle>
           </div>
           <DialogDescription className="text-gray-400">
-            Fordern Sie das vollständige Exposé für <span className="text-[#808FA6]">{propertyTitle}</span> an.
+            Fordern Sie das vollständige Exposé für <span className="text-[#C2A878]">{propertyTitle}</span> an.
             Wir senden Ihnen alle Details per E-Mail zu.
           </DialogDescription>
         </DialogHeader>
@@ -117,7 +117,7 @@ export function ExposeRequestDialog({
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="bg-[#0a0a0a] border-white/10 focus:border-[#808FA6] text-white"
+              className="bg-[#111111] border-white/10 focus:border-[#C2A878] text-white"
             />
           </div>
           <div className="space-y-2">
@@ -129,7 +129,7 @@ export function ExposeRequestDialog({
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-[#0a0a0a] border-white/10 focus:border-[#808FA6] text-white"
+              className="bg-[#111111] border-white/10 focus:border-[#C2A878] text-white"
             />
           </div>
           <div className="space-y-2">
@@ -140,7 +140,7 @@ export function ExposeRequestDialog({
               placeholder="+49 123 456789"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="bg-[#0a0a0a] border-white/10 focus:border-[#808FA6] text-white"
+              className="bg-[#111111] border-white/10 focus:border-[#C2A878] text-white"
             />
           </div>
           <div className="space-y-2">
@@ -150,7 +150,7 @@ export function ExposeRequestDialog({
               placeholder="Haben Sie Fragen zur Immobilie?"
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="bg-[#0a0a0a] border-white/10 focus:border-[#808FA6] text-white min-h-20"
+              className="bg-[#111111] border-white/10 focus:border-[#C2A878] text-white min-h-20"
             />
           </div>
           <div className="flex gap-3 pt-4">
@@ -166,7 +166,7 @@ export function ExposeRequestDialog({
             <Button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-[#808FA6] hover:bg-[#808FA6]/90"
+              className="flex-1 bg-[#C2A878] hover:bg-[#C2A878]/90"
             >
               {loading ? (
                 <>

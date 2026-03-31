@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import { Search, Calendar } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { HERO_BG } from "@/lib/assets";
 
 export function Hero() {
   const scrollToSection = (id: string) => {
@@ -18,11 +19,11 @@ export function Hero() {
     <section id="home" className="relative h-[600px] md:h-[700px] flex items-center justify-center">
       <div className="absolute inset-0">
         <ImageWithFallback
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob3VzZSUyMGV4dGVyaW9yfGVufDF8fHx8MTc2MzE2NDczM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+          src={HERO_BG}
           alt="Modernes Einfamilienhaus in Hamburg - Edit Immobilien vermittelt Traumhäuser in Hamburg, Wedel, Holm und Umgebung"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#808FA6]/90 to-[#808FA6]/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#C2A878]/90 to-[#C2A878]/50"></div>
       </div>
       
       <div className="relative z-10 container mx-auto px-4 text-white">
@@ -34,7 +35,7 @@ export function Hero() {
             Professionelle Immobilienvermittlung in Hamburg, Wedel, Holm & Norderstedt. Über 13 Jahre Erfahrung mit Spezialisierung auf Aufwertung & Wertsteigerung.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" onClick={openCalendly} className="gap-2 bg-[#A2694A] hover:bg-[#8B5A3C]">
+            <Button size="lg" onClick={openCalendly} className="gap-2 bg-[#6B4F3A] hover:bg-[#5A4230]">
               <Calendar className="w-5 h-5" />
               Termin vereinbaren
             </Button>

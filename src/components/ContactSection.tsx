@@ -33,7 +33,7 @@ export function ContactSection() {
   };
 
   return (
-    <section id="kontakt" className="py-20 bg-[#121212]">
+    <section id="kontakt" className="py-20 bg-[#111111]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="mb-4 text-white">Kontaktieren Sie uns</h2>
@@ -45,7 +45,7 @@ export function ContactSection() {
 
         {/* Calendly CTA Banner */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="bg-gradient-to-r from-[#A2694A] to-[#8B5A3C] rounded-2xl p-8 md:p-10 text-center shadow-2xl">
+          <div className="bg-gradient-to-r from-[#6B4F3A] to-[#5A4230] rounded-2xl p-8 md:p-10 text-center shadow-2xl">
             <Calendar className="w-12 h-12 text-white mx-auto mb-4" />
             <h3 className="text-white mb-3">
               Buchen Sie direkt einen Termin
@@ -57,7 +57,7 @@ export function ContactSection() {
             <Button
               size="lg"
               onClick={openCalendly}
-              className="bg-white text-[#A2694A] hover:bg-gray-100 gap-2 shadow-xl hover:scale-105 transition-all duration-300"
+              className="bg-white text-[#6B4F3A] hover:bg-gray-100 gap-2 shadow-xl hover:scale-105 transition-all duration-300"
             >
               <Calendar className="w-5 h-5" />
               Jetzt Termin buchen (30 Min.)
@@ -136,8 +136,8 @@ export function ContactSection() {
                 alt="Edit Immobilien Team" 
                 className="w-full h-auto"
               />
-              <div className="p-6 bg-[#0a0a0a]">
-                <h3 className="mb-2 text-[#808FA6]">Ihre Ansprechpartner</h3>
+              <div className="p-6 bg-[#111111]">
+                <h3 className="mb-2 text-[#C2A878]">Ihre Ansprechpartner</h3>
                 <p className="text-gray-400 text-sm">
                   Wir sind persönlich für Sie da und begleiten Sie bei jedem Schritt Ihres Immobilienprojekts.
                 </p>
@@ -150,13 +150,13 @@ export function ContactSection() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-[#808FA6]/10 rounded-lg flex items-center justify-center border border-[#808FA6]/20">
-                      <Phone className="w-5 h-5 text-[#808FA6]" />
+                    <div className="w-12 h-12 bg-[#C2A878]/10 rounded-lg flex items-center justify-center border border-[#C2A878]/20">
+                      <Phone className="w-5 h-5 text-[#C2A878]" />
                     </div>
                   </div>
                   <div>
                     <div className="mb-1 text-gray-300">Telefon</div>
-                    <a href="tel:+4917290377547" className="text-[#A2694A] hover:underline">
+                    <a href="tel:+4917290377547" className="text-[#6B4F3A] hover:underline">
                       +49 172 90 37 547
                     </a>
                   </div>
@@ -164,13 +164,13 @@ export function ContactSection() {
 
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-[#808FA6]/10 rounded-lg flex items-center justify-center border border-[#808FA6]/20">
-                      <Mail className="w-5 h-5 text-[#808FA6]" />
+                    <div className="w-12 h-12 bg-[#C2A878]/10 rounded-lg flex items-center justify-center border border-[#C2A878]/20">
+                      <Mail className="w-5 h-5 text-[#C2A878]" />
                     </div>
                   </div>
                   <div>
                     <div className="mb-1 text-gray-300">E-Mail</div>
-                    <a href="mailto:kontakt@edit-immobilien.de" className="text-[#A2694A] hover:underline break-all">
+                    <a href="mailto:kontakt@edit-immobilien.de" className="text-[#6B4F3A] hover:underline break-all">
                       kontakt@edit-immobilien.de
                     </a>
                   </div>
@@ -179,7 +179,7 @@ export function ContactSection() {
             </div>
 
             <div className="bg-[#1a1a1a] p-6 rounded-xl border border-white/10">
-              <h4 className="mb-4 text-[#808FA6]">Öffnungszeiten</h4>
+              <h4 className="mb-4 text-[#C2A878]">Öffnungszeiten</h4>
               <div className="space-y-2 text-gray-400">
                 <div className="flex justify-between">
                   <span>Montag - Freitag</span>

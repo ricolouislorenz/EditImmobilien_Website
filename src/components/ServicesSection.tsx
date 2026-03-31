@@ -110,7 +110,7 @@ export function ServicesSection() {
   const [selectedService, setSelectedService] = useState<typeof services[0] | null>(null);
 
   return (
-    <section id="leistungen" className="py-20 bg-[#0a0a0a]">
+    <section id="leistungen" className="py-20 bg-[#111111]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="mb-4 text-white">Unsere Leistungen als Immobilienmakler in Hamburg</h2>
@@ -124,16 +124,16 @@ export function ServicesSection() {
             <div
               key={index}
               onClick={() => setSelectedService(service)}
-              className="group bg-[#121212] p-8 rounded-xl border-2 border-white/10 hover:border-[#808FA6] transition-all duration-300 hover:shadow-2xl hover:shadow-[#808FA6]/20 cursor-pointer"
+              className="group bg-[#111111] p-8 rounded-xl border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20 cursor-pointer"
             >
               <div className="mb-4">
-                <div className="w-12 h-12 bg-[#808FA6]/10 rounded-full flex items-center justify-center border-2 border-[#808FA6]/20 group-hover:scale-110 transition-transform duration-300">
-                  <service.icon className="w-6 h-6 text-[#A2694A]" />
+                <div className="w-12 h-12 bg-[#C2A878]/10 rounded-full flex items-center justify-center border-2 border-[#C2A878]/20 group-hover:scale-110 transition-transform duration-300">
+                  <service.icon className="w-6 h-6 text-[#6B4F3A]" />
                 </div>
               </div>
-              <h3 className="mb-3 text-[#808FA6]">{service.title}</h3>
+              <h3 className="mb-3 text-[#C2A878]">{service.title}</h3>
               <p className="text-gray-400 leading-relaxed">{service.description}</p>
-              <div className="mt-4 text-[#A2694A] group-hover:translate-x-2 transition-transform duration-300 inline-flex items-center gap-1">
+              <div className="mt-4 text-[#6B4F3A] group-hover:translate-x-2 transition-transform duration-300 inline-flex items-center gap-1">
                 Mehr erfahren →
               </div>
             </div>
@@ -141,9 +141,9 @@ export function ServicesSection() {
         </div>
 
         <div className="text-center mt-12">
-          <div className="inline-block bg-gradient-to-r from-[#808FA6]/20 to-[#A2694A]/20 rounded-xl p-6 border-2 border-[#808FA6]/30">
+          <div className="inline-block bg-gradient-to-r from-[#C2A878]/20 to-[#6B4F3A]/20 rounded-xl p-6 border-2 border-[#C2A878]/30">
             <p className="text-gray-300">
-              <span className="text-[#A2694A]">Kostenlose Erstberatung:</span> Vereinbaren Sie jetzt einen unverbindlichen Beratungstermin und lassen Sie uns über Ihre Immobilienziele sprechen.
+              <span className="text-[#6B4F3A]">Kostenlose Erstberatung:</span> Vereinbaren Sie jetzt einen unverbindlichen Beratungstermin und lassen Sie uns über Ihre Immobilienziele sprechen.
             </p>
           </div>
         </div>
@@ -151,16 +151,16 @@ export function ServicesSection() {
 
       {/* Dialog for detailed information */}
       <Dialog open={!!selectedService} onOpenChange={(open) => !open && setSelectedService(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#121212] border-white/10">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#111111] border-white/10">
           {selectedService && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#808FA6] to-[#808FA6]/80 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-gradient-to-br from-[#C2A878] to-[#C2A878]/80 rounded-lg flex items-center justify-center flex-shrink-0">
                     <selectedService.icon className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <DialogTitle className="text-[#808FA6]">{selectedService.title}</DialogTitle>
+                    <DialogTitle className="text-[#C2A878]">{selectedService.title}</DialogTitle>
                     <DialogDescription className="text-gray-400">
                       {selectedService.details.subtitle}
                     </DialogDescription>
@@ -171,19 +171,19 @@ export function ServicesSection() {
               <div className="mt-6">
                 <p className="text-gray-300 mb-6">{selectedService.description}</p>
                 
-                <h4 className="mb-4 text-[#808FA6]">Was wir für Sie tun:</h4>
+                <h4 className="mb-4 text-[#C2A878]">Was wir für Sie tun:</h4>
                 <ul className="space-y-3">
                   {selectedService.details.content.map((item, index) => (
                     <li key={index} className="flex gap-3 text-gray-300">
-                      <span className="text-[#A2694A] mt-1 flex-shrink-0">✓</span>
+                      <span className="text-[#6B4F3A] mt-1 flex-shrink-0">✓</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-8 p-6 bg-gradient-to-r from-[#808FA6]/20 to-[#A2694A]/20 rounded-lg border border-[#808FA6]/30">
+                <div className="mt-8 p-6 bg-gradient-to-r from-[#C2A878]/20 to-[#6B4F3A]/20 rounded-lg border border-[#C2A878]/30">
                   <p className="text-gray-300">
-                    <span className="text-[#A2694A]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
+                    <span className="text-[#6B4F3A]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
                   </p>
                 </div>
               </div>

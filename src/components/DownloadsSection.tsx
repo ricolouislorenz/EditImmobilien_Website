@@ -126,13 +126,13 @@ export function DownloadsSection() {
   };
 
   return (
-    <section id="ratgeber" className="py-20 bg-[#0a0a0a]">
+    <section id="ratgeber" className="py-20 bg-[#111111]">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#808FA6]/10 px-4 py-2 rounded-full mb-4">
-            <FileDown className="w-5 h-5 text-[#808FA6]" />
-            <span className="text-[#808FA6]">Kostenlose Ratgeber</span>
+          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-4 py-2 rounded-full mb-4">
+            <FileDown className="w-5 h-5 text-[#C2A878]" />
+            <span className="text-[#C2A878]">Kostenlose Ratgeber</span>
           </div>
           
           <h2 className="text-white mb-4">
@@ -150,10 +150,10 @@ export function DownloadsSection() {
           {downloads.map((download, index) => (
             <div
               key={index}
-              className="group bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-xl p-6 hover:border-[#808FA6]/50 transition-all duration-300 hover:shadow-xl hover:scale-105"
+              className="group bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-white/10 rounded-xl p-6 hover:border-[#C2A878]/50 transition-all duration-300 hover:shadow-xl hover:scale-105"
             >
               {/* Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-[#808FA6] to-[#6B7A8F] rounded-lg flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#C2A878] to-[#6B7A8F] rounded-lg flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 {download.icon}
               </div>
 
@@ -170,7 +170,7 @@ export function DownloadsSection() {
               {/* Download Button */}
               <Button
                 onClick={() => handleDownloadClick(download)}
-                className="w-full bg-[#A2694A] hover:bg-[#8B5A3C] text-white transition-all duration-300 group-hover:shadow-lg"
+                className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white transition-all duration-300 group-hover:shadow-lg"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Jetzt herunterladen
@@ -181,8 +181,8 @@ export function DownloadsSection() {
 
         {/* Trust Badge */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-[#808FA6]/10 px-6 py-3 rounded-full">
-            <CheckCircle2 className="w-5 h-5 text-[#A2694A]" />
+          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-6 py-3 rounded-full">
+            <CheckCircle2 className="w-5 h-5 text-[#6B4F3A]" />
             <span className="text-gray-400 text-sm">
               100% kostenlos • Keine Verpflichtungen • Sofortiger Zugriff
             </span>
@@ -214,7 +214,7 @@ export function DownloadsSection() {
                 placeholder="Max Mustermann"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-500 focus:border-[#808FA6]"
+                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
                 required
               />
             </div>
@@ -229,7 +229,7 @@ export function DownloadsSection() {
                 placeholder="ihre@email.de"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-500 focus:border-[#808FA6]"
+                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
                 required
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -237,13 +237,13 @@ export function DownloadsSection() {
               </p>
             </div>
 
-            <div className="flex items-start gap-3 bg-[#808FA6]/10 p-4 rounded-lg">
+            <div className="flex items-start gap-3 bg-[#C2A878]/10 p-4 rounded-lg">
               <input
                 type="checkbox"
                 id="newsletter"
                 checked={agreedToNewsletter}
                 onChange={(e) => setAgreedToNewsletter(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-white/20 bg-[#0a0a0a] text-[#A2694A] focus:ring-[#A2694A] focus:ring-offset-0"
+                className="mt-1 w-4 h-4 rounded border-white/20 bg-[#111111] text-[#6B4F3A] focus:ring-[#6B4F3A] focus:ring-offset-0"
               />
               <label htmlFor="newsletter" className="text-xs text-gray-300">
                 Ich möchte gerne weitere wertvolle Tipps rund um den Immobilienverkauf per
@@ -263,7 +263,7 @@ export function DownloadsSection() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-[#A2694A] hover:bg-[#8B5A3C] text-white"
+                className="flex-1 bg-[#6B4F3A] hover:bg-[#5A4230] text-white"
               >
                 {isSubmitting ? (
                   <>

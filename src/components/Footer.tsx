@@ -12,7 +12,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Home className="w-6 h-6 text-[#A2694A]" />
+              <Home className="w-6 h-6 text-[#6B4F3A]" />
               <span className="text-white">
                 EDIT Immobilien
               </span>
@@ -21,20 +21,20 @@ export function Footer() {
               Ihr vertrauensvoller Immobilienmakler in Hamburg und Umgebung seit 2016. Spezialisiert auf Aufwertung & Wertsteigerung.
             </p>
             <address className="text-gray-400 not-italic text-sm space-y-1">
-              <p className="text-[#808FA6]">Serviceregionen:</p>
+              <p className="text-[#C2A878]">Serviceregionen:</p>
               <p>Hamburg • Wedel • Holm</p>
               <p>Norderstedt • Quickborn • Pinneberg</p>
             </address>
           </div>
 
           <div>
-            <h4 className="mb-4 text-[#808FA6]">Navigation</h4>
+            <h4 className="mb-4 text-[#C2A878]">Navigation</h4>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
               <ul className="space-y-2">
                 <li>
                   <a
                     href="#home"
-                    className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm"
+                    className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm"
                   >
                     Home
                   </a>
@@ -42,7 +42,7 @@ export function Footer() {
                 <li>
                   <a
                     href="#immobilien"
-                    className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm"
+                    className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm"
                   >
                     Immobilien
                   </a>
@@ -50,7 +50,7 @@ export function Footer() {
                 <li>
                   <a
                     href="#uber-uns"
-                    className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm"
+                    className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm"
                   >
                     Über uns
                   </a>
@@ -58,7 +58,7 @@ export function Footer() {
                 <li>
                   <a
                     href="#kontakt"
-                    className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm"
+                    className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm"
                   >
                     Kontakt
                   </a>
@@ -80,13 +80,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[#808FA6]">Folgen Sie uns</h4>
+            <h4 className="mb-4 text-[#C2A878]">Folgen Sie uns</h4>
             <div className="flex gap-4 mb-6">
               <a
                 href="https://www.instagram.com/edit_immobilien/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-[#A2694A] hover:border-[#A2694A] transition-all"
+                className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-[#6B4F3A] hover:border-[#6B4F3A] transition-all"
                 aria-label="Instagram - Edit Immobilien"
               >
                 <Instagram className="w-5 h-5" />
@@ -102,18 +102,18 @@ export function Footer() {
             </p>
             <div className="flex gap-6">
               <Impressum>
-                <button className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm">
+                <button className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm">
                   Impressum
                 </button>
               </Impressum>
               <Datenschutz>
-                <button className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm">
+                <button className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm">
                   Datenschutz
                 </button>
               </Datenschutz>
               <a
                 href="#"
-                className="text-gray-400 hover:text-[#A2694A] transition-colors text-sm"
+                className="text-gray-400 hover:text-[#6B4F3A] transition-colors text-sm"
               >
                 AGB
               </a>

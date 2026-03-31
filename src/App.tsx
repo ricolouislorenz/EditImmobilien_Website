@@ -1,3 +1,4 @@
+import { Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { ServicesSection } from "./components/ServicesSection";
@@ -13,8 +14,9 @@ import { TestimonialsSection } from "./components/TestimonialsSection";
 import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { DownloadsSection } from "./components/DownloadsSection";
 import { CookieBanner } from "./components/CookieBanner";
+import { AdminApp } from "./admin/AdminApp";
 
-export default function App() {
+function MainSite() {
   return (
     <div className="min-h-screen">
       <SEOHead />
@@ -36,5 +38,14 @@ export default function App() {
       <CookieBanner />
       <Toaster />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="admin/*" element={<AdminApp />} />
+      <Route path="*" element={<MainSite />} />
+    </Routes>
   );
 }

@@ -41,7 +41,7 @@ export function SEOHead({
     setMetaTag('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
     setMetaTag('language', 'de');
     setMetaTag('revisit-after', '7 days');
-    setMetaTag('theme-color', '#808FA6');
+    setMetaTag('theme-color', '#C2A878');
 
     // Open Graph Tags (Facebook, LinkedIn)
     setMetaTag('og:title', title, true);

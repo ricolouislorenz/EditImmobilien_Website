@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { PropertyCard } from "./PropertyCard";
 import { ExposeRequestDialog } from "./ExposeRequestDialog";
@@ -6,7 +6,7 @@ import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Property } from "@/types";
 
 const PROPERTY_TYPES = [
@@ -53,6 +53,97 @@ function isFilterActive(filter: FilterState): boolean {
   return !!(filter.type || filter.maxPrice || filter.minArea);
 }
 
+function usePageSize(): number {
+  const getSize = () => {
+    if (window.innerWidth >= 1024) return 6;
+    if (window.innerWidth >= 768) return 4;
+    return 3;
+  };
+  const [pageSize, setPageSize] = useState(getSize);
+  useEffect(() => {
+    const handler = () => setPageSize(getSize());
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return pageSize;
+}
+
+interface PaginatedGridProps {
+  properties: Property[];
+  showExposeButton?: boolean;
+  onRequestExpose?: (id: string, title: string) => void;
+  emptyText: string;
+  resetKey: string;
+}
+
+function PaginatedGrid({ properties, showExposeButton, onRequestExpose, emptyText, resetKey }: PaginatedGridProps) {
+  const pageSize = usePageSize();
+  const [page, setPage] = useState(1);
+
+  useEffect(() => { setPage(1); }, [resetKey, pageSize]);
+
+  const totalPages = Math.ceil(properties.length / pageSize);
+  const paginated = properties.slice((page - 1) * pageSize, page * pageSize);
+
+  if (properties.length === 0) {
+    return <p className="text-center text-gray-500 py-12">{emptyText}</p>;
+  }
+
+  return (
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {paginated.map((property) => (
+          <PropertyCard
+            key={property.id}
+            property={property}
+            showExposeButton={showExposeButton}
+            onRequestExpose={onRequestExpose}
+          />
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="border-white/10 hover:bg-white/5 h-9 w-9 p-0"
+            aria-label="Vorherige Seite"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+            <Button
+              key={n}
+              variant={n === page ? "default" : "outline"}
+              onClick={() => setPage(n)}
+              className={`h-9 w-9 p-0 ${
+                n === page
+                  ? "bg-[#C2A878] hover:bg-[#C2A878]/90 text-[#111111] border-transparent"
+                  : "border-white/10 hover:bg-white/5 text-gray-400"
+              }`}
+            >
+              {n}
+            </Button>
+          ))}
+
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="border-white/10 hover:bg-white/5 h-9 w-9 p-0"
+            aria-label="Nächste Seite"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PropertiesSection() {
   const { active, references, loading, error } = useProperties();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -63,17 +154,22 @@ export function PropertiesSection() {
 
   const [pendingFilter, setPendingFilter] = useState<FilterState>(EMPTY_FILTER);
   const [activeFilter, setActiveFilter] = useState<FilterState>(EMPTY_FILTER);
+  const [filterResetKey, setFilterResetKey] = useState("");
 
   const handleRequestExpose = (propertyId: string, propertyTitle: string) => {
     setSelectedProperty({ id: propertyId, title: propertyTitle });
     setDialogOpen(true);
   };
 
-  const handleApply = () => setActiveFilter({ ...pendingFilter });
+  const handleApply = () => {
+    setActiveFilter({ ...pendingFilter });
+    setFilterResetKey(JSON.stringify(pendingFilter));
+  };
 
   const handleReset = () => {
     setPendingFilter(EMPTY_FILTER);
     setActiveFilter(EMPTY_FILTER);
+    setFilterResetKey("");
   };
 
   const filteredActive = applyFilter(active, activeFilter);
@@ -100,76 +196,77 @@ export function PropertiesSection() {
         )}
 
         {/* Filterleiste */}
-        <div className="max-w-4xl mx-auto mb-8 bg-[#1a1a1a] border border-white/10 rounded-xl p-4">
-          <div className="flex flex-col sm:flex-row gap-3 items-end">
-            <div className="flex items-center gap-2 text-[#C2A878] shrink-0 self-center sm:self-end pb-2">
-              <SlidersHorizontal className="w-4 h-4" />
-              <span className="text-sm font-medium">Filter</span>
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <label className="text-xs text-gray-400 mb-1 block">Typ</label>
-              <Select
-                value={pendingFilter.type}
-                onValueChange={(val) =>
-                  setPendingFilter((f) => ({ ...f, type: val === "all" ? "" : val }))
-                }
-              >
-                <SelectTrigger className="bg-[#111111] border-white/10 text-white h-10">
-                  <SelectValue placeholder="Alle Typen" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                  <SelectItem value="all">Alle Typen</SelectItem>
-                  {PROPERTY_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <label className="text-xs text-gray-400 mb-1 block">Max. Kaufpreis (€)</label>
-              <Input
-                type="number"
-                placeholder="z. B. 600000"
-                value={pendingFilter.maxPrice}
-                onChange={(e) =>
-                  setPendingFilter((f) => ({ ...f, maxPrice: e.target.value }))
-                }
-                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
-              />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <label className="text-xs text-gray-400 mb-1 block">Min. Fläche (m²)</label>
-              <Input
-                type="number"
-                placeholder="z. B. 80"
-                value={pendingFilter.minArea}
-                onChange={(e) =>
-                  setPendingFilter((f) => ({ ...f, minArea: e.target.value }))
-                }
-                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
-              />
-            </div>
-
-            <div className="flex gap-2 shrink-0">
-              <Button
-                onClick={handleApply}
-                className="bg-[#C2A878] hover:bg-[#C2A878]/90 h-10"
-              >
-                Anwenden
-              </Button>
-              {filterOn && (
-                <Button
-                  variant="outline"
-                  onClick={handleReset}
-                  className="border-white/10 hover:bg-white/5 h-10 gap-1"
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="flex items-center gap-2 text-[#C2A878] mb-3">
+            <SlidersHorizontal className="w-4 h-4" />
+            <span className="text-sm font-medium">Filter</span>
+          </div>
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4">
+            <div className="flex flex-col sm:flex-row gap-3 items-end">
+              <div className="flex-1 min-w-0">
+                <label className="text-xs text-gray-400 mb-1 block">Typ</label>
+                <Select
+                  value={pendingFilter.type}
+                  onValueChange={(val) =>
+                    setPendingFilter((f) => ({ ...f, type: val === "all" ? "" : val }))
+                  }
                 >
-                  <X className="w-4 h-4" />
-                  Zurücksetzen
+                  <SelectTrigger className="bg-[#111111] border-white/10 text-white h-10">
+                    <SelectValue placeholder="Alle Typen" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                    <SelectItem value="all">Alle Typen</SelectItem>
+                    {PROPERTY_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <label className="text-xs text-gray-400 mb-1 block">Max. Kaufpreis (€)</label>
+                <Input
+                  type="number"
+                  placeholder="z. B. 600000"
+                  value={pendingFilter.maxPrice}
+                  onChange={(e) =>
+                    setPendingFilter((f) => ({ ...f, maxPrice: e.target.value }))
+                  }
+                  className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
+                />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <label className="text-xs text-gray-400 mb-1 block">Min. Fläche (m²)</label>
+                <Input
+                  type="number"
+                  placeholder="z. B. 80"
+                  value={pendingFilter.minArea}
+                  onChange={(e) =>
+                    setPendingFilter((f) => ({ ...f, minArea: e.target.value }))
+                  }
+                  className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
+                />
+              </div>
+
+              <div className="flex gap-2 shrink-0">
+                <Button
+                  onClick={handleApply}
+                  className="bg-[#C2A878] hover:bg-[#C2A878]/90 h-10"
+                >
+                  Anwenden
                 </Button>
-              )}
+                {filterOn && (
+                  <Button
+                    variant="outline"
+                    onClick={handleReset}
+                    className="border-white/10 hover:bg-white/5 h-10 gap-1"
+                  >
+                    <X className="w-4 h-4" />
+                    Zurücksetzen
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -182,38 +279,27 @@ export function PropertiesSection() {
 
           <TabsContent value="current">
             {loading ? (
-              <PropertySkeleton count={3} />
-            ) : filteredActive.length === 0 ? (
-              <p className="text-center text-gray-500 py-12">
-                {filterOn ? "Keine Immobilien entsprechen dem Filter." : "Aktuell keine Immobilien verfügbar."}
-              </p>
+              <PropertySkeleton count={6} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredActive.map((property) => (
-                  <PropertyCard
-                    key={property.id}
-                    property={property}
-                    showExposeButton
-                    onRequestExpose={handleRequestExpose}
-                  />
-                ))}
-              </div>
+              <PaginatedGrid
+                properties={filteredActive}
+                showExposeButton
+                onRequestExpose={handleRequestExpose}
+                emptyText={filterOn ? "Keine Immobilien entsprechen dem Filter." : "Aktuell keine Immobilien verfügbar."}
+                resetKey={filterResetKey + "-current"}
+              />
             )}
           </TabsContent>
 
           <TabsContent value="sold">
             {loading ? (
               <PropertySkeleton count={6} />
-            ) : filteredReferences.length === 0 ? (
-              <p className="text-center text-gray-500 py-12">
-                {filterOn ? "Keine Referenzen entsprechen dem Filter." : "Noch keine Referenzen vorhanden."}
-              </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredReferences.map((property) => (
-                  <PropertyCard key={property.id} property={property} />
-                ))}
-              </div>
+              <PaginatedGrid
+                properties={filteredReferences}
+                emptyText={filterOn ? "Keine Referenzen entsprechen dem Filter." : "Noch keine Referenzen vorhanden."}
+                resetKey={filterResetKey + "-sold"}
+              />
             )}
           </TabsContent>
         </Tabs>

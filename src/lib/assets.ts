@@ -49,7 +49,7 @@ export const TEAM_FOTO = publicImage("team.jpg");
  * Echtes Bild: public/images/team-timo.jpg ablegen → Wert auf publicImage("team-timo.jpg") setzen.
  * Empfohlene Größe: 400×500px
  */
-export const TEAM_TIMO = publicImage("team-timo.svg");
+export const TEAM_TIMO = publicImage("team-timo.jpg");
 
 /**
  * Porträtfoto Sarah.
@@ -57,7 +57,7 @@ export const TEAM_TIMO = publicImage("team-timo.svg");
  * Echtes Bild: public/images/team-sarah.jpg ablegen → Wert auf publicImage("team-sarah.jpg") setzen.
  * Empfohlene Größe: 400×500px
  */
-export const TEAM_SARAH = publicImage("team-sarah.svg");
+export const TEAM_SARAH = publicImage("team-sarah.jpg");
 
 // ─── Immobilien ──────────────────────────────────────────────────────────────
 

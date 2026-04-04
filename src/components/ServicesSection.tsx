@@ -1,10 +1,12 @@
-import { Home, TrendingUp, FileText, Calculator, Camera, Users, Sparkles } from "lucide-react";
+import { Home, TrendingUp, Calculator, Camera, Users, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { Button } from "./ui/button";
 import { useState } from "react";
 
 const services = [
   {
     icon: Home,
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80",
     title: "Immobilienverkauf",
     description: "Professionelle Vermarktung Ihrer Immobilie mit optimaler Preisgestaltung und gezielter Käuferansprache.",
     details: {
@@ -21,6 +23,7 @@ const services = [
   },
   {
     icon: TrendingUp,
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
     title: "Immobilienvermietung",
     description: "Vermietungsservice von der Mietersuche bis zur Vertragsgestaltung - wir finden den passenden Mieter für Sie.",
     details: {
@@ -37,6 +40,7 @@ const services = [
   },
   {
     icon: Calculator,
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
     title: "Immobilienbewertung",
     description: "Fundierte Wertermittlung Ihrer Immobilie basierend auf aktuellen Marktdaten und langjähriger Erfahrung.",
     details: {
@@ -55,6 +59,7 @@ const services = [
   },
   {
     icon: Sparkles,
+    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80",
     title: "Aufwertung & Wertsteigerung",
     description: "Gemeinsam den Wert Ihrer Immobilie steigern - durch gezielte Renovierung, Sanierung und faire Kostenübernahme.",
     details: {
@@ -72,6 +77,7 @@ const services = [
   },
   {
     icon: Camera,
+    image: "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=800&q=80",
     title: "Professionelle Vermarktung",
     description: "Hochwertige Fotos, virtuelle Rundgänge und ansprechende Exposés für maximale Aufmerksamkeit.",
     details: {
@@ -88,6 +94,7 @@ const services = [
   },
   {
     icon: Users,
+    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
     title: "Persönliche Betreuung & Beratung",
     description: "Individuelle Begleitung und kompetente Anlageberatung - von der ersten Besichtigung bis zur erfolgreichen Investition.",
     details: {
@@ -119,22 +126,56 @@ export function ServicesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <div
               key={index}
               onClick={() => setSelectedService(service)}
-              className="group bg-[#111111] p-8 rounded-xl border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20 cursor-pointer"
+              className="group relative rounded-xl overflow-hidden cursor-pointer shadow-lg flex flex-col border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20"
+              style={{ height: '380px' }}
             >
-              <div className="mb-4">
-                <div className="w-12 h-12 bg-[#C2A878]/10 rounded-full flex items-center justify-center border-2 border-[#C2A878]/20 group-hover:scale-110 transition-transform duration-300">
-                  <service.icon className="w-6 h-6 text-[#6B4F3A]" />
+              {/* Bildbereich mit Farbfilter, Titel und Subtext */}
+              <div className="relative flex-1 overflow-hidden">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                {/* Farbfilter */}
+                <div
+                  className="absolute inset-0"
+                  style={{ backgroundColor: 'rgba(107,79,58,0.55)' }}
+                />
+
+                {/* Titelbalken oben links – nur so breit wie der Text */}
+                <div className="absolute top-5 left-5 z-10">
+                  <span
+                    className="inline-block px-4 py-2 rounded text-white text-base font-bold leading-snug"
+                    style={{ backgroundColor: '#111111' }}
+                  >
+                    {service.title}
+                  </span>
+                </div>
+
+                {/* Subtext unten links auf dem Bild */}
+                <div className="absolute left-8 right-12" style={{ bottom: '1.25rem' }}>
+                  <p
+                    className="text-white text-sm leading-relaxed line-clamp-3"
+                    style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
+                  >
+                    {service.description}
+                  </p>
                 </div>
               </div>
-              <h3 className="mb-3 text-[#C2A878]">{service.title}</h3>
-              <p className="text-gray-400 leading-relaxed">{service.description}</p>
-              <div className="mt-4 text-[#6B4F3A] group-hover:translate-x-2 transition-transform duration-300 inline-flex items-center gap-1">
-                Mehr erfahren →
+
+              {/* Unterer Balken – Footer-Grau */}
+              <div
+                className="relative z-10 px-5 py-3 flex items-center justify-center"
+                style={{ backgroundColor: '#1a1a1a' }}
+              >
+                <span className="text-[#C2A878] text-sm font-medium group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center gap-1">
+                  Mehr erfahren →
+                </span>
               </div>
             </div>
           ))}
@@ -182,9 +223,20 @@ export function ServicesSection() {
                 </ul>
 
                 <div className="mt-8 p-6 bg-gradient-to-r from-[#C2A878]/20 to-[#6B4F3A]/20 rounded-lg border border-[#C2A878]/30">
-                  <p className="text-gray-300">
+                  <p className="text-gray-300 mb-4">
                     <span className="text-[#6B4F3A]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
                   </p>
+                  <Button
+                    className="bg-[#6B4F3A] hover:bg-[#5A4230] text-white cursor-pointer"
+                    onClick={() => {
+                      setSelectedService(null);
+                      setTimeout(() => {
+                        document.getElementById("kontakt")?.scrollIntoView({ behavior: "smooth" });
+                      }, 150);
+                    }}
+                  >
+                    Zum Kontaktformular
+                  </Button>
                 </div>
               </div>
             </>

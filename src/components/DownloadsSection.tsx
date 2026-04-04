@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileDown, CheckCircle2, Mail, Download, X } from "lucide-react";
+import { CheckCircle2, Mail, Download, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
@@ -130,10 +130,6 @@ export function DownloadsSection() {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-4 py-2 rounded-full mb-4">
-            <FileDown className="w-5 h-5 text-[#C2A878]" />
-            <span className="text-[#C2A878]">Kostenlose Ratgeber</span>
-          </div>
 
           <h2 className="text-white mb-4">
             Wertvolles Wissen für Ihren Immobilienverkauf

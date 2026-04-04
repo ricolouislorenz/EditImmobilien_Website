@@ -1,5 +1,4 @@
 import { Button } from "./ui/button";
-import { Search, Calendar } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { HERO_BG } from "@/lib/assets";
 
@@ -35,16 +34,11 @@ export function Hero() {
             Professionelle Immobilienvermittlung in Hamburg, Wedel, Holm & Norderstedt. Über 13 Jahre Erfahrung mit Spezialisierung auf Aufwertung & Wertsteigerung.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" onClick={openCalendly} className="gap-2 bg-[#6B4F3A] hover:bg-[#5A4230]">
-              <Calendar className="w-5 h-5" />
+            <Button size="lg" onClick={openCalendly} className="cursor-pointer bg-[#6B4F3A] hover:bg-[#5A4230]">
               Termin vereinbaren
             </Button>
-            <Button size="lg" onClick={() => scrollToSection("immobilien")} className="gap-2" variant="outline">
-              <Search className="w-5 h-5" />
+            <Button size="lg" variant="outline" onClick={() => scrollToSection("immobilien")} className="cursor-pointer bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white/20 hover:border-white">
               Immobilien durchsuchen
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => scrollToSection("kontakt")} className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white/20 hover:border-white">
-              Kontakt aufnehmen
             </Button>
           </div>
         </div>

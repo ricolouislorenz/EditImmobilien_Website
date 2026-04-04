@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Instagram } from "lucide-react";
 import { useState } from "react";
 import { LOGO } from "@/lib/assets";
 
@@ -16,10 +16,10 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-[#111111]/95 backdrop-blur-sm z-50 border-b border-white/10">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer" onClick={() => scrollToSection("home")}>
-            <img src={LOGO} alt="Edit Immobilien" className="h-10 w-auto bg-white rounded px-2 py-1" />
+            <img src={LOGO} alt="Edit Immobilien" className="h-14 w-auto bg-white rounded px-2 py-1" />
           </div>
 
           {/* Desktop Navigation */}
@@ -41,9 +41,18 @@ export function Header() {
             </button>
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
+            <a
+              href="https://www.instagram.com/edit_immobilien/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-[#C2A878] transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
             <Button onClick={() => scrollToSection("kontakt")}>
-              Beratung anfragen
+              Termin vereinbaren
             </Button>
           </div>
 
@@ -75,7 +84,7 @@ export function Header() {
               Kontakt
             </button>
             <Button onClick={() => scrollToSection("kontakt")} className="w-full">
-              Beratung anfragen
+              Termin vereinbaren
             </Button>
           </nav>
         )}

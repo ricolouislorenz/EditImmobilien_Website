@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calculator, TrendingUp, Home, MapPin } from "lucide-react";
+import { TrendingUp, Home, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { Input } from "./ui/input";
@@ -8,117 +8,117 @@ import { Input } from "./ui/input";
 // Quelle: ImmoScout24, Immowelt, Gutachterausschuss Hamburg 2025 (Richtwerte, Stand 2025)
 const PLZ_PREISE: Record<string, { name: string; preis: number }> = {
   // === HAMBURG MITTE ===
-  "20095": { name: "Hamburg Altstadt", preis: 7000 },
-  "20097": { name: "Hamburg Hammerbrook", preis: 5500 },
-  "20099": { name: "Hamburg St. Georg", preis: 6500 },
-  "20354": { name: "Hamburg Neustadt", preis: 6500 },
-  "20355": { name: "Hamburg Neustadt", preis: 6200 },
-  "20357": { name: "Hamburg St. Pauli", preis: 5800 },
-  "20359": { name: "Hamburg St. Pauli", preis: 5600 },
-  "20457": { name: "Hamburg HafenCity", preis: 8500 },
-  "20459": { name: "Hamburg Neustadt", preis: 6000 },
-  "20535": { name: "Hamburg Hamm-Nord", preis: 5000 },
-  "20537": { name: "Hamburg Hamm-Mitte", preis: 4900 },
-  "20539": { name: "Hamburg Hamm-Süd", preis: 4800 },
+  "20095": { name: "Altstadt", preis: 7000 },
+  "20097": { name: "Hammerbrook", preis: 5500 },
+  "20099": { name: "St. Georg", preis: 6500 },
+  "20354": { name: "Neustadt", preis: 6500 },
+  "20355": { name: "Neustadt", preis: 6200 },
+  "20357": { name: "St. Pauli", preis: 5800 },
+  "20359": { name: "St. Pauli", preis: 5600 },
+  "20457": { name: "HafenCity", preis: 8500 },
+  "20459": { name: "Neustadt", preis: 6000 },
+  "20535": { name: "Hamm-Nord", preis: 5000 },
+  "20537": { name: "Hamm-Mitte", preis: 4900 },
+  "20539": { name: "Hamm-Süd", preis: 4800 },
 
   // === EIMSBÜTTEL ===
-  "20144": { name: "Hamburg Eimsbüttel", preis: 6200 },
-  "20146": { name: "Hamburg Rotherbaum", preis: 8500 },
-  "20148": { name: "Hamburg Harvestehude", preis: 9000 },
-  "20149": { name: "Hamburg Harvestehude", preis: 8800 },
-  "20249": { name: "Hamburg Eppendorf", preis: 7000 },
-  "20251": { name: "Hamburg Eppendorf", preis: 7000 },
-  "20253": { name: "Hamburg Hoheluft-West", preis: 6800 },
-  "20255": { name: "Hamburg Eimsbüttel", preis: 6000 },
-  "20257": { name: "Hamburg Eimsbüttel", preis: 6000 },
-  "20259": { name: "Hamburg Eimsbüttel", preis: 6200 },
-  "22523": { name: "Hamburg Eidelstedt", preis: 4500 },
-  "22525": { name: "Hamburg Stellingen", preis: 4500 },
-  "22527": { name: "Hamburg Stellingen", preis: 4500 },
-  "22529": { name: "Hamburg Lokstedt", preis: 5500 },
+  "20144": { name: "Eimsbüttel", preis: 6200 },
+  "20146": { name: "Rotherbaum", preis: 8500 },
+  "20148": { name: "Harvestehude", preis: 9000 },
+  "20149": { name: "Harvestehude", preis: 8800 },
+  "20249": { name: "Eppendorf", preis: 7000 },
+  "20251": { name: "Eppendorf", preis: 7000 },
+  "20253": { name: "Hoheluft-West", preis: 6800 },
+  "20255": { name: "Eimsbüttel", preis: 6000 },
+  "20257": { name: "Eimsbüttel", preis: 6000 },
+  "20259": { name: "Eimsbüttel", preis: 6200 },
+  "22523": { name: "Eidelstedt", preis: 4500 },
+  "22525": { name: "Stellingen", preis: 4500 },
+  "22527": { name: "Stellingen", preis: 4500 },
+  "22529": { name: "Lokstedt", preis: 5500 },
 
   // === ALTONA ===
-  "22761": { name: "Hamburg Bahrenfeld", preis: 5200 },
-  "22763": { name: "Hamburg Ottensen", preis: 6500 },
-  "22765": { name: "Hamburg Altona-Altstadt", preis: 5800 },
-  "22767": { name: "Hamburg Altona-Nord", preis: 5800 },
-  "22769": { name: "Hamburg Bahrenfeld", preis: 5000 },
-  "22547": { name: "Hamburg Lurup", preis: 4200 },
-  "22549": { name: "Hamburg Lurup", preis: 4200 },
-  "22559": { name: "Hamburg Rissen", preis: 6500 },
-  "22587": { name: "Hamburg Blankenese", preis: 8800 },
-  "22589": { name: "Hamburg Sülldorf", preis: 6200 },
-  "22605": { name: "Hamburg Osdorf", preis: 5000 },
-  "22607": { name: "Hamburg Groß Flottbek", preis: 7000 },
-  "22609": { name: "Hamburg Nienstedten", preis: 8000 },
+  "22761": { name: "Bahrenfeld", preis: 5200 },
+  "22763": { name: "Ottensen", preis: 6500 },
+  "22765": { name: "Altona-Altstadt", preis: 5800 },
+  "22767": { name: "Altona-Nord", preis: 5800 },
+  "22769": { name: "Bahrenfeld", preis: 5000 },
+  "22547": { name: "Lurup", preis: 4200 },
+  "22549": { name: "Lurup", preis: 4200 },
+  "22559": { name: "Rissen", preis: 6500 },
+  "22587": { name: "Blankenese", preis: 8800 },
+  "22589": { name: "Sülldorf", preis: 6200 },
+  "22605": { name: "Osdorf", preis: 5000 },
+  "22607": { name: "Groß Flottbek", preis: 7000 },
+  "22609": { name: "Nienstedten", preis: 8000 },
 
   // === HAMBURG-NORD ===
-  "22081": { name: "Hamburg Barmbek-Nord", preis: 4700 },
-  "22083": { name: "Hamburg Barmbek-Süd", preis: 4700 },
-  "22085": { name: "Hamburg Uhlenhorst", preis: 6800 },
-  "22087": { name: "Hamburg Hohenfelde", preis: 6200 },
-  "22089": { name: "Hamburg Eilbek", preis: 5500 },
-  "22297": { name: "Hamburg Alsterdorf", preis: 5500 },
-  "22299": { name: "Hamburg Groß Borstel", preis: 5200 },
-  "22301": { name: "Hamburg Winterhude", preis: 7500 },
-  "22303": { name: "Hamburg Winterhude", preis: 7500 },
-  "22305": { name: "Hamburg Barmbek-Nord", preis: 4700 },
-  "22307": { name: "Hamburg Barmbek-Süd", preis: 4700 },
-  "22309": { name: "Hamburg Steilshoop", preis: 4200 },
-  "22335": { name: "Hamburg Fuhlsbüttel", preis: 5000 },
-  "22337": { name: "Hamburg Ohlsdorf", preis: 5200 },
-  "22339": { name: "Hamburg Hummelsbüttel", preis: 4800 },
-  "22415": { name: "Hamburg Langenhorn", preis: 4500 },
-  "22417": { name: "Hamburg Langenhorn", preis: 4500 },
-  "22419": { name: "Hamburg Langenhorn", preis: 4500 },
-  "22453": { name: "Hamburg Niendorf", preis: 5200 },
-  "22455": { name: "Hamburg Niendorf", preis: 5000 },
-  "22457": { name: "Hamburg Schnelsen", preis: 4800 },
-  "22459": { name: "Hamburg Schnelsen", preis: 4800 },
+  "22081": { name: "Barmbek-Nord", preis: 4700 },
+  "22083": { name: "Barmbek-Süd", preis: 4700 },
+  "22085": { name: "Uhlenhorst", preis: 6800 },
+  "22087": { name: "Hohenfelde", preis: 6200 },
+  "22089": { name: "Eilbek", preis: 5500 },
+  "22297": { name: "Alsterdorf", preis: 5500 },
+  "22299": { name: "Groß Borstel", preis: 5200 },
+  "22301": { name: "Winterhude", preis: 7500 },
+  "22303": { name: "Winterhude", preis: 7500 },
+  "22305": { name: "Barmbek-Nord", preis: 4700 },
+  "22307": { name: "Barmbek-Süd", preis: 4700 },
+  "22309": { name: "Steilshoop", preis: 4200 },
+  "22335": { name: "Fuhlsbüttel", preis: 5000 },
+  "22337": { name: "Ohlsdorf", preis: 5200 },
+  "22339": { name: "Hummelsbüttel", preis: 4800 },
+  "22415": { name: "Langenhorn", preis: 4500 },
+  "22417": { name: "Langenhorn", preis: 4500 },
+  "22419": { name: "Langenhorn", preis: 4500 },
+  "22453": { name: "Niendorf", preis: 5200 },
+  "22455": { name: "Niendorf", preis: 5000 },
+  "22457": { name: "Schnelsen", preis: 4800 },
+  "22459": { name: "Schnelsen", preis: 4800 },
 
   // === WANDSBEK ===
-  "22041": { name: "Hamburg Marienthal", preis: 5000 },
-  "22043": { name: "Hamburg Jenfeld", preis: 4300 },
-  "22045": { name: "Hamburg Tonndorf", preis: 4400 },
-  "22047": { name: "Hamburg Wandsbek", preis: 4600 },
-  "22049": { name: "Hamburg Dulsberg", preis: 4500 },
-  "22111": { name: "Hamburg Horn", preis: 4500 },
-  "22113": { name: "Hamburg Billstedt", preis: 4000 },
-  "22115": { name: "Hamburg Billstedt", preis: 4000 },
-  "22117": { name: "Hamburg Billstedt", preis: 3900 },
-  "22119": { name: "Hamburg Horn", preis: 4500 },
-  "22143": { name: "Hamburg Rahlstedt", preis: 3800 },
-  "22145": { name: "Hamburg Rahlstedt", preis: 3800 },
-  "22147": { name: "Hamburg Rahlstedt", preis: 3800 },
-  "22149": { name: "Hamburg Rahlstedt", preis: 3700 },
-  "22159": { name: "Hamburg Farmsen-Berne", preis: 4500 },
-  "22177": { name: "Hamburg Bramfeld", preis: 4500 },
-  "22179": { name: "Hamburg Bramfeld", preis: 4500 },
-  "22359": { name: "Hamburg Volksdorf", preis: 5500 },
-  "22391": { name: "Hamburg Wellingsbüttel", preis: 5200 },
-  "22393": { name: "Hamburg Sasel", preis: 4800 },
-  "22395": { name: "Hamburg Bergstedt", preis: 5000 },
-  "22397": { name: "Hamburg Duvenstedt", preis: 5000 },
-  "22399": { name: "Hamburg Poppenbüttel", preis: 5200 },
+  "22041": { name: "Marienthal", preis: 5000 },
+  "22043": { name: "Jenfeld", preis: 4300 },
+  "22045": { name: "Tonndorf", preis: 4400 },
+  "22047": { name: "Wandsbek", preis: 4600 },
+  "22049": { name: "Dulsberg", preis: 4500 },
+  "22111": { name: "Horn", preis: 4500 },
+  "22113": { name: "Billstedt", preis: 4000 },
+  "22115": { name: "Billstedt", preis: 4000 },
+  "22117": { name: "Billstedt", preis: 3900 },
+  "22119": { name: "Horn", preis: 4500 },
+  "22143": { name: "Rahlstedt", preis: 3800 },
+  "22145": { name: "Rahlstedt", preis: 3800 },
+  "22147": { name: "Rahlstedt", preis: 3800 },
+  "22149": { name: "Rahlstedt", preis: 3700 },
+  "22159": { name: "Farmsen-Berne", preis: 4500 },
+  "22177": { name: "Bramfeld", preis: 4500 },
+  "22179": { name: "Bramfeld", preis: 4500 },
+  "22359": { name: "Volksdorf", preis: 5500 },
+  "22391": { name: "Wellingsbüttel", preis: 5200 },
+  "22393": { name: "Sasel", preis: 4800 },
+  "22395": { name: "Bergstedt", preis: 5000 },
+  "22397": { name: "Duvenstedt", preis: 5000 },
+  "22399": { name: "Poppenbüttel", preis: 5200 },
 
   // === BERGEDORF ===
-  "21029": { name: "Hamburg Lohbrügge", preis: 4200 },
-  "21031": { name: "Hamburg Lohbrügge", preis: 4200 },
-  "21033": { name: "Hamburg Bergedorf", preis: 4400 },
-  "21035": { name: "Hamburg Neuallermöhe", preis: 4200 },
-  "21037": { name: "Hamburg Kirchwerder", preis: 3500 },
-  "21039": { name: "Hamburg Neuengamme", preis: 3500 },
+  "21029": { name: "Lohbrügge", preis: 4200 },
+  "21031": { name: "Lohbrügge", preis: 4200 },
+  "21033": { name: "Bergedorf", preis: 4400 },
+  "21035": { name: "Neuallermöhe", preis: 4200 },
+  "21037": { name: "Kirchwerder", preis: 3500 },
+  "21039": { name: "Neuengamme", preis: 3500 },
 
   // === HARBURG ===
-  "21073": { name: "Hamburg Harburg", preis: 4200 },
-  "21075": { name: "Hamburg Harburg", preis: 4000 },
-  "21077": { name: "Hamburg Eißendorf", preis: 4000 },
-  "21079": { name: "Hamburg Wilstorf", preis: 3900 },
-  "21107": { name: "Hamburg Wilhelmsburg", preis: 4000 },
-  "21109": { name: "Hamburg Wilhelmsburg", preis: 3800 },
-  "21129": { name: "Hamburg Finkenwerder", preis: 4200 },
-  "21147": { name: "Hamburg Neugraben-Fischbek", preis: 3800 },
-  "21149": { name: "Hamburg Hausbruch", preis: 3700 },
+  "21073": { name: "Harburg", preis: 4200 },
+  "21075": { name: "Harburg", preis: 4000 },
+  "21077": { name: "Eißendorf", preis: 4000 },
+  "21079": { name: "Wilstorf", preis: 3900 },
+  "21107": { name: "Wilhelmsburg", preis: 4000 },
+  "21109": { name: "Wilhelmsburg", preis: 3800 },
+  "21129": { name: "Finkenwerder", preis: 4200 },
+  "21147": { name: "Neugraben-Fischbek", preis: 3800 },
+  "21149": { name: "Hausbruch", preis: 3700 },
 
   // === NORDERSTEDT ===
   "22844": { name: "Norderstedt", preis: 4100 },
@@ -208,17 +208,17 @@ function getOrtsname(address: string): string {
   if (plz && PLZ_PREISE[plz]) return PLZ_PREISE[plz].name;
 
   const lower = address.toLowerCase();
-  if (lower.includes("harvestehude")) return "Hamburg Harvestehude";
-  if (lower.includes("rotherbaum")) return "Hamburg Rotherbaum";
-  if (lower.includes("hafencity")) return "Hamburg HafenCity";
-  if (lower.includes("blankenese")) return "Hamburg Blankenese";
-  if (lower.includes("winterhude")) return "Hamburg Winterhude";
-  if (lower.includes("eppendorf")) return "Hamburg Eppendorf";
-  if (lower.includes("altona")) return "Hamburg Altona";
-  if (lower.includes("ottensen")) return "Hamburg Ottensen";
-  if (lower.includes("harburg")) return "Hamburg Harburg";
-  if (lower.includes("wilhelmsburg")) return "Hamburg Wilhelmsburg";
-  if (lower.includes("bergedorf")) return "Hamburg Bergedorf";
+  if (lower.includes("harvestehude")) return "Harvestehude";
+  if (lower.includes("rotherbaum")) return "Rotherbaum";
+  if (lower.includes("hafencity")) return "HafenCity";
+  if (lower.includes("blankenese")) return "Blankenese";
+  if (lower.includes("winterhude")) return "Winterhude";
+  if (lower.includes("eppendorf")) return "Eppendorf";
+  if (lower.includes("altona")) return "Altona";
+  if (lower.includes("ottensen")) return "Ottensen";
+  if (lower.includes("harburg")) return "Harburg";
+  if (lower.includes("wilhelmsburg")) return "Wilhelmsburg";
+  if (lower.includes("bergedorf")) return "Bergedorf";
   if (lower.includes("ahrensburg")) return "Ahrensburg";
   if (lower.includes("reinbek")) return "Reinbek";
   if (lower.includes("schenefeld")) return "Schenefeld";
@@ -297,14 +297,9 @@ export function ImmobilienwertRechner() {
 
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#6B4F3A]/10 border border-[#6B4F3A]/20 px-4 py-2 rounded-full mb-4">
-            <Calculator className="w-4 h-4 text-[#6B4F3A]" />
-            <span className="text-[#6B4F3A] text-sm">Kostenlos & unverbindlich</span>
-          </div>
           <h2 className="text-white mb-4">Was ist Ihre Immobilie wert?</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Ermitteln Sie sofort eine erste Werteinschätzung — der Rechner aktualisiert
-            sich live bei jeder Eingabe.
+            Ermitteln Sie sofort eine erste Werteinschätzung.
           </p>
         </div>
 
@@ -453,7 +448,7 @@ export function ImmobilienwertRechner() {
 
             {/* Ergebnis */}
             <div className="p-8 md:p-10 flex flex-col justify-between">
-              <div>
+              <div className="flex-1 flex flex-col justify-center">
                 {/* Label */}
                 <div className="flex items-center gap-2 mb-6">
                   <TrendingUp className="w-4 h-4 text-[#6B4F3A]" />
@@ -528,8 +523,8 @@ export function ImmobilienwertRechner() {
             { wert: "13+", label: "Jahre Markterfahrung" },
           ].map((item) => (
             <div key={item.label} className="text-center py-5 px-4 bg-white/[0.03] border border-white/5 rounded-xl">
-              <div className="text-2xl font-bold text-[#6B4F3A] mb-1">{item.wert}</div>
-              <div className="text-sm text-gray-500">{item.label}</div>
+              <div className="text-2xl font-bold text-[#C2A878] mb-1">{item.wert}</div>
+              <div className="text-sm text-gray-300">{item.label}</div>
             </div>
           ))}
         </div>

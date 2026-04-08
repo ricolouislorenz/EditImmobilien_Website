@@ -51,7 +51,7 @@ export function ContactSection() {
               Buchen Sie direkt einen Termin
             </h3>
             <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-              Nutzen Sie unseren Online-Kalender und vereinbaren Sie ganz bequem einen kostenlosen 
+              Nutzen Sie unseren Online-Kalender und vereinbaren Sie ganz bequem einen kostenlosen
               Beratungstermin – wann es Ihnen am besten passt.
             </p>
             <Button

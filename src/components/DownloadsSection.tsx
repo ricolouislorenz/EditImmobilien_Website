@@ -146,31 +146,43 @@ export function DownloadsSection() {
           {downloads.map((download, index) => (
             <div
               key={index}
-              className="group bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-white/10 rounded-xl p-6 hover:border-[#C2A878]/50 transition-all duration-300 hover:shadow-xl hover:scale-105"
+              className="group relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/10 hover:-translate-y-1"
+              style={{
+                background: "linear-gradient(145deg, rgba(30,27,24,0.98) 0%, rgba(18,16,14,1) 100%)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+              }}
             >
-              {/* Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-[#C2A878] to-[#6B7A8F] rounded-lg flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                {download.icon}
+              {/* Goldener Akzentstreifen oben */}
+              <div className="h-px w-full" style={{ background: "linear-gradient(to right, transparent, rgba(194,168,120,0.5), transparent)" }} />
+
+              <div className="flex flex-col flex-1 p-6">
+                {/* Titel */}
+                <h3 className="text-[#F6F2ED] mb-3 leading-snug" style={{ fontSize: "1rem", fontWeight: 700 }}>
+                  {download.title}
+                </h3>
+
+                {/* Trennlinie */}
+                <div className="h-px mb-4" style={{ background: "rgba(255,255,255,0.06)" }} />
+
+                {/* Beschreibung */}
+                <p className="text-gray-500 text-sm leading-relaxed flex-1 mb-6">
+                  {download.description}
+                </p>
+
+                {/* Button */}
+                <Button
+                  onClick={() => handleDownloadClick(download)}
+                  className="w-full text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#6B4F3A]/30"
+                  style={{ background: "linear-gradient(135deg, #6B4F3A 0%, #5A4230 100%)", border: "1px solid rgba(194,168,120,0.2)" }}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Jetzt herunterladen
+                </Button>
               </div>
 
-              {/* Title */}
-              <h3 className="text-white mb-3 text-lg">
-                {download.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                {download.description}
-              </p>
-
-              {/* Download Button */}
-              <Button
-                onClick={() => handleDownloadClick(download)}
-                className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white transition-all duration-300 group-hover:shadow-lg"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Jetzt herunterladen
-              </Button>
+              {/* Goldener Akzentstreifen unten */}
+              <div className="h-px w-full" style={{ background: "linear-gradient(to right, transparent, rgba(194,168,120,0.15), transparent)" }} />
             </div>
           ))}
         </div>
@@ -190,8 +202,7 @@ export function DownloadsSection() {
       <Dialog open={!!selectedDownload} onOpenChange={() => setSelectedDownload(null)}>
         <DialogContent className="bg-[#1a1a1a] border-white/20 text-white max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-3">
-              <span className="text-3xl">{selectedDownload?.icon}</span>
+            <DialogTitle className="text-2xl">
               Download starten
             </DialogTitle>
             <DialogDescription className="text-gray-400">

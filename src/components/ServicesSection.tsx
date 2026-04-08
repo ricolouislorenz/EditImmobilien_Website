@@ -157,8 +157,8 @@ export function ServicesSection() {
                   </span>
                 </div>
 
-                {/* Subtext unten links auf dem Bild */}
-                <div className="absolute left-8 right-12" style={{ bottom: '1.25rem' }}>
+                {/* Subtext unten auf dem Bild */}
+                <div className="absolute left-8 right-8" style={{ bottom: '1.25rem' }}>
                   <p
                     className="text-white text-sm leading-relaxed line-clamp-3"
                     style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
@@ -196,22 +196,15 @@ export function ServicesSection() {
           {selectedService && (
             <>
               <DialogHeader>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#C2A878] to-[#C2A878]/80 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <selectedService.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <DialogTitle className="text-[#C2A878]">{selectedService.title}</DialogTitle>
-                    <DialogDescription className="text-gray-400">
-                      {selectedService.details.subtitle}
-                    </DialogDescription>
-                  </div>
+                <div className="mb-4">
+                  <DialogTitle className="text-[#C2A878]">{selectedService.title}</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    {selectedService.description}
+                  </DialogDescription>
                 </div>
               </DialogHeader>
               
-              <div className="mt-6">
-                <p className="text-gray-300 mb-6">{selectedService.description}</p>
-                
+              <div className="mt-0">
                 <h4 className="mb-4 text-[#C2A878]">Was wir für Sie tun:</h4>
                 <ul className="space-y-3">
                   {selectedService.details.content.map((item, index) => (
@@ -227,7 +220,7 @@ export function ServicesSection() {
                     <span className="text-[#6B4F3A]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
                   </p>
                   <Button
-                    className="bg-[#6B4F3A] hover:bg-[#5A4230] text-white cursor-pointer"
+                    className="bg-[#6B4F3A] hover:bg-[#5A4230] text-white cursor-pointer block mx-auto"
                     onClick={() => {
                       setSelectedService(null);
                       setTimeout(() => {

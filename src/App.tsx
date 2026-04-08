@@ -10,9 +10,16 @@ import { Toaster } from "./components/ui/sonner";
 import { SEOHead, StructuredData } from "./components/SEOHead";
 import { ImmobilienwertRechner } from "./components/ImmobilienwertRechner";
 import { DownloadsSection } from "./components/DownloadsSection";
+import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { CookieBanner } from "./components/CookieBanner";
 import { AdminApp } from "./admin/AdminApp";
+
+function GoldDivider() {
+  return (
+    <div style={{ height: "1px", background: "linear-gradient(to right, transparent, #C2A878, transparent)" }} />
+  );
+}
 
 function MainSite() {
   return (
@@ -22,11 +29,19 @@ function MainSite() {
       <Header />
       <main className="pt-[73px]">
         <Hero />
+        <GoldDivider />
         <ImmobilienwertRechner />
+        <GoldDivider />
         <ServicesSection />
+        <GoldDivider />
         <PropertiesSection />
+        <GoldDivider />
         <AboutSection />
+        <GoldDivider />
+        <VerkaufsprozessTimeline />
+        <GoldDivider />
         <DownloadsSection />
+        <GoldDivider />
         <ContactSection />
       </main>
       <Footer />

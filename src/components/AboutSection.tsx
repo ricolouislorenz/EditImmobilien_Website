@@ -25,24 +25,20 @@ export function AboutSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="mb-3 text-white">Über uns</h2>
-          <p className="text-gray-400 max-w-3xl mx-auto italic">
-            Begeistern - Verändern - Emotionen wecken
-          </p>
         </div>
 
         {/* Kompakter Text ohne Bild */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-            {/* Wer wir sind – Timo */}
-            <div className="rounded-xl overflow-hidden border border-white/10 hover:border-[#C2A878]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#C2A878]/10 bg-[#1a1a1a]">
-              <div className="h-56 overflow-hidden">
-                <img
-                  src={TEAM_TIMO}
-                  alt="Timo – Edit Immobilien"
-                  className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
-                />
-              </div>
-              <div className="p-6">
+          <div className="flex flex-col gap-6 mb-10">
+            {/* Wer wir sind – Timo: Bild links, Text rechts */}
+            <div className="flex flex-row items-center gap-6">
+              <img
+                src={TEAM_TIMO}
+                alt="Timo – Edit Immobilien"
+                className="rounded-lg transition-transform duration-500 hover:scale-105"
+                style={{ width: '160px', height: '160px', objectFit: 'cover', objectPosition: 'top', flexShrink: 0 }}
+              />
+              <div>
                 <h3 className="text-[#C2A878] mb-3">Wer wir sind</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">
                   Wir sind ein junges, engagiertes Immobilienteam, das seit unserer Gründung im Jahr 2016 den Markt mit frischen Ansätzen und neuen Ideen prägen möchte. Unsere Vision ist ein fairer Immobilienmarkt, der Verkäufer und Käufer gleichermaßen wertschätzt und deren Bedürfnisse in Einklang bringt.
@@ -50,21 +46,20 @@ export function AboutSection() {
               </div>
             </div>
 
-            {/* Unsere Expertise – Sarah */}
-            <div className="rounded-xl overflow-hidden border border-white/10 hover:border-[#C2A878]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#C2A878]/10 bg-[#1a1a1a]">
-              <div className="h-56 overflow-hidden">
-                <img
-                  src={TEAM_SARAH}
-                  alt="Sarah – Edit Immobilien"
-                  className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
-                />
-              </div>
-              <div className="p-6">
+            {/* Unsere Expertise – Sarah: Text links, Bild rechts */}
+            <div className="flex flex-row items-center gap-6">
+              <div className="flex-1">
                 <h3 className="text-[#C2A878] mb-3">Unsere Expertise</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">
                   Mit über 13 Jahren Erfahrung in der Immobilienbranche vereinen wir Fachwissen aus Bauprojektentwicklung, Hausverwaltung und Immobilienvermittlung. Diese Kombination aus langjähriger Expertise und innovativem Denken macht uns zu einem verlässlichen Partner für Ihre Immobilienprojekte.
                 </p>
               </div>
+              <img
+                src={TEAM_SARAH}
+                alt="Sarah – Edit Immobilien"
+                className="rounded-lg transition-transform duration-500 hover:scale-105"
+                style={{ width: '160px', height: '160px', objectFit: 'cover', objectPosition: 'top', flexShrink: 0 }}
+              />
             </div>
           </div>
 

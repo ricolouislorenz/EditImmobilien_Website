@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { FileSignature } from "lucide-react";
 
 const steps = [
   {
@@ -11,7 +10,6 @@ const steps = [
     title: "Aufwertung & Wertsteigerung",
     timeline: "Tag 3–14",
     description: "Wir investieren bis zu 10 % unserer Courtage in Renovierungen – kostenfrei für Sie.",
-    highlight: true,
   },
   {
     title: "Professionelle Fotos & Exposé",
@@ -45,23 +43,21 @@ const steps = [
   },
 ];
 
-const CARD_W = 220;
-const CARD_H = 150;
-const COL_GAP = 48;
+const CARD_W = 240;
+const CARD_H = 160;
+const COL_GAP = 32;
 const DOT_H = 40;
 
 export function VerkaufsprozessTimeline() {
   const outerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const outer = outerRef.current;
     const sticky = stickyRef.current;
     const track = trackRef.current;
-    const bar = progressRef.current;
-    if (!outer || !sticky || !track || !bar) return;
+    if (!outer || !sticky || !track) return;
 
     const setup = () => {
       // Track-Breite nach dem Render messen
@@ -92,7 +88,6 @@ export function VerkaufsprozessTimeline() {
       ));
 
       track.style.transform = `translateX(${-ratio * overflow}px)`;
-      bar.style.width = `${ratio * 100}%`;
     };
 
     // Auf nächsten Frame warten, damit der Track korrekt gerendert ist
@@ -132,7 +127,7 @@ export function VerkaufsprozessTimeline() {
         }}
       >
         {/* Titel */}
-        <div style={{ textAlign: "center", padding: "1.5rem 1rem 1rem", flexShrink: 0 }}>
+        <div style={{ textAlign: "center", padding: "1.5rem 1rem 0.25rem", flexShrink: 0 }}>
           <h2 className="text-white mb-1">So läuft Ihr Hausverkauf ab</h2>
           <p className="text-gray-500 text-sm">Scrollen Sie, um den Prozess zu erkunden →</p>
         </div>
@@ -199,15 +194,6 @@ export function VerkaufsprozessTimeline() {
           </div>
         </div>
 
-        {/* Fortschrittsbalken */}
-        <div style={{ padding: "0.5rem 4rem 1rem", flexShrink: 0 }}>
-          <div style={{ height: "1px", backgroundColor: "rgba(255,255,255,0.1)", borderRadius: "999px", overflow: "hidden" }}>
-            <div
-              ref={progressRef}
-              style={{ height: "100%", width: "0%", background: "linear-gradient(to right, #C2A878, #6B4F3A)", borderRadius: "999px" }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -220,15 +206,9 @@ function StepCard({ step }: { step: typeof steps[0] }) {
       style={{
         width: "100%",
         height: "100%",
-        background: step.highlight
-          ? "linear-gradient(135deg, rgba(107,79,58,0.25) 0%, rgba(90,66,48,0.12) 100%)"
-          : "linear-gradient(135deg, rgba(30,28,26,0.95) 0%, rgba(20,18,16,0.98) 100%)",
-        border: step.highlight
-          ? "1px solid rgba(194,168,120,0.35)"
-          : "1px solid rgba(255,255,255,0.07)",
-        boxShadow: step.highlight
-          ? "0 4px 24px rgba(194,168,120,0.08), inset 0 1px 0 rgba(194,168,120,0.12)"
-          : "0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+        background: "linear-gradient(135deg, rgba(30,28,26,0.95) 0%, rgba(20,18,16,0.98) 100%)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
         padding: "1rem",
       }}
     >
@@ -239,9 +219,7 @@ function StepCard({ step }: { step: typeof steps[0] }) {
         left: "1rem",
         right: "1rem",
         height: "1px",
-        background: step.highlight
-          ? "linear-gradient(to right, transparent, rgba(194,168,120,0.7), transparent)"
-          : "linear-gradient(to right, transparent, rgba(194,168,120,0.2), transparent)",
+        background: "linear-gradient(to right, transparent, rgba(194,168,120,0.2), transparent)",
       }} />
 
       {/* Zeitangabe */}
@@ -293,10 +271,6 @@ function StepCard({ step }: { step: typeof steps[0] }) {
         color: "rgba(180,170,160,0.85)",
         fontSize: "11px",
         lineHeight: 1.6,
-        overflow: "hidden",
-        display: "-webkit-box",
-        WebkitLineClamp: 3,
-        WebkitBoxOrient: "vertical",
         flex: 1,
       }}>
         {step.description}

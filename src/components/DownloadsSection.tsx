@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, Mail, Download, X } from "lucide-react";
+import { Mail, Download } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
@@ -187,15 +187,6 @@ export function DownloadsSection() {
           ))}
         </div>
 
-        {/* Trust Badge */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-[#C2A878]/10 px-6 py-3 rounded-full">
-            <CheckCircle2 className="w-5 h-5 text-[#6B4F3A]" />
-            <span className="text-gray-400 text-sm">
-              100% kostenlos • Keine Verpflichtungen • Sofortiger Zugriff
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Download Modal */}

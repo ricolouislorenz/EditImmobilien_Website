@@ -1,19 +1,15 @@
-import { Award, Users, TrendingUp } from "lucide-react";
 import { TEAM_TIMO, TEAM_SARAH } from "@/lib/assets";
 
 const features = [
   {
-    icon: Award,
     title: "Begeistern",
     description: "Wir verknüpfen 'lose Enden' und schaffen vertrauensvolle Beziehungen durch qualifizierte, bedarfsgerechte Betreuung von Verkäufer und Käufer. Mit unserem umfassenden Netzwerk bringen wir Ihre Wünsche mit den passenden Handwerkern zusammen",
   },
   {
-    icon: Users,
     title: "Verändern",
     description: "Wir möchten den Immobilienmarkt nachhaltig verändern. Mit Professionalität und Empathie bringen wir die oft unterschiedlichen Bedürfnisse beider Seiten in Einklang und schaffen so Lösungen, die Vertrauen und Zufriedenheit fördern",
   },
   {
-    icon: TrendingUp,
     title: "Emotionen wecken",
     description: "Immobilien sind viel mehr als Zahlen, Daten, Fakten und eine Anhäufung von Steinen. Sie sind Orte der Träume, größer Entscheidungen und Lebensprojekte. Wir begleiten Sie auf diesem Weg mit Engagement und Fachwissen, um Ihre Vision Realität werden zu lassen.",
   },
@@ -68,14 +64,24 @@ export function AboutSection() {
             <h3 className="text-center text-[#C2A878] mb-6">Unsere Werte</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {features.map((feature, index) => (
-                <div key={index} className="bg-[#111111] p-6 rounded-xl border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20">
-                  <div className="flex justify-center mb-4">
-                    <div className="w-12 h-12 bg-[#C2A878]/10 rounded-full flex items-center justify-center border-2 border-[#C2A878]/20">
-                      <feature.icon className="w-6 h-6 text-[#6B4F3A]" />
-                    </div>
+                <div
+                  key={index}
+                  className="relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 border-2 border-white/10 hover:border-[#C2A878] hover:shadow-2xl hover:shadow-[#C2A878]/20"
+                  style={{
+                    background: "linear-gradient(145deg, rgba(30,27,24,0.98) 0%, rgba(18,16,14,1) 100%)",
+                  }}
+                >
+                  {/* Goldener Akzentstreifen oben */}
+                  <div style={{ height: "1px", background: "linear-gradient(to right, transparent, rgba(194,168,120,0.5), transparent)" }} />
+
+                  <div className="flex flex-col p-6">
+                    <h4 className="text-center mb-3" style={{ color: "#C2A878" }}>{feature.title}</h4>
+                    <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", marginBottom: "1rem" }} />
+                    <p className="text-sm leading-relaxed text-center" style={{ color: "rgba(180,170,160,0.85)" }}>{feature.description}</p>
                   </div>
-                  <h4 className="mb-3 text-center text-[#C2A878]">{feature.title}</h4>
-                  <p className="text-gray-400 text-sm leading-relaxed text-center">{feature.description}</p>
+
+                  {/* Goldener Akzentstreifen unten */}
+                  <div style={{ height: "1px", background: "linear-gradient(to right, transparent, rgba(194,168,120,0.15), transparent)" }} />
                 </div>
               ))}
             </div>

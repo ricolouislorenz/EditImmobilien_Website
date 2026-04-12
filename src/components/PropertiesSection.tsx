@@ -4,9 +4,8 @@ import { PropertyCard } from "./PropertyCard";
 import { ExposeRequestDialog } from "./ExposeRequestDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Property } from "@/types";
 
 const PROPERTY_TYPES = [
@@ -66,6 +65,68 @@ function usePageSize(): number {
     return () => window.removeEventListener("resize", handler);
   }, []);
   return pageSize;
+}
+
+interface NumberStepInputProps {
+  value: string;
+  onChange: (val: string) => void;
+  step: number;
+  placeholder?: string;
+}
+
+interface NumberStepInputProps {
+  value: string;
+  onChange: (val: string) => void;
+  step: number;
+  placeholder?: string;
+  formatThousands?: boolean;
+}
+
+function NumberStepInput({ value, onChange, step, placeholder, formatThousands }: NumberStepInputProps) {
+  const current = value === "" ? 0 : parseInt(value, 10);
+
+  const decrement = () => {
+    const next = Math.max(0, current - step);
+    onChange(next === 0 && value === "" ? "" : String(next));
+  };
+
+  const increment = () => {
+    const base = value === "" ? 0 : current;
+    onChange(String(base + step));
+  };
+
+  const displayValue = formatThousands && value !== ""
+    ? current.toLocaleString("de-DE")
+    : value;
+
+  return (
+    <div className="flex h-10 bg-[#111111] border border-white/10 rounded-md overflow-hidden">
+      <button
+        type="button"
+        onClick={decrement}
+        className="w-10 shrink-0 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 border-r border-white/10 text-lg leading-none transition-colors"
+        aria-label="Verringern"
+      >
+        −
+      </button>
+      <input
+        type="text"
+        inputMode="numeric"
+        value={displayValue}
+        onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ""))}
+        placeholder={placeholder}
+        className="flex-1 min-w-0 bg-transparent text-white text-sm text-center placeholder:text-gray-600 focus:outline-none px-1"
+      />
+      <button
+        type="button"
+        onClick={increment}
+        className="w-10 shrink-0 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 border-l border-white/10 text-lg leading-none transition-colors"
+        aria-label="Erhöhen"
+      >
+        +
+      </button>
+    </div>
+  );
 }
 
 interface PaginatedGridProps {
@@ -202,7 +263,7 @@ export function PropertiesSection() {
             <span className="text-sm font-medium">Filter</span>
           </div>
           <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4">
-            <div className="flex flex-col sm:flex-row gap-3 items-end">
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
               <div className="flex-1 min-w-0">
                 <label className="text-xs text-gray-400 mb-1 block">Typ</label>
                 <Select
@@ -225,47 +286,40 @@ export function PropertiesSection() {
 
               <div className="flex-1 min-w-0">
                 <label className="text-xs text-gray-400 mb-1 block">Max. Kaufpreis (€)</label>
-                <Input
-                  type="number"
-                  placeholder="z. B. 600000"
+                <NumberStepInput
                   value={pendingFilter.maxPrice}
-                  onChange={(e) =>
-                    setPendingFilter((f) => ({ ...f, maxPrice: e.target.value }))
-                  }
-                  className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
+                  onChange={(val) => setPendingFilter((f) => ({ ...f, maxPrice: val }))}
+                  step={10000}
+                  placeholder="z. B. 600.000"
+                  formatThousands
                 />
               </div>
 
               <div className="flex-1 min-w-0">
                 <label className="text-xs text-gray-400 mb-1 block">Min. Fläche (m²)</label>
-                <Input
-                  type="number"
-                  placeholder="z. B. 80"
+                <NumberStepInput
                   value={pendingFilter.minArea}
-                  onChange={(e) =>
-                    setPendingFilter((f) => ({ ...f, minArea: e.target.value }))
-                  }
-                  className="bg-[#111111] border-white/10 text-white placeholder:text-gray-600 h-10"
+                  onChange={(val) => setPendingFilter((f) => ({ ...f, minArea: val }))}
+                  step={10}
+                  placeholder="z. B. 80"
                 />
               </div>
 
               <div className="flex gap-2 shrink-0">
                 <Button
                   onClick={handleApply}
-                  className="bg-[#C2A878] hover:bg-[#C2A878]/90 h-10"
+                  className="bg-[#C2A878] hover:bg-[#C2A878]/90 text-[#111111] h-10 px-4 text-sm font-medium"
                 >
                   Anwenden
                 </Button>
-                {filterOn && (
-                  <Button
-                    variant="outline"
-                    onClick={handleReset}
-                    className="border-white/10 hover:bg-white/5 h-10 gap-1"
-                  >
-                    <X className="w-4 h-4" />
-                    Zurücksetzen
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={handleReset}
+                  disabled={!filterOn}
+                  className="border-white/10 hover:bg-white/5 h-10 px-3 gap-1 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Zurücksetzen
+                </Button>
               </div>
             </div>
           </div>

@@ -260,6 +260,10 @@ export function ImmobilienwertRechner() {
   const [zustand, setZustand] = useState("gut");
   const [adresse, setAdresse] = useState("");
 
+  // PLZ-Validierung: nur anzeigen wenn eine 5-stellige Zahl eingegeben wurde, die nicht bekannt ist
+  const enteredPLZ = extractPLZ(adresse);
+  const isUnknownPLZ = enteredPLZ !== null && !PLZ_PREISE[enteredPLZ];
+
   // Zimmer: wenige Zimmer senken, viele erhöhen den Wert leicht
   const zimmerFaktor =
     zimmer <= 1 ? 0.93
@@ -304,14 +308,14 @@ export function ImmobilienwertRechner() {
         </div>
 
         <div className="bg-[#0d0d0d] border border-white/10 rounded-2xl overflow-hidden">
-          <div className="grid md:grid-cols-2">
+          <div className="grid md:grid-cols-2 md:items-start">
 
             {/* Eingaben */}
-            <div className="p-8 md:p-10 space-y-8 border-b md:border-b-0 md:border-r border-white/10">
+            <div className="divide-y divide-white/[0.06] md:border-r border-white/10">
 
               {/* Objekttyp */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Objekttyp</label>
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">Objekttyp</label>
                 <select
                   value={objekttyp}
                   onChange={(e) => setObjekttyp(e.target.value)}
@@ -326,88 +330,69 @@ export function ImmobilienwertRechner() {
               </div>
 
               {/* Wohnfläche */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm text-gray-400 flex items-center gap-2">
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-xs uppercase tracking-widest text-gray-500 flex items-center gap-2">
                     <Home className="w-4 h-4 text-[#C2A878]" />
                     Wohnfläche
                   </label>
-                  <span className="text-[#6B4F3A] font-medium">{wohnflaeche} m²</span>
+                  <span className="text-[#C2A878] font-semibold tabular-nums">{wohnflaeche} m²</span>
                 </div>
-                <Slider
-                  value={[wohnflaeche]}
-                  onValueChange={(v) => setWohnflaeche(v[0])}
-                  min={30}
-                  max={500}
-                  step={5}
-                  className="cursor-pointer"
-                />
-                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <div className="py-1">
+                  <Slider value={[wohnflaeche]} onValueChange={(v) => setWohnflaeche(v[0])} min={30} max={500} step={5} className="cursor-pointer" />
+                </div>
+                <div className="flex justify-between text-xs text-gray-600 mt-2">
                   <span>30 m²</span><span>500 m²</span>
                 </div>
               </div>
 
               {/* Zimmer & Bäder */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm text-gray-400">Zimmer</label>
-                    <span className="text-[#6B4F3A] font-medium">{zimmer}</span>
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <div className="grid grid-cols-2 gap-6 sm:gap-8">
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <label className="text-xs uppercase tracking-widest text-gray-500">Zimmer</label>
+                      <span className="text-[#C2A878] font-semibold tabular-nums">{zimmer}</span>
+                    </div>
+                    <div className="py-1">
+                      <Slider value={[zimmer]} onValueChange={(v) => setZimmer(v[0])} min={1} max={10} step={1} className="cursor-pointer" />
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600 mt-2">
+                      <span>1</span><span>10</span>
+                    </div>
                   </div>
-                  <Slider
-                    value={[zimmer]}
-                    onValueChange={(v) => setZimmer(v[0])}
-                    min={1}
-                    max={10}
-                    step={1}
-                    className="cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-600 mt-1">
-                    <span>1</span><span>10</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm text-gray-400">Badezimmer</label>
-                    <span className="text-[#6B4F3A] font-medium">{baeder}</span>
-                  </div>
-                  <Slider
-                    value={[baeder]}
-                    onValueChange={(v) => setBaeder(v[0])}
-                    min={1}
-                    max={4}
-                    step={1}
-                    className="cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-600 mt-1">
-                    <span>1</span><span>4</span>
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <label className="text-xs uppercase tracking-widest text-gray-500">Bäder</label>
+                      <span className="text-[#C2A878] font-semibold tabular-nums">{baeder}</span>
+                    </div>
+                    <div className="py-1">
+                      <Slider value={[baeder]} onValueChange={(v) => setBaeder(v[0])} min={1} max={4} step={1} className="cursor-pointer" />
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600 mt-2">
+                      <span>1</span><span>4</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Baujahr */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm text-gray-400">Baujahr</label>
-                  <span className="text-[#6B4F3A] font-medium">{baujahr}</span>
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-xs uppercase tracking-widest text-gray-500">Baujahr</label>
+                  <span className="text-[#C2A878] font-semibold tabular-nums">{baujahr}</span>
                 </div>
-                <Slider
-                  value={[baujahr]}
-                  onValueChange={(v) => setBaujahr(v[0])}
-                  min={1900}
-                  max={2025}
-                  step={1}
-                  className="cursor-pointer"
-                />
-                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <div className="py-1">
+                  <Slider value={[baujahr]} onValueChange={(v) => setBaujahr(v[0])} min={1900} max={2025} step={1} className="cursor-pointer" />
+                </div>
+                <div className="flex justify-between text-xs text-gray-600 mt-2">
                   <span>1900</span><span>2025</span>
                 </div>
               </div>
 
               {/* Zustand */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Zustand</label>
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">Zustand</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: "neuwertig", label: "Neuwertig" },
@@ -419,9 +404,9 @@ export function ImmobilienwertRechner() {
                       key={opt.value}
                       type="button"
                       onClick={() => setZustand(opt.value)}
-                      className={`px-3 py-2 rounded-lg text-sm border transition-all ${
+                      className={`px-3 py-3 rounded-lg text-xs sm:text-sm border transition-all leading-tight ${
                         zustand === opt.value
-                          ? "bg-[#6B4F3A]/20 border-[#6B4F3A] text-[#6B4F3A]"
+                          ? "bg-[#6B4F3A]/20 border-[#6B4F3A] text-[#C2A878]"
                           : "bg-[#1a1a1a] border-white/10 text-gray-400 hover:border-white/30"
                       }`}
                     >
@@ -432,8 +417,8 @@ export function ImmobilienwertRechner() {
               </div>
 
               {/* Lage */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2 flex items-center gap-2">
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
+                <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#C2A878]" />
                   Lage (PLZ oder Adresse)
                 </label>
@@ -441,76 +426,81 @@ export function ImmobilienwertRechner() {
                   value={adresse}
                   onChange={(e) => setAdresse(e.target.value)}
                   placeholder="z. B. 22880 oder Hamburg Wedel"
-                  className="bg-[#1a1a1a] border-white/10 text-white placeholder:text-gray-600 focus:border-[#6B4F3A]"
+                  className={`bg-[#1a1a1a] text-white placeholder:text-gray-600 transition-colors ${
+                    isUnknownPLZ
+                      ? "border-amber-600/60 focus:border-amber-500"
+                      : "border-white/10 focus:border-[#6B4F3A]"
+                  }`}
                 />
+                <div className="mt-2 h-[5rem] relative">
+                  {isUnknownPLZ && (
+                    <p className="absolute inset-x-0 top-0 text-xs text-amber-500/80 leading-snug">
+                      Diese PLZ liegt außerhalb unseres Einzugsgebiets (Hamburg & Umgebung). Die Schätzung basiert auf Hamburger Durchschnittswerten.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Ergebnis */}
-            <div className="p-8 md:p-10 flex flex-col justify-between">
-              <div className="flex-1 flex flex-col justify-center">
-                {/* Label */}
-                <div className="flex items-center gap-2 mb-6">
+            <div className="flex flex-col divide-y divide-white/[0.06] md:self-start">
+
+              {/* Inhalt – flex-1 damit er den verfügbaren Raum füllt, justify-center zentriert vertikal */}
+              <div className="flex-1 flex flex-col justify-center gap-8 px-6 sm:px-9 md:px-12 py-8 sm:py-10">
+
+                <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-[#6B4F3A]" />
-                  <span className="text-sm text-gray-400">Geschätzter Marktwert</span>
+                  <span className="text-xs uppercase tracking-widest text-gray-500">Geschätzter Marktwert</span>
                 </div>
 
-                {/* Preisspanne mit Mittelwert */}
-                <div className="mb-6">
-                  {/* Werte über dem Balken */}
-                  <div className="flex items-end justify-between mb-3">
-                    <div className="text-left">
-                      <div className="text-xs text-gray-600 mb-1">Minimum</div>
-                      <div className="text-base text-gray-400 font-medium">
-                        {formatCurrency(wert.min)}
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs text-[#6B4F3A] mb-1 font-medium">Mittelwert</div>
-                      <div className="text-3xl md:text-4xl font-bold text-white leading-none">
-                        {formatCurrency(wert.mittel)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-gray-600 mb-1">Maximum</div>
-                      <div className="text-base text-gray-400 font-medium">
-                        {formatCurrency(wert.max)}
-                      </div>
+                <div>
+                  <div className="text-center mb-8">
+                    <div className="text-xs uppercase tracking-widest text-[#6B4F3A] mb-2 font-medium">Mittelwert</div>
+                    <div className="text-3xl sm:text-4xl font-bold text-white leading-none">
+                      {formatCurrency(wert.mittel)}
                     </div>
                   </div>
-
-                  {/* Balken */}
-                  <div className="relative h-1.5 bg-white/10 rounded-full">
+                  <div className="relative h-1.5 bg-white/10 rounded-full mb-4">
                     <div className="absolute inset-y-0 left-[9%] right-[9%] bg-gradient-to-r from-[#C2A878]/50 via-[#6B4F3A] to-[#C2A878]/50 rounded-full" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[#6B4F3A] rounded-full border-2 border-[#0d0d0d] shadow-md shadow-[#6B4F3A]/50" />
                   </div>
-                </div>
-
-                {/* Kennzahlen */}
-                <div className="grid grid-cols-2 gap-3 mb-8">
-                  <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-                    <div className="text-xs text-gray-500 mb-1">Ø Marktpreis / m²</div>
-                    <div className="text-white font-semibold">{formatCurrency(preisProQm)}</div>
-                  </div>
-                  <div className="bg-white/5 border border-white/5 rounded-xl p-4">
-                    <div className="text-xs text-gray-500 mb-1">Lage</div>
-                    <div className="text-white font-semibold text-sm leading-tight">{ortsname}</div>
+                  <div className="flex justify-between">
+                    <div>
+                      <div className="text-xs text-gray-600 mb-1">Minimum</div>
+                      <div className="text-sm text-gray-400 font-medium tabular-nums">{formatCurrency(wert.min)}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-600 mb-1">Maximum</div>
+                      <div className="text-sm text-gray-400 font-medium tabular-nums">{formatCurrency(wert.max)}</div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Hinweis */}
-                <p className="text-xs text-gray-600 mb-8 leading-relaxed">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5">
+                    <div className="text-xs text-gray-500 mb-2">Ø Marktpreis / m²</div>
+                    <div className="text-white font-semibold tabular-nums">{formatCurrency(preisProQm)}</div>
+                  </div>
+                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5">
+                    <div className="text-xs text-gray-500 mb-2">Lage</div>
+                    <div className="text-white font-semibold text-sm leading-snug">{ortsname}</div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-600 leading-relaxed">
                   Richtwert auf Basis von Lage, Fläche, Baujahr und Zustand. Marktentwicklungen
                   und individuelle Merkmale können den tatsächlichen Wert beeinflussen.
                 </p>
               </div>
 
-              {/* CTA */}
-              <a href="#kontakt">
-                <Button className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white py-6 transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#6B4F3A]/20">
-                  Kostenlose Bewertung anfragen
-                </Button>
-              </a>
+              {/* CTA – kein flex-1, sitzt fest am unteren Ende des Panels */}
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7 md:mb-[5rem]">
+                <a href="#kontakt">
+                  <Button className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white py-6 transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#6B4F3A]/20">
+                    Kostenlose Bewertung anfragen
+                  </Button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -522,9 +512,9 @@ export function ImmobilienwertRechner() {
             { wert: "180+", label: "Bewertete Immobilien" },
             { wert: "13+", label: "Jahre Markterfahrung" },
           ].map((item) => (
-            <div key={item.label} className="text-center py-5 px-4 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div key={item.label} className="text-center py-12 px-3 bg-white/[0.03] border border-white/5 rounded-xl">
               <div className="text-2xl font-bold text-[#C2A878] mb-1">{item.wert}</div>
-              <div className="text-sm text-gray-300">{item.label}</div>
+              <div className="text-sm text-white">{item.label}</div>
             </div>
           ))}
         </div>

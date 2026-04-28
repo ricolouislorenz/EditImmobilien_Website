@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { MapPin, Bed, Bath, Maximize, FileText } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageWithFallback } from "./ImageWithFallback";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { getImageUrl } from "@/lib/supabase";

@@ -121,7 +121,7 @@ export function ServicesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="mb-4 text-white">Unsere Leistungen als Immobilienmakler in Hamburg</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-white max-w-2xl mx-auto">
             Als Ihr vertrauensvoller Immobilienmakler in Hamburg, Wedel, Holm und Norderstedt bieten wir Ihnen umfassende Dienstleistungen rund um Ihre Immobilie - von Verkauf über Vermietung bis zur professionellen Bewertung.
           </p>
         </div>

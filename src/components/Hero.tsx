@@ -1,8 +1,16 @@
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageWithFallback } from "./ImageWithFallback";
 import { HERO_BG } from "@/lib/assets";
 
 export function Hero() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -22,11 +30,14 @@ export function Hero() {
           alt="Modernes Einfamilienhaus in Hamburg - Edit Immobilien vermittelt Traumhäuser in Hamburg, Wedel, Holm und Umgebung"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/55"></div>
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4 text-white">
-        <div className="max-w-3xl bg-black/60 backdrop-blur-sm rounded-2xl p-8 md:p-10">
+        <div
+          className={`max-w-3xl backdrop-blur-sm rounded-2xl p-8 md:p-10 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.88)" }}
+        >
           <h1 className="text-white mb-6">
             Immobilienmakler Hamburg - Ihr Traumhaus in Hamburg & Umgebung
           </h1>

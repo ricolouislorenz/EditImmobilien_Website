@@ -19,7 +19,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer" onClick={() => scrollToSection("home")}>
-            <img src={LOGO} alt="Edit Immobilien" className="h-14 w-auto bg-white rounded px-2 py-1" />
+            <img src={LOGO} alt="Edit Immobilien" className="h-12 w-auto" />
           </div>
 
           {/* Desktop Navigation */}

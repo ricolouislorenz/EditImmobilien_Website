@@ -257,22 +257,22 @@ export function PropertiesSection() {
         )}
 
         {/* Filterleiste */}
-        <div className="max-w-4xl mx-auto mb-8">
+        <div className="max-w-4xl mx-auto mb-10">
           <div className="flex items-center gap-2 text-[#C2A878] mb-3">
             <SlidersHorizontal className="w-4 h-4" />
-            <span className="text-sm font-medium">Filter</span>
+            <span className="text-sm font-medium tracking-wide">Filter</span>
           </div>
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4">
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
-              <div className="flex-1 min-w-0">
-                <label className="text-xs text-gray-400 mb-1 block">Typ</label>
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4 sm:p-5">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
+              <div className="min-w-0">
+                <label className="block text-[11px] uppercase tracking-widest text-gray-500 mb-1.5">Typ</label>
                 <Select
                   value={pendingFilter.type}
                   onValueChange={(val) =>
                     setPendingFilter((f) => ({ ...f, type: val === "all" ? "" : val }))
                   }
                 >
-                  <SelectTrigger className="bg-[#111111] border-white/10 text-white h-10">
+                  <SelectTrigger className="bg-[#111111] border-white/10 text-white h-10 w-full">
                     <SelectValue placeholder="Alle Typen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
@@ -284,8 +284,8 @@ export function PropertiesSection() {
                 </Select>
               </div>
 
-              <div className="flex-1 min-w-0">
-                <label className="text-xs text-gray-400 mb-1 block">Max. Kaufpreis (€)</label>
+              <div className="min-w-0">
+                <label className="block text-[11px] uppercase tracking-widest text-gray-500 mb-1.5">Max. Kaufpreis (€)</label>
                 <NumberStepInput
                   value={pendingFilter.maxPrice}
                   onChange={(val) => setPendingFilter((f) => ({ ...f, maxPrice: val }))}
@@ -295,8 +295,8 @@ export function PropertiesSection() {
                 />
               </div>
 
-              <div className="flex-1 min-w-0">
-                <label className="text-xs text-gray-400 mb-1 block">Min. Fläche (m²)</label>
+              <div className="min-w-0">
+                <label className="block text-[11px] uppercase tracking-widest text-gray-500 mb-1.5">Min. Fläche (m²)</label>
                 <NumberStepInput
                   value={pendingFilter.minArea}
                   onChange={(val) => setPendingFilter((f) => ({ ...f, minArea: val }))}
@@ -305,10 +305,10 @@ export function PropertiesSection() {
                 />
               </div>
 
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-2 md:col-span-3 md:pt-1 lg:col-span-1 lg:pt-0">
                 <Button
                   onClick={handleApply}
-                  className="bg-[#C2A878] hover:bg-[#C2A878]/90 text-[#111111] h-10 px-4 text-sm font-medium"
+                  className="flex-1 lg:flex-none lg:px-6 bg-[#C2A878] hover:bg-[#C2A878]/90 text-[#111111] h-10 text-sm font-medium transition-colors"
                 >
                   Anwenden
                 </Button>
@@ -316,7 +316,7 @@ export function PropertiesSection() {
                   variant="outline"
                   onClick={handleReset}
                   disabled={!filterOn}
-                  className="border-white/10 hover:bg-white/5 h-10 px-3 gap-1 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex-1 lg:flex-none lg:px-5 border-white/10 hover:bg-white/5 h-10 text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Zurücksetzen
                 </Button>

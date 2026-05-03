@@ -1,6 +1,3 @@
-import { useRef, useState } from "react";
-import { Button } from "./ui/button";
-
 const steps = [
   {
     title: "Kostenlose Bewertung & Unterlagen",
@@ -44,162 +41,79 @@ const steps = [
   },
 ];
 
-const CARD_H = 160;
-
 export function VerkaufsprozessTimeline() {
-  const [isOpen, setIsOpen] = useState(false);
-  const timelineRef = useRef<HTMLDivElement>(null);
-
-  const openTimeline = () => {
-    setIsOpen(true);
-    requestAnimationFrame(() => {
-      timelineRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-
   return (
     <section className="bg-[#111111] py-20">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-3 text-white">So läuft Ihr Hausverkauf ab</h2>
-          <p className="mb-6 text-sm text-gray-500">
-            Starten Sie den Prozess und scrollen Sie anschließend Schritt für Schritt nach unten.
+          <p className="text-sm leading-relaxed text-gray-400">
+            Ein klarer Ablauf vom ersten Gespräch bis zur Übergabe - kompakt, transparent und gut planbar.
           </p>
-          {!isOpen && (
-            <Button
-              type="button"
-              onClick={openTimeline}
-              className="bg-[#6B4F3A] px-7 py-6 text-white hover:bg-[#5A4230]"
-            >
-              Verkaufsprozess anzeigen
-            </Button>
-          )}
         </div>
 
-        {isOpen && (
-          <div ref={timelineRef} className="relative mx-auto mt-14 max-w-5xl pt-2">
-            <div className="absolute bottom-0 left-5 top-2 w-px bg-[#C2A878]/40 md:left-1/2 md:-translate-x-1/2" />
+        <div className="relative mx-auto mt-10 max-w-5xl">
+          <div className="absolute bottom-6 left-5 top-6 w-px bg-[#C2A878]/35 lg:left-1/2 lg:-translate-x-1/2" />
 
-            <div className="space-y-8 md:space-y-10">
-              {steps.map((step, i) => {
-                const rightSide = i % 2 === 0;
+          <div className="space-y-5">
+            {steps.map((step, index) => {
+              const rightSide = index % 2 === 0;
 
-                return (
+              return (
+                <div
+                  key={step.title}
+                  className="relative grid min-h-[104px] gap-4 pl-12 lg:grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] lg:items-center lg:gap-0 lg:pl-0"
+                >
+                  <div className="absolute left-5 top-7 h-px w-7 bg-[#C2A878]/35 lg:hidden" />
                   <div
-                    key={step.title}
-                    className="relative grid gap-4 pl-12 md:grid-cols-[1fr_40px_1fr] md:items-center md:gap-6 md:pl-0"
+                    className={
+                      rightSide
+                        ? "hidden lg:absolute lg:left-1/2 lg:top-1/2 lg:ml-2 lg:block lg:h-px lg:w-10 lg:-translate-y-1/2 lg:bg-[#C2A878]/35"
+                        : "hidden lg:absolute lg:right-1/2 lg:top-1/2 lg:mr-2 lg:block lg:h-px lg:w-10 lg:-translate-y-1/2 lg:bg-[#C2A878]/35"
+                    }
+                  />
+
+                  <div
+                    className={
+                      rightSide
+                        ? "lg:col-start-3 lg:w-[25vw] lg:max-w-[320px] lg:justify-self-start lg:pl-8"
+                        : "lg:col-start-1 lg:w-[25vw] lg:max-w-[320px] lg:justify-self-end lg:pr-8"
+                    }
                   >
-                    <div className={rightSide ? "md:col-start-3" : "md:col-start-1"}>
-                      <StepCard step={step} />
-                    </div>
-
-                    <div className="absolute left-5 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 md:static md:col-start-2 md:row-start-1 md:flex md:translate-x-0 md:translate-y-0 md:justify-center">
-                      <div className="h-3 w-3 rounded-full bg-[#C2A878] shadow-[0_0_0_6px_rgba(17,17,17,1)]" />
-                    </div>
-
-                    <div
-                      className={
-                        rightSide
-                          ? "hidden md:col-start-1 md:row-start-1 md:block"
-                          : "hidden md:col-start-3 md:row-start-1 md:block"
-                      }
-                    >
-                      <div className="text-sm text-[#C2A878]/70">Schritt {i + 1}</div>
-                    </div>
+                    <StepCard step={step} stepNumber={index + 1} />
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="absolute left-5 top-7 z-10 -translate-x-1/2 -translate-y-1/2 lg:static lg:col-start-2 lg:row-start-1 lg:flex lg:translate-x-0 lg:translate-y-0 lg:justify-center">
+                    <div className="h-3 w-3 rounded-full border-2 border-[#111111] bg-[#C2A878] shadow-[0_0_0_4px_rgba(17,17,17,1)]" />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
 }
 
-function StepCard({ step }: { step: typeof steps[0] }) {
+function StepCard({ step, stepNumber }: { step: typeof steps[0]; stepNumber: number }) {
   return (
-    <div
-      className="relative flex flex-col overflow-hidden rounded-2xl"
-      style={{
-        width: "100%",
-        minHeight: `${CARD_H}px`,
-        background: "linear-gradient(135deg, rgba(30,28,26,0.95) 0%, rgba(20,18,16,0.98) 100%)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
-        padding: "1rem",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "1rem",
-          right: "1rem",
-          height: "1px",
-          background: "linear-gradient(to right, transparent, rgba(194,168,120,0.2), transparent)",
-        }}
-      />
-
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "5px",
-          marginBottom: "8px",
-          alignSelf: "flex-start",
-        }}
-      >
-        <div
-          style={{
-            width: "5px",
-            height: "5px",
-            borderRadius: "50%",
-            backgroundColor: "#C2A878",
-            flexShrink: 0,
-          }}
-        />
-        <span
-          style={{
-            fontSize: "10px",
-            color: "#C2A878",
-            letterSpacing: "0.06em",
-            fontWeight: 500,
-          }}
-        >
+    <div className="relative w-full overflow-hidden rounded-lg border border-white/10 bg-[#181818] p-4 shadow-[0_8px_22px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C2A878]/35 hover:bg-[#1C1A18] hover:shadow-[0_12px_28px_rgba(0,0,0,0.3)]">
+      <div className="absolute bottom-4 left-0 top-4 w-0.5 bg-[#C2A878]/60" />
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <span className="rounded border border-[#C2A878]/20 bg-[#C2A878]/10 px-2.5 py-1 text-[11px] font-medium text-[#C2A878]">
+          Schritt {stepNumber}
+        </span>
+        <span className="text-[11px] font-medium uppercase tracking-wider text-[#C2A878]/75">
           {step.timeline}
         </span>
       </div>
 
-      <h3
-        style={{
-          color: "#F6F2ED",
-          fontSize: "12px",
-          fontWeight: 700,
-          lineHeight: 1.35,
-          marginBottom: "6px",
-          letterSpacing: "0.01em",
-        }}
-      >
+      <h3 className="mb-2 text-sm font-semibold leading-snug text-white">
         {step.title}
       </h3>
 
-      <div
-        style={{
-          height: "1px",
-          background: "rgba(255,255,255,0.06)",
-          marginBottom: "8px",
-        }}
-      />
-
-      <p
-        style={{
-          color: "rgba(180,170,160,0.85)",
-          fontSize: "11px",
-          lineHeight: 1.6,
-          flex: 1,
-        }}
-      >
+      <p className="text-xs leading-relaxed text-gray-400">
         {step.description}
       </p>
     </div>

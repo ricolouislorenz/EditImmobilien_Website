@@ -1,9 +1,7 @@
-import {
-  Home,
-  Instagram,
-} from "lucide-react";
+import { Instagram } from "lucide-react";
 import { Impressum } from "./Impressum";
 import { Datenschutz } from "./Datenschutz";
+import { LOGO } from "@/lib/assets";
 
 export function Footer() {
   return (
@@ -11,12 +9,7 @@ export function Footer() {
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Home className="w-6 h-6 text-[#6B4F3A]" />
-              <span className="text-white">
-                EDIT Immobilien
-              </span>
-            </div>
+            <img src={LOGO} alt="Edit Immobilien" className="h-12 w-auto mb-4" />
             <p className="text-gray-400 mb-4 text-sm">
               Ihr vertrauensvoller Immobilienmakler in Hamburg und Umgebung seit 2016. Spezialisiert auf Aufwertung & Wertsteigerung.
             </p>

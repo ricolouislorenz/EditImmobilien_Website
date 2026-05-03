@@ -308,7 +308,7 @@ export function ImmobilienwertRechner() {
         </div>
 
         <div className="bg-[#0d0d0d] border border-white/10 rounded-2xl overflow-hidden">
-          <div className="grid md:grid-cols-2 md:items-start">
+          <div className="grid md:grid-cols-2">
 
             {/* Eingaben */}
             <div className="divide-y divide-white/[0.06] md:border-r border-white/10">
@@ -420,30 +420,26 @@ export function ImmobilienwertRechner() {
               <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
                 <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#C2A878]" />
-                  Lage (PLZ oder Adresse)
+                  Lage (PLZ)
                 </label>
                 <Input
                   value={adresse}
-                  onChange={(e) => setAdresse(e.target.value)}
-                  placeholder="z. B. 22880 oder Hamburg Wedel"
+                  onChange={(e) => setAdresse(e.target.value.replace(/\D/g, "").slice(0, 5))}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={5}
+                  placeholder="z. B. 22880"
                   className={`bg-[#1a1a1a] text-white placeholder:text-gray-600 transition-colors ${
                     isUnknownPLZ
                       ? "border-amber-600/60 focus:border-amber-500"
                       : "border-white/10 focus:border-[#6B4F3A]"
                   }`}
                 />
-                <div className="mt-2 h-[5rem] relative">
-                  {isUnknownPLZ && (
-                    <p className="absolute inset-x-0 top-0 text-xs text-amber-500/80 leading-snug">
-                      Diese PLZ liegt außerhalb unseres Einzugsgebiets (Hamburg & Umgebung). Die Schätzung basiert auf Hamburger Durchschnittswerten.
-                    </p>
-                  )}
-                </div>
               </div>
             </div>
 
             {/* Ergebnis */}
-            <div className="flex flex-col divide-y divide-white/[0.06] md:self-start">
+            <div className="flex flex-col divide-y divide-white/[0.06]">
 
               {/* Inhalt – flex-1 damit er den verfügbaren Raum füllt, justify-center zentriert vertikal */}
               <div className="flex-1 flex flex-col justify-center gap-8 px-6 sm:px-9 md:px-12 py-8 sm:py-10">
@@ -477,13 +473,17 @@ export function ImmobilienwertRechner() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5">
-                    <div className="text-xs text-gray-500 mb-2">Ø Marktpreis / m²</div>
-                    <div className="text-white font-semibold tabular-nums">{formatCurrency(preisProQm)}</div>
+                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5 flex flex-col min-h-[96px]">
+                    <div className="text-xs uppercase tracking-wide text-gray-500">Ø Marktpreis / m²</div>
+                    <div className="text-white font-semibold tabular-nums mt-auto pt-3">
+                      {isUnknownPLZ ? "/" : formatCurrency(preisProQm)}
+                    </div>
                   </div>
-                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5">
-                    <div className="text-xs text-gray-500 mb-2">Lage</div>
-                    <div className="text-white font-semibold text-sm leading-snug">{ortsname}</div>
+                  <div className="bg-white/5 border border-white/5 rounded-xl p-4 sm:p-5 flex flex-col min-h-[96px]">
+                    <div className="text-xs uppercase tracking-wide text-gray-500">Lage</div>
+                    <div className="text-white font-semibold text-sm leading-snug mt-auto pt-3">
+                      {isUnknownPLZ ? "Außerhalb Hamburgs" : ortsname}
+                    </div>
                   </div>
                 </div>
 
@@ -494,7 +494,7 @@ export function ImmobilienwertRechner() {
               </div>
 
               {/* CTA – kein flex-1, sitzt fest am unteren Ende des Panels */}
-              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7 md:mb-[5rem]">
+              <div className="px-6 sm:px-9 md:px-12 py-6 sm:py-7">
                 <a href="#kontakt">
                   <Button className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white py-6 transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#6B4F3A]/20">
                     Kostenlose Bewertung anfragen

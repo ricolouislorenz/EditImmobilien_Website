@@ -69,7 +69,6 @@ const services = [
         "Wertsteigerung durch individuelle Lösungen: Ob Renovierung oder Sanierung - wir rücken Ihre Immobilie ins beste Licht",
         "Faire Kostenübernahme: Wir beteiligen uns an den Renovierungskosten, um gemeinsam mit Ihnen den besten Preis zu erzielen",
         "Übernahme von bis zu 10% der Nettocourtage als Beitrag zu den Renovierungskosten",
-        "Qualifizierter Alleinauftrag mit einer Laufzeit von mindestens 6 Monaten ab Vermarktungsstart",
         "Gemeinsame Planung der Renovierungsmaßnahmen, individuell an Ihre Bedürfnisse angepasst",
         "Maßgeschneiderte Lösungen für maximale Wertsteigerung und Verkaufserfolg",
       ],
@@ -158,9 +157,9 @@ export function ServicesSection() {
                 </div>
 
                 {/* Subtext unten auf dem Bild */}
-                <div className="absolute left-8 right-8" style={{ bottom: '1.25rem' }}>
+                <div className="absolute inset-x-5 sm:inset-x-7" style={{ bottom: '1.25rem' }}>
                   <p
-                    className="text-white text-sm leading-relaxed line-clamp-3"
+                    className="rounded-md bg-black/35 px-4 py-3 text-white text-sm leading-relaxed line-clamp-3 backdrop-blur-[2px]"
                     style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
                   >
                     {service.description}

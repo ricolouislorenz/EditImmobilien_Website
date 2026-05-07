@@ -1,106 +1,238 @@
-import { useState } from "react";
-import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  Check,
+  Home,
+  Mail,
+  MessageSquareText,
+  Phone,
+  Search,
+  Send,
+} from "lucide-react";
 import { toast } from "sonner";
-import { TEAM_FOTO, TEAM_SARAH, TEAM_TIMO } from "@/lib/assets";
+import { sendContactEmail } from "@/lib/email";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 
-const contactPeople = [
+const CALENDLY_URL = "https://calendly.com/kontakt-edit-immobilien/30min";
+const PHONE_HREF = "tel:+4917290377547";
+
+type InquiryType = "offer" | "search" | "general";
+type ContactMethod = "phone" | "appointment" | "email";
+type WizardStep = "inquiry" | "method" | "name" | "email";
+
+const inquiryOptions: Array<{
+  id: InquiryType;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}> = [
   {
-    name: "Timo",
-    title: "Ihr Ansprechpartner",
-    role: "Immobilienbewertung & Verkauf",
-    image: TEAM_TIMO,
+    id: "offer",
+    title: "Immobilie vermieten/verkaufen",
+    description: "Für Eigentümer, die eine Immobilie anbieten möchten.",
+    icon: <Home className="h-5 w-5" />,
   },
   {
-    name: "Sarah",
-    title: "Ihre Ansprechpartnerin",
-    role: "Beratung & Kundenbetreuung",
-    image: TEAM_SARAH,
+    id: "search",
+    title: "Immobilie mieten/kaufen",
+    description: "Für Interessenten, die ein neues Zuhause suchen.",
+    icon: <Search className="h-5 w-5" />,
+  },
+  {
+    id: "general",
+    title: "Allgemeine Anfrage",
+    description: "Für Fragen, Rückmeldungen oder sonstige Anliegen.",
+    icon: <MessageSquareText className="h-5 w-5" />,
   },
 ];
 
-export function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
+const methodOptions: Array<{
+  id: ContactMethod;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}> = [
+  {
+    id: "phone",
+    title: "Jetzt anrufen",
+    description: "Startet direkt einen Anruf bei EDIT Immobilien.",
+    icon: <Phone className="h-5 w-5" />,
+  },
+  {
+    id: "appointment",
+    title: "Termin vereinbaren",
+    description: "Öffnet das hinterlegte Calendly-Fenster.",
+    icon: <CalendarDays className="h-5 w-5" />,
+  },
+  {
+    id: "email",
+    title: "Direkt schreiben",
+    description: "Fragt kurz Ihre Daten ab und sendet eine E-Mail.",
+    icon: <Mail className="h-5 w-5" />,
+  },
+];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.");
-    setFormData({ name: "", email: "", phone: "", message: "" });
+const stepLabels: Record<WizardStep, string> = {
+  inquiry: "Anliegen",
+  method: "Kontaktweg",
+  name: "Name",
+  email: "E-Mail",
+};
+
+const methodCtaLabels: Record<ContactMethod, string> = {
+  phone: "Jetzt anrufen",
+  appointment: "Termin öffnen",
+  email: "Weiter zu Ihren Daten",
+};
+
+function getMethodCtaLabel(contactMethod: ContactMethod | "") {
+  return contactMethod ? methodCtaLabels[contactMethod] : "Kontaktweg auswählen";
+}
+
+export function ContactSection() {
+  const [step, setStep] = useState<WizardStep>("inquiry");
+  const [formData, setFormData] = useState({
+    inquiryType: "" as InquiryType | "",
+    contactMethod: "" as ContactMethod | "",
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const selectedInquiry = useMemo(
+    () => inquiryOptions.find((option) => option.id === formData.inquiryType),
+    [formData.inquiryType],
+  );
+
+  const handleInquirySelect = (inquiryType: InquiryType) => {
+    setFormData((current) => ({
+      ...current,
+      inquiryType,
+      contactMethod: "",
+    }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInquiryContinue = () => {
+    setStep("method");
+  };
+
+  const handleMethodSelect = (contactMethod: ContactMethod) => {
+    setFormData((current) => ({ ...current, contactMethod }));
+  };
+
+  const handleMethodContinue = () => {
+    if (formData.contactMethod === "phone") {
+      window.location.href = PHONE_HREF;
+      toast.info("Der Anruf wird gestartet.");
+      return;
+    }
+
+    if (formData.contactMethod === "appointment") {
+      window.open(CALENDLY_URL, "_blank", "noopener,noreferrer");
+      toast.info("Das Terminfenster wurde geöffnet.");
+      return;
+    }
+
+    if (formData.contactMethod === "email") {
+      setStep("name");
+    }
+  };
+
+  const handleBack = () => {
+    if (step === "method") {
+      setStep("inquiry");
+      return;
+    }
+
+    if (step === "name") {
+      setStep("method");
+      return;
+    }
+
+    if (step === "email") {
+      setStep("name");
+    }
+  };
+
+  const handleNameSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStep("email");
+  };
+
+  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const name = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+    const message = [
+      "Neue Kontaktanfrage über den Website-Assistenten",
+      "",
+      `Anliegen: ${selectedInquiry?.title ?? "Allgemeine Anfrage"}`,
+      "Gewünschter Kontaktweg: Direkt schreiben",
+      "",
+      "Bitte per E-Mail antworten.",
+    ].join("\n");
+
+    try {
+      await sendContactEmail({
+        name,
+        email: formData.email.trim(),
+        phone: "",
+        message,
+      });
+      toast.success("Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.");
+      setFormData({
+        inquiryType: "",
+        contactMethod: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+      });
+      setStep("inquiry");
+    } catch (error) {
+      console.error(error);
+      toast.error("Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section id="kontakt" className="bg-[#111111] py-20">
       <div className="container mx-auto max-w-6xl px-4">
-        <div className="mb-12 grid gap-8 lg:grid-cols-[1fr_420px] lg:items-end">
+        <div className="mx-auto mb-12 max-w-4xl">
           <div>
             <p className="mb-3 text-xs uppercase tracking-widest text-[#C2A878]">Kontakt</p>
             <h2 className="mb-4 text-white">Wir sind persönlich für Sie da</h2>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-400">
-              Ob erste Frage, konkrete Verkaufsabsicht oder Wunsch nach einer Bewertung: Schreiben Sie uns
-              oder buchen Sie direkt ein kostenloses Erstgespräch.
+              Wählen Sie kurz aus, worum es geht. Danach entscheiden Sie, ob Sie direkt anrufen,
+              einen Termin buchen oder uns schreiben möchten.
             </p>
-          </div>
-
-          <div
-            className="mx-auto flex max-w-2xl flex-col overflow-hidden rounded-2xl sm:flex-row lg:mx-0"
-            style={{
-              background: "linear-gradient(135deg, rgba(107,79,58,0.35) 0%, rgba(60,44,32,0.3) 100%)",
-              border: "1px solid rgba(194,168,120,0.25)",
-            }}
-          >
-            <div className="flex flex-1 flex-col items-center justify-center gap-6 p-8 text-center">
-              <div>
-                <p className="mb-1.5 text-base font-semibold text-[#F6F2ED] sm:text-lg">
-                  Kostenloses Erstgespräch buchen
-                </p>
-                <p className="text-sm text-gray-400">30 Minuten - bequem online, ohne Wartezeit</p>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <Button
-                  onClick={() => window.open("https://calendly.com/kontakt-edit-immobilien/30min", "_blank")}
-                  className="px-6 font-semibold text-[#111111] transition-all duration-200 hover:opacity-90"
-                  style={{ background: "linear-gradient(135deg, #C2A878 0%, #b09060 100%)" }}
-                >
-                  Termin buchen
-                </Button>
-                <p className="text-xs text-gray-500">30 Minuten · kostenlos · unverbindlich</p>
-              </div>
-            </div>
-            <img
-              src={TEAM_FOTO}
-              alt="Edit Immobilien Team"
-              className="h-48 object-cover object-top sm:h-auto sm:w-48"
-            />
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          <form
-            onSubmit={handleSubmit}
-            className="relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#151311] p-6 shadow-2xl shadow-black/25 sm:p-8 lg:p-10"
+        <div className="mx-auto max-w-4xl px-1 sm:px-0">
+          <div
+            className="relative flex min-h-[520px] flex-col overflow-hidden rounded-2xl border border-[#C2A878]/20 bg-[#1a1a1a] p-6 shadow-2xl shadow-black/25 sm:min-h-[540px] sm:p-9 lg:p-12"
             style={{
               background:
-                "radial-gradient(circle at top left, rgba(194,168,120,0.12), transparent 34%), linear-gradient(145deg, rgba(28,25,22,0.98) 0%, rgba(12,11,10,1) 100%)",
+                "radial-gradient(circle at top left, rgba(194,168,120,0.12), transparent 34%), linear-gradient(145deg, rgba(30,27,24,0.98) 0%, rgba(18,16,14,1) 100%)",
             }}
           >
             <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#C2A878]/50 to-transparent" />
-            <div className="mb-7 flex items-start justify-between gap-4">
+            <div className="mb-8 flex items-start justify-between gap-4 border-b border-white/[0.07] pb-6">
               <div>
-                <p className="mb-2 text-xs uppercase tracking-widest text-[#C2A878]">Schreiben Sie uns</p>
-                <h3 className="text-xl font-semibold text-[#F6F2ED]">Ihre Nachricht</h3>
+                <p className="mb-2 text-xs uppercase tracking-widest text-[#C2A878]">
+                  Kontaktassistent
+                </p>
+                <h3 className="text-xl font-semibold text-[#F6F2ED]">{stepLabels[step]}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                  Wir antworten in der Regel innerhalb von 24 Stunden.
+                  {selectedInquiry
+                    ? `Ausgewählt: ${selectedInquiry.title}`
+                    : "Starten Sie mit der Auswahl Ihres Anliegens."}
                 </p>
               </div>
               <div className="hidden h-11 w-11 items-center justify-center rounded-xl border border-[#C2A878]/25 bg-[#C2A878]/10 shadow-lg shadow-[#C2A878]/10 sm:flex">
@@ -108,142 +240,253 @@ export function ContactSection() {
               </div>
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-2">
-              <Field label="Name *" htmlFor="name">
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Max Mustermann"
-                  className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
-                />
-              </Field>
-
-              <Field label="Telefon" htmlFor="phone">
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+49 123 456789"
-                  className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
-                />
-              </Field>
-            </div>
-
-            <div className="mt-4">
-              <Field label="E-Mail *" htmlFor="email">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="max@beispiel.de"
-                  className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
-                />
-              </Field>
-            </div>
-
-            <div className="mt-4">
-              <Field label="Nachricht *" htmlFor="message">
-                <Textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={7}
-                  placeholder="Wie können wir Ihnen helfen?"
-                  className="resize-none rounded-xl border-white/10 bg-black/20 py-3 leading-relaxed text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
-                />
-              </Field>
-            </div>
-
-            <Button
-              type="submit"
-              className="mt-7 h-12 w-full rounded-xl border border-[#C2A878]/20 bg-[#6B4F3A] font-medium text-white shadow-lg shadow-[#6B4F3A]/25 transition-all duration-200 hover:bg-[#5A4230] hover:shadow-[#6B4F3A]/35"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Nachricht senden
-            </Button>
-          </form>
-
-          <aside
-            className="relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#151311] p-6 shadow-2xl shadow-black/25 sm:p-8 lg:p-10"
-            style={{
-              background:
-                "radial-gradient(circle at top right, rgba(194,168,120,0.12), transparent 34%), linear-gradient(145deg, rgba(28,25,22,0.98) 0%, rgba(12,11,10,1) 100%)",
-            }}
-          >
-            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#C2A878]/50 to-transparent" />
-            <div className="mb-7">
-              <p className="mb-2 text-xs uppercase tracking-widest text-[#C2A878]">Ihre Ansprechpartner</p>
-              <h3 className="text-xl font-semibold text-[#F6F2ED]">Direkt erreichbar</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                Persönlich, verbindlich und ohne Umwege.
-              </p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-              {contactPeople.map((person) => (
-                <div
-                  key={person.name}
-                  className="group overflow-hidden rounded-xl border border-white/[0.08] bg-black/15 transition-all duration-200 hover:border-[#C2A878]/30 hover:bg-[#C2A878]/[0.06]"
-                >
-                  <div className="relative h-24 overflow-hidden">
-                    <img
-                      src={person.image}
-                      alt={`${person.name} - Edit Immobilien`}
-                      className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+            <div className="flex flex-1 flex-col">
+              {step === "inquiry" && (
+                <WizardPanel>
+                  <OptionGrid>
+                    {inquiryOptions.map((option) => (
+                      <WizardOption
+                        key={option.id}
+                        icon={option.icon}
+                        title={option.title}
+                        description={option.description}
+                        selected={formData.inquiryType === option.id}
+                        onClick={() => handleInquirySelect(option.id)}
+                      />
+                    ))}
+                  </OptionGrid>
+                  {formData.inquiryType ? (
+                    <WizardFooter
+                      onNext={handleInquiryContinue}
+                      submitLabel="Weiter zum Kontaktweg"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-                  </div>
-                  <div className="p-4">
-                    <p className="text-base font-semibold leading-none text-white">{person.name}</p>
-                    <p className="mt-2 inline-flex rounded-full border border-[#C2A878]/25 bg-[#C2A878]/10 px-2.5 py-1 text-[10px] uppercase tracking-widest text-[#C2A878]">
-                      {person.title}
-                    </p>
-                    <p className="mt-3 text-xs leading-relaxed text-gray-400">{person.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  ) : null}
+                </WizardPanel>
+              )}
 
-            <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/[0.09] to-transparent" />
+              {step === "method" && (
+                <WizardPanel
+                  title="Wie möchten Sie Kontakt aufnehmen?"
+                  description="Wählen Sie den gewünschten Kontaktweg. Der Button unten führt den nächsten Schritt aus."
+                >
+                  <OptionGrid>
+                    {methodOptions.map((option) => (
+                      <WizardOption
+                        key={option.id}
+                        icon={option.icon}
+                        title={option.title}
+                        description={option.description}
+                        selected={formData.contactMethod === option.id}
+                        onClick={() => handleMethodSelect(option.id)}
+                      />
+                    ))}
+                  </OptionGrid>
+                  <WizardFooter
+                    onBack={handleBack}
+                    onNext={handleMethodContinue}
+                    submitLabel={getMethodCtaLabel(formData.contactMethod)}
+                    submitDisabled={!formData.contactMethod}
+                  />
+                </WizardPanel>
+              )}
 
-            <div className="grid gap-3">
-              <ContactDetail
-                icon={<Phone className="h-4 w-4" />}
-                label="Telefon"
-                href="tel:+4917290377547"
-                text="+49 172 90 37 547"
-              />
-              <ContactDetail
-                icon={<Mail className="h-4 w-4" />}
-                label="E-Mail"
-                href="mailto:kontakt@edit-immobilien.de"
-                text="kontakt@edit-immobilien.de"
-              />
-              <ContactDetail
-                icon={<Clock className="h-4 w-4" />}
-                label="Öffnungszeiten"
-                text="Mo - Fr 9:00 - 18:00 · Sa 10:00 - 14:00"
-              />
-              <ContactDetail
-                icon={<MapPin className="h-4 w-4" />}
-                label="Adresse"
-                text="Hartwicusstr. 3 · 22087 Hamburg"
-              />
+              {step === "name" && (
+                <form onSubmit={handleNameSubmit} className="flex flex-1 flex-col">
+                  <WizardPanel
+                    title="Wie dürfen wir Sie ansprechen?"
+                    description="Vorname und Nachname werden getrennt abgefragt."
+                  >
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <Field label="Vorname *" htmlFor="firstName">
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={(event) =>
+                            setFormData((current) => ({ ...current, firstName: event.target.value }))
+                          }
+                          required
+                          placeholder="Max"
+                          className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                        />
+                      </Field>
+                      <Field label="Nachname *" htmlFor="lastName">
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={(event) =>
+                            setFormData((current) => ({ ...current, lastName: event.target.value }))
+                          }
+                          required
+                          placeholder="Mustermann"
+                          className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                        />
+                      </Field>
+                    </div>
+                    <WizardFooter onBack={handleBack} submitLabel="Weiter" />
+                  </WizardPanel>
+                </form>
+              )}
+
+              {step === "email" && (
+                <form onSubmit={handleEmailSubmit} className="flex flex-1 flex-col">
+                  <WizardPanel
+                    title="An welche E-Mail-Adresse dürfen wir antworten?"
+                    description="Ihr Anliegen und Ihr Name werden automatisch in die Nachricht übernommen."
+                  >
+                    <Field label="E-Mail *" htmlFor="email">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(event) =>
+                          setFormData((current) => ({ ...current, email: event.target.value }))
+                        }
+                        required
+                        placeholder="max@beispiel.de"
+                        className="h-12 rounded-xl border-white/10 bg-black/20 text-white shadow-inner shadow-black/20 placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                      />
+                    </Field>
+                    <WizardFooter
+                      onBack={handleBack}
+                      submitLabel={isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
+                      submitIcon={<Send className="h-4 w-4" />}
+                      submitDisabled={isSubmitting}
+                    />
+                  </WizardPanel>
+                </form>
+              )}
             </div>
-          </aside>
+          </div>
+
         </div>
       </div>
     </section>
+  );
+}
+
+function WizardPanel({
+  title,
+  description,
+  children,
+}: {
+  title?: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-1 flex-col">
+      {(title || description) && (
+        <div className="mb-5">
+          {title && <h4 className="text-lg font-semibold text-white sm:text-xl">{title}</h4>}
+          {description && (
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500">{description}</p>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+function OptionGrid({ children }: { children: React.ReactNode }) {
+  return <div className="grid gap-4 md:grid-cols-3 lg:gap-5">{children}</div>;
+}
+
+function WizardOption({
+  icon,
+  title,
+  description,
+  selected,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-xl border p-4 text-left transition-all duration-200 sm:p-5 md:min-h-[190px] md:flex-col md:items-start md:justify-start ${
+        selected
+          ? "border-[#C2A878] bg-[#C2A878]/15 shadow-xl shadow-[#C2A878]/15 ring-1 ring-[#C2A878]/45"
+          : "border-white/[0.12] bg-black/25 shadow-lg shadow-black/10 hover:-translate-y-0.5 hover:border-[#C2A878]/55 hover:bg-[#C2A878]/[0.08] hover:shadow-[#C2A878]/10"
+      }`}
+    >
+      {selected ? (
+        <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-[#C2A878] text-[#111111] shadow-lg shadow-[#C2A878]/20">
+          <Check className="h-4 w-4" />
+        </span>
+      ) : null}
+      <span
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-[#C2A878] shadow-lg shadow-[#C2A878]/10 ${
+          selected ? "border-[#C2A878]/70 bg-[#C2A878]/20" : "border-[#C2A878]/30 bg-[#C2A878]/10"
+        }`}
+      >
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block pr-8 text-base font-semibold text-[#F6F2ED] md:pr-0">{title}</span>
+        <span className="mt-2 block text-sm leading-relaxed text-gray-500">{description}</span>
+        <span
+          className={`mt-4 inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-widest ${
+            selected
+              ? "border-[#C2A878] bg-[#C2A878] text-[#111111]"
+              : "border-[#C2A878]/30 bg-[#C2A878]/10 text-[#C2A878] group-hover:border-[#C2A878]/60"
+          }`}
+        >
+          {selected ? "Ausgewählt" : "Auswählen"}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function WizardFooter({
+  onBack,
+  onNext,
+  submitLabel,
+  submitIcon,
+  submitDisabled,
+}: {
+  onBack?: () => void;
+  onNext?: () => void;
+  submitLabel?: string;
+  submitIcon?: React.ReactNode;
+  submitDisabled?: boolean;
+}) {
+  return (
+    <div className="mt-auto flex flex-col-reverse gap-3 pt-7 sm:flex-row sm:items-center sm:justify-between">
+      {onBack ? (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-11 w-full rounded-xl border-white/10 bg-black/20 text-gray-200 hover:border-[#C2A878]/30 hover:bg-[#C2A878]/10 hover:text-white sm:w-auto"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Zurück
+        </Button>
+      ) : (
+        <div className="hidden sm:block" />
+      )}
+      {submitLabel ? (
+        <Button
+          type={onNext ? "button" : "submit"}
+          onClick={onNext}
+          disabled={submitDisabled}
+          className="h-11 w-full rounded-xl border border-[#C2A878]/20 bg-[#6B4F3A] px-6 font-medium text-white shadow-lg shadow-[#6B4F3A]/25 transition-all duration-200 hover:bg-[#5A4230] hover:shadow-[#6B4F3A]/35 sm:w-auto"
+        >
+          {submitIcon}
+          {submitLabel}
+        </Button>
+      ) : null}
+    </div>
   );
 }
 
@@ -262,46 +505,6 @@ function Field({
         {label}
       </label>
       {children}
-    </div>
-  );
-}
-
-function IconBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C2A878]/25 bg-[#C2A878]/10 text-[#C2A878] shadow-lg shadow-[#C2A878]/10">
-      {children}
-    </div>
-  );
-}
-
-function ContactDetail({
-  icon,
-  label,
-  href,
-  text,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  href: string;
-  text: string;
-}) {
-  const content = (
-    <>
-      <p className="mb-1 text-xs uppercase tracking-widest text-gray-500">{label}</p>
-      <p className="text-sm leading-relaxed text-[#F6F2ED]">{text}</p>
-    </>
-  );
-
-  return (
-    <div className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-black/15 p-3.5">
-      <IconBox>{icon}</IconBox>
-      {href ? (
-        <a href={href} className="transition-colors hover:[&_p:last-child]:text-[#C2A878]">
-          {content}
-        </a>
-      ) : (
-        <div>{content}</div>
-      )}
     </div>
   );
 }

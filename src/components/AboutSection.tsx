@@ -1,4 +1,7 @@
-import { TEAM_TIMO, TEAM_SARAH } from "@/lib/assets";
+import { TEAM_FOTO } from "@/lib/assets";
+import { Button } from "./ui/button";
+
+const CALENDLY_URL = "https://calendly.com/kontakt-edit-immobilien/30min";
 
 const features = [
   {
@@ -25,37 +28,19 @@ export function AboutSection() {
 
         {/* Kompakter Text ohne Bild */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="flex flex-col gap-6 mb-10">
-            {/* Wer wir sind – Timo: Bild links, Text rechts */}
-            <div className="flex flex-row items-center gap-6">
-              <img
-                src={TEAM_TIMO}
-                alt="Timo – Edit Immobilien"
-                className="rounded-lg transition-transform duration-500 hover:scale-105"
-                style={{ width: '160px', height: '160px', objectFit: 'cover', objectPosition: 'top', flexShrink: 0 }}
-              />
-              <div>
-                <h3 className="text-[#C2A878] mb-3">Wer wir sind</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Wir sind ein junges, engagiertes Immobilienteam, das seit unserer Gründung im Jahr 2016 den Markt mit frischen Ansätzen und neuen Ideen prägen möchte. Unsere Vision ist ein fairer Immobilienmarkt, der Verkäufer und Käufer gleichermaßen wertschätzt und deren Bedürfnisse in Einklang bringt.
-                </p>
-              </div>
+          <div className="mx-auto mb-12 flex max-w-3xl flex-col gap-10">
+            <div>
+              <h3 className="mb-4 text-[#C2A878]">Wer wir sind</h3>
+              <p className="text-sm leading-relaxed text-gray-400">
+                Wir sind ein junges, engagiertes Immobilienteam, das seit unserer Gründung im Jahr 2016 den Markt mit frischen Ansätzen und neuen Ideen prägen möchte. Unsere Vision ist ein fairer Immobilienmarkt, der Verkäufer und Käufer gleichermaßen wertschätzt und deren Bedürfnisse in Einklang bringt.
+              </p>
             </div>
 
-            {/* Unsere Expertise – Sarah: Text links, Bild rechts */}
-            <div className="flex flex-row items-center gap-6">
-              <div className="flex-1">
-                <h3 className="text-[#C2A878] mb-3">Unsere Expertise</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Mit über 13 Jahren Erfahrung in der Immobilienbranche vereinen wir Fachwissen aus Bauprojektentwicklung, Hausverwaltung und Immobilienvermittlung. Diese Kombination aus langjähriger Expertise und innovativem Denken macht uns zu einem verlässlichen Partner für Ihre Immobilienprojekte.
-                </p>
-              </div>
-              <img
-                src={TEAM_SARAH}
-                alt="Sarah – Edit Immobilien"
-                className="rounded-lg transition-transform duration-500 hover:scale-105"
-                style={{ width: '160px', height: '160px', objectFit: 'cover', objectPosition: 'top', flexShrink: 0 }}
-              />
+            <div className="border-t border-white/10 pt-10">
+              <h3 className="mb-4 text-[#C2A878]">Unsere Expertise</h3>
+              <p className="text-sm leading-relaxed text-gray-400">
+                Mit über 13 Jahren Erfahrung in der Immobilienbranche vereinen wir Fachwissen aus Bauprojektentwicklung, Hausverwaltung und Immobilienvermittlung. Diese Kombination aus langjähriger Expertise und innovativem Denken macht uns zu einem verlässlichen Partner für Ihre Immobilienprojekte.
+              </p>
             </div>
           </div>
 
@@ -84,6 +69,38 @@ export function AboutSection() {
                   <div style={{ height: "1px", background: "linear-gradient(to right, transparent, rgba(194,168,120,0.15), transparent)" }} />
                 </div>
               ))}
+            </div>
+
+            <div
+              className="mx-auto mt-8 flex max-w-3xl flex-col overflow-hidden rounded-2xl sm:flex-row"
+              style={{
+                background: "linear-gradient(135deg, rgba(107,79,58,0.35) 0%, rgba(60,44,32,0.3) 100%)",
+                border: "1px solid rgba(194,168,120,0.25)",
+              }}
+            >
+              <div className="flex flex-1 flex-col items-center justify-center gap-6 p-8 text-center">
+                <div>
+                  <p className="mb-1.5 text-base font-semibold text-[#F6F2ED] sm:text-lg">
+                    Kostenloses Erstgespräch buchen
+                  </p>
+                  <p className="text-sm text-gray-400">30 Minuten - bequem online, ohne Wartezeit</p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Button
+                    onClick={() => window.open(CALENDLY_URL, "_blank", "noopener,noreferrer")}
+                    className="px-6 font-semibold text-[#111111] transition-all duration-200 hover:opacity-90"
+                    style={{ background: "linear-gradient(135deg, #C2A878 0%, #b09060 100%)" }}
+                  >
+                    Termin buchen
+                  </Button>
+                  <p className="text-xs text-gray-500">30 Minuten · kostenlos · unverbindlich</p>
+                </div>
+              </div>
+              <img
+                src={TEAM_FOTO}
+                alt="Edit Immobilien Team"
+                className="h-48 object-cover object-top sm:h-auto sm:w-48"
+              />
             </div>
           </div>
         </div>

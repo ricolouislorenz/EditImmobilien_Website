@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { PropertyCard } from "./PropertyCard";
 import { ExposeRequestDialog } from "./ExposeRequestDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import type { Property } from "@/types";
 
 const PROPERTY_TYPES = [
@@ -26,6 +26,8 @@ interface FilterState {
 }
 
 const EMPTY_FILTER: FilterState = { type: "", maxPrice: "", minArea: "" };
+
+const PAGE_SIZE = 4;
 
 function parsePrice(price: string): number {
   const cleaned = price.replace(/[€\s]/g, "").replace(/\./g, "").replace(",", ".");
@@ -48,30 +50,14 @@ function applyFilter(properties: Property[], filter: FilterState): Property[] {
   });
 }
 
+function sortNewestFirst(properties: Property[]): Property[] {
+  return [...properties].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
 function isFilterActive(filter: FilterState): boolean {
   return !!(filter.type || filter.maxPrice || filter.minArea);
-}
-
-function usePageSize(): number {
-  const getSize = () => {
-    if (window.innerWidth >= 1024) return 6;
-    if (window.innerWidth >= 768) return 4;
-    return 3;
-  };
-  const [pageSize, setPageSize] = useState(getSize);
-  useEffect(() => {
-    const handler = () => setPageSize(getSize());
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, []);
-  return pageSize;
-}
-
-interface NumberStepInputProps {
-  value: string;
-  onChange: (val: string) => void;
-  step: number;
-  placeholder?: string;
 }
 
 interface NumberStepInputProps {
@@ -137,71 +123,131 @@ interface PaginatedGridProps {
   resetKey: string;
 }
 
-function PaginatedGrid({ properties, showExposeButton, onRequestExpose, emptyText, resetKey }: PaginatedGridProps) {
-  const pageSize = usePageSize();
+function getVisiblePages(page: number, totalPages: number): Array<number | string> {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const pages = new Set([1, totalPages, page - 1, page, page + 1]);
+  const validPages = Array.from(pages)
+    .filter((n) => n >= 1 && n <= totalPages)
+    .sort((a, b) => a - b);
+
+  const visiblePages: Array<number | string> = [];
+
+  validPages.forEach((pageNumber, index) => {
+    const previousPage = validPages[index - 1];
+    if (previousPage && pageNumber - previousPage > 1) {
+      visiblePages.push(pageNumber - previousPage === 2 ? previousPage + 1 : `ellipsis-${index}`);
+    }
+    visiblePages.push(pageNumber);
+  });
+
+  return visiblePages;
+}
+
+function PaginatedGrid({
+  properties,
+  showExposeButton,
+  onRequestExpose,
+  emptyText,
+  resetKey,
+}: PaginatedGridProps) {
   const [page, setPage] = useState(1);
 
-  useEffect(() => { setPage(1); }, [resetKey, pageSize]);
+  useEffect(() => { setPage(1); }, [resetKey]);
 
-  const totalPages = Math.ceil(properties.length / pageSize);
-  const paginated = properties.slice((page - 1) * pageSize, page * pageSize);
-
-  if (properties.length === 0) {
-    return <p className="text-center text-gray-500 py-12">{emptyText}</p>;
-  }
+  const totalPages = Math.max(1, Math.ceil(properties.length / PAGE_SIZE));
+  const paginated = properties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const firstVisibleItem = properties.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const lastVisibleItem = Math.min(page * PAGE_SIZE, properties.length);
+  const visiblePages = getVisiblePages(page, totalPages);
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {paginated.map((property) => (
-          <PropertyCard
-            key={property.id}
-            property={property}
-            showExposeButton={showExposeButton}
-            onRequestExpose={onRequestExpose}
-          />
-        ))}
+      <div className="mb-6 flex items-center border-y border-white/10 py-3 text-sm text-gray-400">
+        {properties.length === 0
+          ? "Keine Immobilien"
+          : `Zeige ${firstVisibleItem} bis ${lastVisibleItem} von ${properties.length} ${
+              properties.length === 1 ? "Immobilie" : "Immobilien"
+            }`}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-10">
-          <Button
-            variant="outline"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="border-white/10 hover:bg-white/5 h-9 w-9 p-0"
-            aria-label="Vorherige Seite"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+      {properties.length === 0 ? (
+        <p className="text-center text-gray-500 py-12">{emptyText}</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+            {paginated.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                showExposeButton={showExposeButton}
+                onRequestExpose={onRequestExpose}
+              />
+            ))}
+          </div>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-            <Button
-              key={n}
-              variant={n === page ? "default" : "outline"}
-              onClick={() => setPage(n)}
-              className={`h-9 w-9 p-0 ${
-                n === page
-                  ? "bg-[#C2A878] hover:bg-[#C2A878]/90 text-[#111111] border-transparent"
-                  : "border-white/10 hover:bg-white/5 text-gray-400"
-              }`}
+          {totalPages > 1 && (
+            <nav
+              className="mt-10 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-sm"
+              aria-label="Immobilien Seiten"
             >
-              {n}
-            </Button>
-          ))}
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 text-gray-400 transition-colors hover:text-[#C2A878] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-gray-400"
+              >
+                « zurück
+              </button>
 
-          <Button
-            variant="outline"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="border-white/10 hover:bg-white/5 h-9 w-9 p-0"
-            aria-label="Nächste Seite"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+              {visiblePages.map((item) =>
+                typeof item === "number" ? (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setPage(item)}
+                    aria-current={item === page ? "page" : undefined}
+                    className={
+                      item === page
+                        ? "min-w-8 rounded bg-[#C2A878] px-2.5 py-1 font-medium text-[#111111]"
+                        : "min-w-8 rounded px-2.5 py-1 text-gray-400 transition-colors hover:text-[#C2A878]"
+                    }
+                  >
+                    {item}
+                  </button>
+                ) : (
+                  <span key={item} className="px-1 text-gray-600">
+                    …
+                  </span>
+                )
+              )}
+
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1.5 text-gray-400 transition-colors hover:text-[#C2A878] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-gray-400"
+              >
+                nächste »
+              </button>
+            </nav>
+          )}
+        </>
       )}
     </div>
+  );
+}
+
+function PropertyTabLabel({ label, count }: { label: string; count: number }) {
+  return (
+    <span className="flex items-center gap-2">
+      <span>{label}</span>
+      <span className="min-w-6 rounded-full bg-white/10 px-2 py-0.5 text-xs text-inherit">
+        {count}
+      </span>
+    </span>
   );
 }
 
@@ -233,8 +279,14 @@ export function PropertiesSection() {
     setFilterResetKey("");
   };
 
-  const filteredActive = applyFilter(active, activeFilter);
-  const filteredReferences = applyFilter(references, activeFilter);
+  const filteredActive = useMemo(
+    () => sortNewestFirst(applyFilter(active, activeFilter)),
+    [active, activeFilter]
+  );
+  const filteredReferences = useMemo(
+    () => sortNewestFirst(applyFilter(references, activeFilter)),
+    [references, activeFilter]
+  );
   const filterOn = isFilterActive(activeFilter);
 
   return (
@@ -325,15 +377,22 @@ export function PropertiesSection() {
           </div>
         </div>
 
+        <div className="mx-auto max-w-7xl">
         <Tabs defaultValue="current">
-          <TabsList className="flex justify-center">
-            <TabsTrigger value="current">Aktuell</TabsTrigger>
-            <TabsTrigger value="sold">Referenzen</TabsTrigger>
-          </TabsList>
+          <div className="mb-8 flex justify-center">
+            <TabsList className="mb-0 grid h-auto w-full max-w-md grid-cols-2 gap-1 rounded-xl border border-white/10 bg-[#1a1a1a] p-1 sm:w-fit">
+              <TabsTrigger value="current" className="h-11 px-4 sm:px-6">
+                <PropertyTabLabel label="Aktuell" count={filteredActive.length} />
+              </TabsTrigger>
+              <TabsTrigger value="sold" className="h-11 px-4 sm:px-6">
+                <PropertyTabLabel label="Referenzen" count={filteredReferences.length} />
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="current">
             {loading ? (
-              <PropertySkeleton count={6} />
+              <PropertySkeleton count={PAGE_SIZE} />
             ) : (
               <PaginatedGrid
                 properties={filteredActive}
@@ -347,7 +406,7 @@ export function PropertiesSection() {
 
           <TabsContent value="sold">
             {loading ? (
-              <PropertySkeleton count={6} />
+              <PropertySkeleton count={PAGE_SIZE} />
             ) : (
               <PaginatedGrid
                 properties={filteredReferences}
@@ -357,6 +416,7 @@ export function PropertiesSection() {
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
 
       {selectedProperty && (
@@ -373,17 +433,18 @@ export function PropertiesSection() {
 
 function PropertySkeleton({ count }: { count: number }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
           className="bg-[#111111] border border-white/10 rounded-lg overflow-hidden animate-pulse"
         >
-          <div className="h-64 bg-white/5" />
-          <div className="p-6 space-y-3">
+          <div className="aspect-[4/3] bg-white/5" />
+          <div className="p-5 space-y-3">
             <div className="h-4 bg-white/5 rounded w-3/4" />
             <div className="h-3 bg-white/5 rounded w-1/2" />
             <div className="h-3 bg-white/5 rounded w-1/3" />
+            <div className="h-9 bg-white/5 rounded mt-4" />
           </div>
         </div>
       ))}

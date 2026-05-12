@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { PropertyCard } from "./PropertyCard";
 import { ExposeRequestDialog } from "./ExposeRequestDialog";
+import { PropertyDetailDialog } from "./PropertyDetailDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -101,7 +102,7 @@ function NumberStepInput({ value, onChange, step, placeholder, formatThousands }
         value={displayValue}
         onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ""))}
         placeholder={placeholder}
-        className="flex-1 min-w-0 bg-transparent text-white text-sm text-center placeholder:text-gray-600 focus:outline-none px-1"
+        className="flex-1 min-w-0 bg-transparent text-white text-sm text-center placeholder:text-gray-500 focus:outline-none px-1"
       />
       <button
         type="button"
@@ -119,6 +120,7 @@ interface PaginatedGridProps {
   properties: Property[];
   showExposeButton?: boolean;
   onRequestExpose?: (id: string, title: string) => void;
+  onSelect?: (property: Property) => void;
   emptyText: string;
   resetKey: string;
 }
@@ -150,6 +152,7 @@ function PaginatedGrid({
   properties,
   showExposeButton,
   onRequestExpose,
+  onSelect,
   emptyText,
   resetKey,
 }: PaginatedGridProps) {
@@ -174,7 +177,7 @@ function PaginatedGrid({
       </div>
 
       {properties.length === 0 ? (
-        <p className="text-center text-gray-500 py-12">{emptyText}</p>
+        <p className="text-center text-gray-400 py-12">{emptyText}</p>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
@@ -184,6 +187,7 @@ function PaginatedGrid({
                 property={property}
                 showExposeButton={showExposeButton}
                 onRequestExpose={onRequestExpose}
+                onSelect={onSelect}
               />
             ))}
           </div>
@@ -218,7 +222,7 @@ function PaginatedGrid({
                     {item}
                   </button>
                 ) : (
-                  <span key={item} className="px-1 text-gray-600">
+                  <span key={item} className="px-1 text-gray-500">
                     …
                   </span>
                 )
@@ -258,6 +262,8 @@ export function PropertiesSection() {
     id: string;
     title: string;
   } | null>(null);
+  const [detailProperty, setDetailProperty] = useState<Property | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const [pendingFilter, setPendingFilter] = useState<FilterState>(EMPTY_FILTER);
   const [activeFilter, setActiveFilter] = useState<FilterState>(EMPTY_FILTER);
@@ -266,6 +272,16 @@ export function PropertiesSection() {
   const handleRequestExpose = (propertyId: string, propertyTitle: string) => {
     setSelectedProperty({ id: propertyId, title: propertyTitle });
     setDialogOpen(true);
+  };
+
+  const handleSelectProperty = (property: Property) => {
+    setDetailProperty(property);
+    setDetailOpen(true);
+  };
+
+  const handleDetailRequestExpose = (propertyId: string, propertyTitle: string) => {
+    setDetailOpen(false);
+    handleRequestExpose(propertyId, propertyTitle);
   };
 
   const handleApply = () => {
@@ -296,7 +312,7 @@ export function PropertiesSection() {
           <h2 className="mb-4 text-white">
             Immobilien in Hamburg, Wedel, Holm & Umgebung
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-gray-300 max-w-2xl mx-auto">
             Entdecken Sie unser aktuelles Angebot und erfolgreich vermittelte
             Referenzobjekte. Vom Einfamilienhaus über Eigentumswohnungen bis zu
             Mehrfamilienhäusern in Hamburg, Norderstedt, Wedel und der gesamten
@@ -381,10 +397,16 @@ export function PropertiesSection() {
         <Tabs defaultValue="current">
           <div className="mb-8 flex justify-center">
             <TabsList className="mb-0 grid h-auto w-full max-w-md grid-cols-2 gap-1 rounded-xl border border-white/10 bg-[#1a1a1a] p-1 sm:w-fit">
-              <TabsTrigger value="current" className="h-11 px-4 sm:px-6">
+              <TabsTrigger
+                value="current"
+                className="h-11 px-4 data-[state=active]:shadow-none sm:px-6"
+              >
                 <PropertyTabLabel label="Aktuell" count={filteredActive.length} />
               </TabsTrigger>
-              <TabsTrigger value="sold" className="h-11 px-4 sm:px-6">
+              <TabsTrigger
+                value="sold"
+                className="h-11 px-4 data-[state=active]:shadow-none sm:px-6"
+              >
                 <PropertyTabLabel label="Referenzen" count={filteredReferences.length} />
               </TabsTrigger>
             </TabsList>
@@ -398,6 +420,7 @@ export function PropertiesSection() {
                 properties={filteredActive}
                 showExposeButton
                 onRequestExpose={handleRequestExpose}
+                onSelect={handleSelectProperty}
                 emptyText={filterOn ? "Keine Immobilien entsprechen dem Filter." : "Aktuell keine Immobilien verfügbar."}
                 resetKey={filterResetKey + "-current"}
               />
@@ -410,6 +433,7 @@ export function PropertiesSection() {
             ) : (
               <PaginatedGrid
                 properties={filteredReferences}
+                onSelect={handleSelectProperty}
                 emptyText={filterOn ? "Keine Referenzen entsprechen dem Filter." : "Noch keine Referenzen vorhanden."}
                 resetKey={filterResetKey + "-sold"}
               />
@@ -427,6 +451,13 @@ export function PropertiesSection() {
           propertyId={selectedProperty.id}
         />
       )}
+
+      <PropertyDetailDialog
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        property={detailProperty}
+        onRequestExpose={handleDetailRequestExpose}
+      />
     </section>
   );
 }

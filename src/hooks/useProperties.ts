@@ -3,6 +3,7 @@ import type { Property } from "@/types";
 import {
   fetchActiveProperties,
   fetchReferenceProperties,
+  isSupabaseConfigured,
 } from "@/lib/supabase";
 
 interface UsePropertiesResult {
@@ -20,6 +21,12 @@ export function useProperties(): UsePropertiesResult {
 
   useEffect(() => {
     let cancelled = false;
+
+    if (!isSupabaseConfigured) {
+      setError("Datenbank ist nicht konfiguriert.");
+      setLoading(false);
+      return;
+    }
 
     async function load() {
       try {

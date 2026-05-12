@@ -302,7 +302,7 @@ export function ImmobilienwertRechner() {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-white mb-4">Was ist Ihre Immobilie wert?</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-gray-300 max-w-2xl mx-auto">
             Ermitteln Sie sofort eine erste Werteinschätzung.
           </p>
         </div>
@@ -341,7 +341,7 @@ export function ImmobilienwertRechner() {
                 <div className="py-1">
                   <Slider value={[wohnflaeche]} onValueChange={(v) => setWohnflaeche(v[0])} min={30} max={500} step={5} className="cursor-pointer" />
                 </div>
-                <div className="flex justify-between text-xs text-gray-600 mt-2">
+                <div className="flex justify-between text-xs text-gray-400 mt-2">
                   <span>30 m²</span><span>500 m²</span>
                 </div>
               </div>
@@ -357,7 +357,7 @@ export function ImmobilienwertRechner() {
                     <div className="py-1">
                       <Slider value={[zimmer]} onValueChange={(v) => setZimmer(v[0])} min={1} max={10} step={1} className="cursor-pointer" />
                     </div>
-                    <div className="flex justify-between text-xs text-gray-600 mt-2">
+                    <div className="flex justify-between text-xs text-gray-400 mt-2">
                       <span>1</span><span>10</span>
                     </div>
                   </div>
@@ -369,7 +369,7 @@ export function ImmobilienwertRechner() {
                     <div className="py-1">
                       <Slider value={[baeder]} onValueChange={(v) => setBaeder(v[0])} min={1} max={4} step={1} className="cursor-pointer" />
                     </div>
-                    <div className="flex justify-between text-xs text-gray-600 mt-2">
+                    <div className="flex justify-between text-xs text-gray-400 mt-2">
                       <span>1</span><span>4</span>
                     </div>
                   </div>
@@ -385,7 +385,7 @@ export function ImmobilienwertRechner() {
                 <div className="py-1">
                   <Slider value={[baujahr]} onValueChange={(v) => setBaujahr(v[0])} min={1900} max={2025} step={1} className="cursor-pointer" />
                 </div>
-                <div className="flex justify-between text-xs text-gray-600 mt-2">
+                <div className="flex justify-between text-xs text-gray-400 mt-2">
                   <span>1900</span><span>2025</span>
                 </div>
               </div>
@@ -429,7 +429,7 @@ export function ImmobilienwertRechner() {
                   pattern="[0-9]*"
                   maxLength={5}
                   placeholder="z. B. 22880"
-                  className={`bg-[#1a1a1a] text-white placeholder:text-gray-600 transition-colors ${
+                  className={`bg-[#1a1a1a] text-white placeholder:text-gray-500 transition-colors ${
                     isUnknownPLZ
                       ? "border-amber-600/60 focus:border-amber-500"
                       : "border-white/10 focus:border-[#6B4F3A]"
@@ -462,12 +462,12 @@ export function ImmobilienwertRechner() {
                   </div>
                   <div className="flex justify-between">
                     <div>
-                      <div className="text-xs text-gray-600 mb-1">Minimum</div>
-                      <div className="text-sm text-gray-400 font-medium tabular-nums">{formatCurrency(wert.min)}</div>
+                      <div className="text-xs text-gray-400 mb-1">Minimum</div>
+                      <div className="text-base text-gray-200 font-medium tabular-nums">{formatCurrency(wert.min)}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-gray-600 mb-1">Maximum</div>
-                      <div className="text-sm text-gray-400 font-medium tabular-nums">{formatCurrency(wert.max)}</div>
+                      <div className="text-xs text-gray-400 mb-1">Maximum</div>
+                      <div className="text-base text-gray-200 font-medium tabular-nums">{formatCurrency(wert.max)}</div>
                     </div>
                   </div>
                 </div>
@@ -487,7 +487,7 @@ export function ImmobilienwertRechner() {
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-400 leading-relaxed">
                   Richtwert auf Basis von Lage, Fläche, Baujahr und Zustand. Marktentwicklungen
                   und individuelle Merkmale können den tatsächlichen Wert beeinflussen.
                 </p>

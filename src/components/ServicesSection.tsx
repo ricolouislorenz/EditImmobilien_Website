@@ -2,6 +2,9 @@ import { Home, TrendingUp, Calculator, Camera, Users, Sparkles } from "lucide-re
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { TEAM_FOTO } from "@/lib/assets";
+
+const CALENDLY_URL = "https://calendly.com/kontakt-edit-immobilien/30min";
 
 const services = [
   {
@@ -120,7 +123,7 @@ export function ServicesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="mb-4 text-white">Unsere Leistungen als Immobilienmakler in Hamburg</h2>
-          <p className="text-white max-w-2xl mx-auto">
+          <p className="text-base text-gray-300 max-w-2xl mx-auto">
             Als Ihr vertrauensvoller Immobilienmakler in Hamburg, Wedel, Holm und Norderstedt bieten wir Ihnen umfassende Dienstleistungen rund um Ihre Immobilie - von Verkauf über Vermietung bis zur professionellen Bewertung.
           </p>
         </div>
@@ -133,7 +136,7 @@ export function ServicesSection() {
               className="group relative rounded-xl overflow-hidden cursor-pointer shadow-lg flex flex-col border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20"
               style={{ height: '380px' }}
             >
-              {/* Bildbereich mit Farbfilter, Titel und Subtext */}
+              {/* Bildbereich mit Farbfilter, Titel-Pill oben links und Subtext unten */}
               <div className="relative flex-1 overflow-hidden">
                 <img
                   src={service.image}
@@ -146,15 +149,13 @@ export function ServicesSection() {
                   style={{ backgroundColor: 'rgba(107,79,58,0.55)' }}
                 />
 
-                {/* Titelbalken oben links – nur so breit wie der Text */}
-                <div className="absolute top-5 left-5 z-10">
-                  <span
-                    className="inline-block px-4 py-2 rounded text-white text-base font-bold leading-snug"
-                    style={{ backgroundColor: '#111111' }}
-                  >
-                    {service.title}
-                  </span>
-                </div>
+                {/* Titel-Pill oben links auf dem Bild – nur so breit wie der Text */}
+                <h3
+                  className="absolute left-4 top-4 z-10 inline-block max-w-[calc(100%-2rem)] rounded px-3 py-1.5 text-base font-bold leading-snug text-white shadow-md"
+                  style={{ backgroundColor: '#111111' }}
+                >
+                  {service.title}
+                </h3>
 
                 {/* Subtext unten auf dem Bild */}
                 <div className="absolute inset-x-5 sm:inset-x-7" style={{ bottom: '1.25rem' }}>
@@ -180,11 +181,45 @@ export function ServicesSection() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <div className="inline-block bg-gradient-to-r from-[#C2A878]/20 to-[#6B4F3A]/20 rounded-xl p-6 border-2 border-[#C2A878]/30">
-            <p className="text-gray-300">
-              <span className="text-[#6B4F3A]">Kostenlose Erstberatung:</span> Vereinbaren Sie jetzt einen unverbindlichen Beratungstermin und lassen Sie uns über Ihre Immobilienziele sprechen.
-            </p>
+        <div className="mt-14 flex justify-center">
+          <div
+            className="group relative flex w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#C2A878]/35 shadow-2xl shadow-black/40 transition-shadow duration-300 hover:shadow-[#C2A878]/20 sm:flex-row"
+            style={{ background: "linear-gradient(135deg, rgba(30,27,24,0.96) 0%, rgba(18,16,14,1) 100%)" }}
+          >
+            {/* Gold-Akzent oben */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C2A878]/70 to-transparent" />
+
+            {/* Text */}
+            <div className="flex flex-1 flex-col items-center justify-center gap-5 p-7 text-center sm:p-9">
+              <div>
+                <p className="mb-2 text-lg font-semibold text-[#F6F2ED] sm:text-xl">
+                  Kostenloses Erstgespräch buchen
+                </p>
+                <p className="text-base text-gray-300">30 Minuten – bequem online, ohne Wartezeit</p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  onClick={() => window.open(CALENDLY_URL, "_blank", "noopener,noreferrer")}
+                  className="px-6 font-semibold text-[#111111] transition-all duration-200 hover:opacity-90"
+                  style={{ background: "linear-gradient(135deg, #C2A878 0%, #b09060 100%)" }}
+                >
+                  Termin buchen
+                </Button>
+                <p className="text-sm text-gray-400">30 Minuten · kostenlos · unverbindlich</p>
+              </div>
+            </div>
+
+            {/* Vertikaler Gold-Trenner (nur Desktop) */}
+            <div className="hidden w-px shrink-0 bg-gradient-to-b from-transparent via-[#C2A878]/40 to-transparent sm:block" />
+
+            {/* Foto rechts */}
+            <div className="relative overflow-hidden sm:w-60">
+              <img
+                src={TEAM_FOTO}
+                alt="Edit Immobilien Team"
+                className="h-56 w-full object-cover object-top sm:h-full"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -215,15 +250,21 @@ export function ServicesSection() {
                 </ul>
 
                 <div className="mt-8 p-6 bg-gradient-to-r from-[#C2A878]/20 to-[#6B4F3A]/20 rounded-lg border border-[#C2A878]/30">
-                  <p className="text-gray-300 mb-4">
-                    <span className="text-[#6B4F3A]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
+                  <p className="text-base text-gray-200 mb-4 leading-relaxed">
+                    <span className="font-semibold text-[#C2A878]">Interessiert?</span> Kontaktieren Sie uns für ein persönliches Beratungsgespräch. Wir freuen uns darauf, Sie kennenzulernen!
                   </p>
                   <Button
                     className="bg-[#6B4F3A] hover:bg-[#5A4230] text-white cursor-pointer block mx-auto"
                     onClick={() => {
+                      const serviceTitle = selectedService.title;
                       setSelectedService(null);
                       setTimeout(() => {
                         document.getElementById("kontakt")?.scrollIntoView({ behavior: "smooth" });
+                        window.dispatchEvent(
+                          new CustomEvent("edit-immobilien:select-service", {
+                            detail: { title: serviceTitle },
+                          }),
+                        );
                       }, 150);
                     }}
                   >

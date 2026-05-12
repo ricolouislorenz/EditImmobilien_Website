@@ -135,7 +135,7 @@ export function DownloadsSection() {
             Wertvolles Wissen für Ihren Immobilienverkauf
           </h2>
 
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-gray-300 max-w-2xl mx-auto">
             Laden Sie unsere kostenlosen Ratgeber herunter und profitieren Sie von unserer
             jahrelangen Erfahrung im Immobilienverkauf.
           </p>
@@ -166,7 +166,7 @@ export function DownloadsSection() {
                 <div className="h-px mb-4" style={{ background: "rgba(255,255,255,0.06)" }} />
 
                 {/* Beschreibung */}
-                <p className="text-gray-500 text-sm leading-relaxed flex-1 mb-6">
+                <p className="text-gray-300 text-base leading-relaxed flex-1 mb-6">
                   {download.description}
                 </p>
 
@@ -230,7 +230,7 @@ export function DownloadsSection() {
                 className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Wir senden Ihnen den Download-Link per E-Mail zu.
               </p>
             </div>
@@ -243,7 +243,7 @@ export function DownloadsSection() {
                 onChange={(e) => setAgreedToNewsletter(e.target.checked)}
                 className="mt-1 w-4 h-4 rounded border-white/20 bg-[#111111] text-[#6B4F3A] focus:ring-[#6B4F3A] focus:ring-offset-0"
               />
-              <label htmlFor="newsletter" className="text-xs text-gray-300">
+              <label htmlFor="newsletter" className="text-sm text-gray-300">
                 Ich möchte gerne weitere wertvolle Tipps rund um den Immobilienverkauf per
                 E-Mail erhalten (optional, jederzeit abbestellbar)
               </label>
@@ -277,7 +277,7 @@ export function DownloadsSection() {
               </Button>
             </div>
 
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-sm text-gray-400 text-center">
               Ihre Daten werden vertraulich behandelt und nicht an Dritte weitergegeben.
             </p>
           </form>

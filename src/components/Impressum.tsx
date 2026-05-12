@@ -88,7 +88,7 @@ export function Impressum({ children }: ImpressumProps) {
             </p>
           </section>
 
-          <section className="text-sm text-gray-500 pt-4 border-t border-white/10">
+          <section className="text-sm text-gray-400 pt-4 border-t border-white/10">
             <p>Quelle: <a href="https://www.e-recht24.de" target="_blank" rel="noopener noreferrer" className="hover:underline">e-recht24.de</a></p>
           </section>
         </div>

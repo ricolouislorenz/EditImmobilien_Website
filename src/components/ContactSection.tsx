@@ -13,13 +13,14 @@ import { toast } from "sonner";
 import { sendContactEmail } from "@/lib/email";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 const CALENDLY_URL = "https://calendly.com/kontakt-edit-immobilien/30min";
 const PHONE_HREF = "tel:+4917290377547";
 
 type InquiryType = "offer" | "search" | "general";
 type ContactMethod = "phone" | "appointment" | "email";
-type WizardStep = "inquiry" | "method" | "name" | "email";
+type WizardStep = "inquiry" | "method" | "name" | "email" | "message";
 
 const inquiryOptions: Array<{
   id: InquiryType;
@@ -70,6 +71,7 @@ const stepLabels: Record<WizardStep, string> = {
   method: "Kontaktweg",
   name: "Name",
   email: "E-Mail",
+  message: "Nachricht",
 };
 
 export function ContactSection() {
@@ -80,8 +82,10 @@ export function ContactSection() {
     firstName: "",
     lastName: "",
     email: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prefilledInquiryTitle, setPrefilledInquiryTitle] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
 
@@ -90,15 +94,33 @@ export function ContactSection() {
     [formData.inquiryType],
   );
 
+  const effectiveInquiryTitle = prefilledInquiryTitle ?? selectedInquiry?.title ?? null;
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    if (step === "name" || step === "email") {
+    if (step === "name" || step === "email" || step === "message") {
       wizardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [step]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ title?: string }>).detail;
+      if (!detail?.title) return;
+      setPrefilledInquiryTitle(detail.title);
+      setFormData((current) => ({
+        ...current,
+        inquiryType: "",
+        contactMethod: "",
+      }));
+      setStep("method");
+    };
+    window.addEventListener("edit-immobilien:select-service", handler);
+    return () => window.removeEventListener("edit-immobilien:select-service", handler);
+  }, []);
 
   const handleInquirySelect = (inquiryType: InquiryType) => {
     setFormData((current) => ({
@@ -131,6 +153,7 @@ export function ContactSection() {
 
   const handleBack = () => {
     if (step === "method") {
+      setPrefilledInquiryTitle(null);
       setStep("inquiry");
       return;
     }
@@ -142,6 +165,11 @@ export function ContactSection() {
 
     if (step === "email") {
       setStep("name");
+      return;
+    }
+
+    if (step === "message") {
+      setStep("email");
     }
   };
 
@@ -150,18 +178,25 @@ export function ContactSection() {
     setStep("email");
   };
 
-  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStep("message");
+  };
+
+  const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     const name = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+    const userMessage = formData.message.trim();
     const message = [
       "Neue Kontaktanfrage über den Website-Assistenten",
       "",
-      `Anliegen: ${selectedInquiry?.title ?? "Allgemeine Anfrage"}`,
+      `Anliegen: ${effectiveInquiryTitle ?? "Allgemeine Anfrage"}`,
       "Gewünschter Kontaktweg: Direkt schreiben",
       "",
-      "Bitte per E-Mail antworten.",
+      "Nachricht:",
+      userMessage,
     ].join("\n");
 
     try {
@@ -178,7 +213,9 @@ export function ContactSection() {
         firstName: "",
         lastName: "",
         email: "",
+        message: "",
       });
+      setPrefilledInquiryTitle(null);
       setStep("inquiry");
     } catch (error) {
       console.error(error);
@@ -191,15 +228,12 @@ export function ContactSection() {
   return (
     <section id="kontakt" className="bg-[#111111] py-20">
       <div className="container mx-auto max-w-6xl px-4">
-        <div className="mx-auto mb-12 max-w-4xl">
-          <div>
-            <p className="mb-3 text-xs uppercase tracking-widest text-[#C2A878]">Kontakt</p>
-            <h2 className="mb-4 text-white">Wir sind persönlich für Sie da</h2>
-            <p className="max-w-2xl text-sm leading-relaxed text-gray-400">
-              Wählen Sie kurz aus, worum es geht. Danach entscheiden Sie, ob Sie direkt anrufen,
-              einen Termin buchen oder uns schreiben möchten.
-            </p>
-          </div>
+        <div className="text-center mb-12">
+          <h2 className="mb-4 text-white">Wir sind persönlich für Sie da</h2>
+          <p className="text-base leading-relaxed text-gray-300 max-w-2xl mx-auto">
+            Wählen Sie kurz aus, worum es geht. Danach entscheiden Sie, ob Sie direkt anrufen,
+            einen Termin buchen oder uns schreiben möchten.
+          </p>
         </div>
 
         <div className="mx-auto max-w-4xl px-1 sm:px-0">
@@ -212,21 +246,13 @@ export function ContactSection() {
             }}
           >
             <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#C2A878]/50 to-transparent" />
-            <div className="mb-8 flex items-start justify-between gap-4 pb-2">
-              <div>
-                <p className="mb-2 text-xs uppercase tracking-widest text-[#C2A878]">
-                  Kontaktassistent
-                </p>
-                <h3 className="text-xl font-semibold text-[#F6F2ED]">{stepLabels[step]}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                  {selectedInquiry
-                    ? `Ausgewählt: ${selectedInquiry.title}`
-                    : "Starten Sie mit der Auswahl Ihres Anliegens."}
-                </p>
-              </div>
-              <div className="hidden h-11 w-11 items-center justify-center rounded-xl border border-[#C2A878]/25 bg-[#C2A878]/10 shadow-lg shadow-[#C2A878]/10 sm:flex">
-                <Mail className="h-5 w-5 text-[#C2A878]" />
-              </div>
+            <div className="mb-8 pb-2">
+              <h3 className="text-xl font-semibold text-[#F6F2ED]">{stepLabels[step]}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-gray-400">
+                {effectiveInquiryTitle
+                  ? `Ausgewählt: ${effectiveInquiryTitle}`
+                  : "Starten Sie mit der Auswahl Ihres Anliegens."}
+              </p>
             </div>
 
             <div className="flex flex-col">
@@ -279,7 +305,7 @@ export function ContactSection() {
                             }
                             required
                             placeholder="Max"
-                            className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                            className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                           />
                         </Field>
                         <Field label="Nachname" htmlFor="lastName">
@@ -292,7 +318,7 @@ export function ContactSection() {
                             }
                             required
                             placeholder="Mustermann"
-                            className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                            className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                           />
                         </Field>
                       </div>
@@ -320,7 +346,35 @@ export function ContactSection() {
                           }
                           required
                           placeholder="max@beispiel.de"
-                          className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-600 focus:border-[#C2A878] focus:ring-0"
+                          className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
+                        />
+                      </Field>
+                    </div>
+                    <WizardFooter onBack={handleBack} submitLabel="Weiter" />
+                  </WizardPanel>
+                </form>
+              )}
+
+              {step === "message" && (
+                <form onSubmit={handleMessageSubmit} className="flex flex-col">
+                  <WizardPanel
+                    title="Was möchten Sie uns mitteilen?"
+                    description="Beschreiben Sie kurz Ihr Anliegen – je konkreter, desto besser können wir vorbereiten."
+                  >
+                    <div className="rounded-2xl border border-white/[0.08] bg-black/25 p-5 sm:p-6 md:p-7">
+                      <Field label="Nachricht" htmlFor="message">
+                        <Textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={(event) =>
+                            setFormData((current) => ({ ...current, message: event.target.value }))
+                          }
+                          required
+                          minLength={10}
+                          rows={6}
+                          placeholder="Schildern Sie uns kurz Ihre Situation, gewünschte Lage, Zeitrahmen ..."
+                          className="min-h-[160px] w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                         />
                       </Field>
                     </div>
@@ -328,7 +382,7 @@ export function ContactSection() {
                       onBack={handleBack}
                       submitLabel={isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
                       submitIcon={<Send className="h-4 w-4" />}
-                      submitDisabled={isSubmitting}
+                      submitDisabled={isSubmitting || formData.message.trim().length < 10}
                     />
                   </WizardPanel>
                 </form>
@@ -357,7 +411,7 @@ function WizardPanel({
         <div className="mb-6">
           {title && <h4 className="text-lg font-semibold text-white sm:text-xl">{title}</h4>}
           {description && (
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500">{description}</p>
+            <p className="mt-2 max-w-2xl text-base leading-relaxed text-gray-300">{description}</p>
           )}
         </div>
       )}

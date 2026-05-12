@@ -57,7 +57,7 @@ export function VerkaufsprozessTimeline() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-3 text-white">So läuft Ihr Hausverkauf ab</h2>
-          <p className="text-sm leading-relaxed text-gray-400">
+          <p className="text-base leading-relaxed text-gray-300">
             Ein klarer Ablauf vom ersten Gespräch bis zur Übergabe – kompakt,
             transparent und gut planbar.
           </p>
@@ -86,11 +86,7 @@ export function VerkaufsprozessTimeline() {
 }
 
 function StepDivider() {
-  return (
-    <div className="relative flex h-10 items-center justify-center">
-      <div className="h-2 w-2 rounded-full bg-[#C2A878]" />
-    </div>
-  );
+  return <div aria-hidden="true" className="h-10" />;
 }
 
 function StepCard({
@@ -101,15 +97,15 @@ function StepCard({
   stepNumber: number;
 }) {
   return (
-    <div className="relative block h-[160px] w-[280px] overflow-hidden rounded-lg border border-white/[0.08] bg-[#181818] p-4 transition-colors duration-200 hover:border-[#C2A878]/35">
+    <div className="relative block h-[190px] w-[280px] overflow-hidden rounded-lg border border-white/[0.08] bg-[#181818] p-4 transition-colors duration-200 hover:border-[#C2A878]/35">
       <div className="mb-3 flex items-center justify-between gap-2 text-[11px] font-medium uppercase tracking-wider">
         <span className="text-[#C2A878]">Schritt {stepNumber}</span>
-        <span className="text-gray-500">{step.timeline}</span>
+        <span className="text-gray-400">{step.timeline}</span>
       </div>
-      <div className="mb-2 line-clamp-2 text-sm font-semibold leading-snug text-white">
+      <div className="mb-2 line-clamp-2 text-base font-semibold leading-snug text-white">
         {step.title}
       </div>
-      <p className="line-clamp-3 text-xs leading-relaxed text-gray-400">
+      <p className="line-clamp-3 text-sm leading-relaxed text-gray-300">
         {step.description}
       </p>
     </div>

@@ -39,7 +39,7 @@ export function Hero() {
           style={{ backgroundColor: "rgba(0, 0, 0, 0.88)" }}
         >
           <h1 className="text-white mb-6">
-            Immobilienmakler Hamburg - Ihr Traumhaus in Hamburg & Umgebung
+            Ihr Traumhaus in Hamburg & Umgebung
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-100">
             Professionelle Immobilienvermittlung in Hamburg, Wedel, Holm & Norderstedt. Über 13 Jahre Erfahrung mit Spezialisierung auf Aufwertung & Wertsteigerung.

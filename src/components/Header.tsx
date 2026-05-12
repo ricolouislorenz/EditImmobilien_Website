@@ -51,7 +51,7 @@ export function Header() {
             >
               <Instagram className="w-5 h-5" />
             </a>
-            <Button onClick={() => scrollToSection("kontakt")}>
+            <Button onClick={() => scrollToSection("kontakt")} className="bg-[#6B4F3A] hover:bg-[#5A4230] text-white">
               Termin vereinbaren
             </Button>
           </div>
@@ -83,7 +83,7 @@ export function Header() {
             <button onClick={() => scrollToSection("kontakt")} className="text-gray-300 hover:text-[#6B4F3A] transition-colors text-left">
               Kontakt
             </button>
-            <Button onClick={() => scrollToSection("kontakt")} className="w-full">
+            <Button onClick={() => scrollToSection("kontakt")} className="w-full bg-[#6B4F3A] hover:bg-[#5A4230] text-white">
               Termin vereinbaren
             </Button>
           </nav>

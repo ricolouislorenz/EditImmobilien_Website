@@ -1,16 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Property } from "@/types";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY müssen in der .env gesetzt sein."
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.error(
+    "Supabase: VITE_SUPABASE_URL und/oder VITE_SUPABASE_ANON_KEY fehlen. Datenbank-Funktionen sind deaktiviert."
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  supabaseUrl ?? "https://placeholder.invalid",
+  supabaseAnonKey ?? "placeholder"
+);
 
 // ---------------------------------------------------------------------------
 // Storage-Hilfsfunktionen

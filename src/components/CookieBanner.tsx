@@ -94,9 +94,9 @@ export function CookieBanner() {
                   <Cookie className="w-5 h-5 sm:hidden text-[#C2A878]" />
                   Wir respektieren Ihre Privatsphäre
                 </h3>
-                <p className="text-gray-400 mb-4 leading-relaxed">
-                  Wir verwenden Cookies, um Ihnen die beste Erfahrung auf unserer Website zu bieten. 
-                  Notwendige Cookies sind für die Grundfunktionen erforderlich. Mit Ihrer Zustimmung 
+                <p className="text-base text-gray-300 mb-4 leading-relaxed">
+                  Wir verwenden Cookies, um Ihnen die beste Erfahrung auf unserer Website zu bieten.
+                  Notwendige Cookies sind für die Grundfunktionen erforderlich. Mit Ihrer Zustimmung
                   können wir auch Analyse- und Marketing-Cookies verwenden, um unsere Website zu verbessern.
                 </p>
 
@@ -129,7 +129,7 @@ export function CookieBanner() {
                 </div>
 
                 {/* Privacy Policy Link */}
-                <p className="text-gray-500 text-sm mt-4">
+                <p className="text-gray-400 text-sm mt-4">
                   Weitere Informationen finden Sie in unserer{" "}
                   <Datenschutz>
                     <button className="text-[#C2A878] hover:text-[#6B4F3A] underline">

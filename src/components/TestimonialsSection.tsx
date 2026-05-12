@@ -170,7 +170,7 @@ export function TestimonialsSection() {
                         <div className="text-white">
                           {testimonial.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-400">
                           Google Bewertung • {testimonial.date}
                         </div>
                       </div>

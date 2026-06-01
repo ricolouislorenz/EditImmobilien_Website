@@ -24,5 +24,10 @@
 /hello-world                        /               301
 /category/uncategorized             /               301
 
-# SPA-Fallback (muss letzte Regel bleiben)
-/*                                  /index.html     200
+# SPA-Fallback nur für echte Client-Routen.
+# Ein universelles /* erzeugt auf Cloudflare eine Endlosschleife und wird
+# ignoriert; unbekannte Pfade liefern stattdessen 404.html (korrekter 404).
+/admin                              /index.html     200
+/admin/*                            /index.html     200
+/impressum                          /index.html     200
+/datenschutz                        /index.html     200

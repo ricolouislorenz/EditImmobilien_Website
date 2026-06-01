@@ -28,6 +28,5 @@
 # Ein universelles /* erzeugt auf Cloudflare eine Endlosschleife und wird
 # ignoriert; unbekannte Pfade liefern stattdessen 404.html (korrekter 404).
 /admin                              /index.html     200
-/admin/*                            /index.html     200
 /impressum                          /index.html     200
 /datenschutz                        /index.html     200

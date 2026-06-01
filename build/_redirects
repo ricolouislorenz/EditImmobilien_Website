@@ -1,1 +1,28 @@
-/* /index.html 200
+# 301-Weiterleitungen der alten WordPress-URLs auf den Onepager.
+# Erhält SEO-Wert und vermeidet 404s nach dem Umzug.
+# Reihenfolge: spezifische Regeln zuerst, SPA-Fallback zuletzt.
+
+# Inhaltsseiten -> passende Abschnitte
+/ueber-uns                          /#uber-uns      301
+/kontakt                            /#kontakt       301
+/elementor-81/immobilie-bewerten    /#wertrechner   301
+/elementor-81/verkauf-2             /#leistungen    301
+/elementor-81/vermieten             /#leistungen    301
+/elementor-81/immobilie-aufwerten   /#leistungen    301
+
+# Rechtsseiten -> echte Routen (/impressum & /datenschutz werden vom SPA bedient)
+/datenschutzerklaerung              /datenschutz    301
+/cookie-richtlinie-eu               /datenschutz    301
+
+# Autoren-Archive -> Team / Ueber uns
+/author/jana-meier                  /#uber-uns      301
+/author/timo-konrad                 /#uber-uns      301
+
+# WordPress-/Plugin-Reste -> Startseite
+/elementor-81                       /               301
+/yith-compare                       /               301
+/hello-world                        /               301
+/category/uncategorized             /               301
+
+# SPA-Fallback (muss letzte Regel bleiben)
+/*                                  /index.html     200

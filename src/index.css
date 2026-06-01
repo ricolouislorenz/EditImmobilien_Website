@@ -193,3 +193,61 @@ label[for],
 select {
   cursor: pointer;
 }
+
+/* Aufmerksamkeits-Effekte (dezent, premium-orientiert) */
+
+@keyframes edit-ken-burns {
+  0% {
+    transform: scale(1);
+    transform-origin: center;
+  }
+  100% {
+    transform: scale(1.06);
+    transform-origin: center;
+  }
+}
+
+@keyframes edit-scroll-bounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+@keyframes edit-cta-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(194, 168, 120, 0),
+      0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px rgba(194, 168, 120, 0.18),
+      0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.animate-ken-burns {
+  animation: edit-ken-burns 28s ease-out forwards;
+}
+
+.animate-scroll-bounce {
+  animation: edit-scroll-bounce 1.8s ease-in-out infinite;
+}
+
+.animate-cta-pulse {
+  animation: edit-cta-pulse 2.4s ease-in-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns,
+  .animate-scroll-bounce,
+  .animate-cta-pulse {
+    animation: none !important;
+    transform: none !important;
+  }
+}

@@ -21,8 +21,16 @@ export function Datenschutz({ children }: DatenschutzProps) {
         <DialogHeader>
           <DialogTitle className="text-2xl text-[#C2A878]">Datenschutzerklärung</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-8 text-gray-300 leading-relaxed">
+
+        <DatenschutzContent />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function DatenschutzContent() {
+  return (
+    <div className="space-y-8 text-gray-300 leading-relaxed">
           {/* Section 1 */}
           <section>
             <h2 className="text-xl text-[#6B4F3A] mb-4">1. Datenschutz auf einen Blick</h2>
@@ -249,8 +257,6 @@ export function Datenschutz({ children }: DatenschutzProps) {
           <section className="text-sm text-gray-400 pt-4 border-t border-white/10">
             <p>Quelle: <a href="https://www.e-recht24.de" target="_blank" rel="noopener noreferrer" className="hover:underline">e-recht24.de</a></p>
           </section>
-        </div>
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }

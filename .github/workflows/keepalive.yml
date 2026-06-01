@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive
+
+# Verhindert, dass das Supabase-Free-Tier-Projekt nach 7 Tagen ohne
+# Aktivität automatisch pausiert. Ein kleiner Read-Request alle 2 Tage
+# setzt den Inaktivitäts-Timer zurück.
+
+on:
+  schedule:
+    # Alle 2 Tage um 06:00 UTC
+    - cron: "0 6 */2 * *"
+  # Manuelles Auslösen im Actions-Tab möglich
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST-API
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Secrets VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY fehlen."
+            exit 1
+          fi
+
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/properties?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+
+          echo "Supabase antwortete mit HTTP $code"
+
+          if [ "$code" -ne 200 ]; then
+            echo "Keep-Alive fehlgeschlagen – Datenbank nicht erreichbar."
+            exit 1
+          fi
+
+          echo "Keep-Alive erfolgreich."

@@ -13,7 +13,10 @@ import { DownloadsSection } from "./components/DownloadsSection";
 import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { CookieBanner } from "./components/CookieBanner";
+import { ScrollProgressBar } from "./components/ScrollProgressBar";
+import { MobileStickyCTA } from "./components/MobileStickyCTA";
 import { AdminApp } from "./admin/AdminApp";
+import { ImpressumPage, DatenschutzPage } from "./components/LegalPage";
 
 function GoldDivider() {
   return (
@@ -26,6 +29,7 @@ function MainSite() {
     <div className="min-h-screen">
       <SEOHead />
       <StructuredData />
+      <ScrollProgressBar />
       <Header />
       <main className="pt-[73px]">
         <Hero />
@@ -46,6 +50,7 @@ function MainSite() {
       </main>
       <Footer />
       <WhatsAppButton />
+      <MobileStickyCTA />
       <CookieBanner />
       <Toaster />
     </div>
@@ -56,6 +61,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="admin/*" element={<AdminApp />} />
+      <Route path="impressum" element={<ImpressumPage />} />
+      <Route path="datenschutz" element={<DatenschutzPage />} />
       <Route path="*" element={<MainSite />} />
     </Routes>
   );

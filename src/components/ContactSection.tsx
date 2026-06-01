@@ -20,7 +20,7 @@ const PHONE_HREF = "tel:+4917290377547";
 
 type InquiryType = "offer" | "search" | "general";
 type ContactMethod = "phone" | "appointment" | "email";
-type WizardStep = "inquiry" | "method" | "name" | "email" | "message";
+type WizardStep = "inquiry" | "method" | "details";
 
 const inquiryOptions: Array<{
   id: InquiryType;
@@ -69,9 +69,7 @@ const methodOptions: Array<{
 const stepLabels: Record<WizardStep, string> = {
   inquiry: "Anliegen",
   method: "Kontaktweg",
-  name: "Name",
-  email: "E-Mail",
-  message: "Nachricht",
+  details: "Ihre Nachricht",
 };
 
 export function ContactSection() {
@@ -101,7 +99,7 @@ export function ContactSection() {
       isFirstRender.current = false;
       return;
     }
-    if (step === "name" || step === "email" || step === "message") {
+    if (step === "details") {
       wizardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [step]);
@@ -147,7 +145,7 @@ export function ContactSection() {
     }
 
     if (contactMethod === "email") {
-      setStep("name");
+      setStep("details");
     }
   };
 
@@ -158,32 +156,12 @@ export function ContactSection() {
       return;
     }
 
-    if (step === "name") {
+    if (step === "details") {
       setStep("method");
-      return;
-    }
-
-    if (step === "email") {
-      setStep("name");
-      return;
-    }
-
-    if (step === "message") {
-      setStep("email");
     }
   };
 
-  const handleNameSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStep("email");
-  };
-
-  const handleEmailSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setStep("message");
-  };
-
-  const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleDetailsSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 
@@ -287,102 +265,86 @@ export function ContactSection() {
                 </WizardPanel>
               )}
 
-              {step === "name" && (
-                <form onSubmit={handleNameSubmit} className="flex flex-col">
+              {step === "details" && (
+                <form onSubmit={handleDetailsSubmit} className="flex flex-col">
                   <WizardPanel
-                    title="Wie dürfen wir Sie ansprechen?"
-                    description="Vorname und Nachname werden getrennt abgefragt."
+                    title="Schreiben Sie uns direkt"
+                    description="Wir antworten Ihnen so schnell wie möglich per E-Mail."
                   >
                     <div className="rounded-2xl border border-white/[0.08] bg-black/25 p-5 sm:p-6 md:p-7">
                       <div className="flex flex-col gap-6">
-                        <Field label="Vorname" htmlFor="firstName">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                          <Field label="Vorname" htmlFor="firstName">
+                            <Input
+                              id="firstName"
+                              name="firstName"
+                              value={formData.firstName}
+                              onChange={(event) =>
+                                setFormData((current) => ({ ...current, firstName: event.target.value }))
+                              }
+                              required
+                              placeholder="Max"
+                              className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
+                            />
+                          </Field>
+                          <Field label="Nachname" htmlFor="lastName">
+                            <Input
+                              id="lastName"
+                              name="lastName"
+                              value={formData.lastName}
+                              onChange={(event) =>
+                                setFormData((current) => ({ ...current, lastName: event.target.value }))
+                              }
+                              required
+                              placeholder="Mustermann"
+                              className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
+                            />
+                          </Field>
+                        </div>
+
+                        <Field label="E-Mail" htmlFor="email">
                           <Input
-                            id="firstName"
-                            name="firstName"
-                            value={formData.firstName}
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
                             onChange={(event) =>
-                              setFormData((current) => ({ ...current, firstName: event.target.value }))
+                              setFormData((current) => ({ ...current, email: event.target.value }))
                             }
                             required
-                            placeholder="Max"
+                            placeholder="max@beispiel.de"
                             className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                           />
                         </Field>
-                        <Field label="Nachname" htmlFor="lastName">
-                          <Input
-                            id="lastName"
-                            name="lastName"
-                            value={formData.lastName}
+
+                        <Field label="Nachricht" htmlFor="message">
+                          <Textarea
+                            id="message"
+                            name="message"
+                            value={formData.message}
                             onChange={(event) =>
-                              setFormData((current) => ({ ...current, lastName: event.target.value }))
+                              setFormData((current) => ({ ...current, message: event.target.value }))
                             }
                             required
-                            placeholder="Mustermann"
-                            className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
+                            minLength={10}
+                            rows={6}
+                            placeholder="Schildern Sie uns kurz Ihre Situation, gewünschte Lage, Zeitrahmen ..."
+                            className="min-h-[160px] w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                           />
                         </Field>
                       </div>
-                    </div>
-                    <WizardFooter onBack={handleBack} submitLabel="Weiter" />
-                  </WizardPanel>
-                </form>
-              )}
-
-              {step === "email" && (
-                <form onSubmit={handleEmailSubmit} className="flex flex-col">
-                  <WizardPanel
-                    title="An welche E-Mail-Adresse dürfen wir antworten?"
-                    description="Ihr Anliegen und Ihr Name werden automatisch in die Nachricht übernommen."
-                  >
-                    <div className="rounded-2xl border border-white/[0.08] bg-black/25 p-5 sm:p-6 md:p-7">
-                      <Field label="E-Mail" htmlFor="email">
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(event) =>
-                            setFormData((current) => ({ ...current, email: event.target.value }))
-                          }
-                          required
-                          placeholder="max@beispiel.de"
-                          className="h-12 w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
-                        />
-                      </Field>
-                    </div>
-                    <WizardFooter onBack={handleBack} submitLabel="Weiter" />
-                  </WizardPanel>
-                </form>
-              )}
-
-              {step === "message" && (
-                <form onSubmit={handleMessageSubmit} className="flex flex-col">
-                  <WizardPanel
-                    title="Was möchten Sie uns mitteilen?"
-                    description="Beschreiben Sie kurz Ihr Anliegen – je konkreter, desto besser können wir vorbereiten."
-                  >
-                    <div className="rounded-2xl border border-white/[0.08] bg-black/25 p-5 sm:p-6 md:p-7">
-                      <Field label="Nachricht" htmlFor="message">
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
-                          onChange={(event) =>
-                            setFormData((current) => ({ ...current, message: event.target.value }))
-                          }
-                          required
-                          minLength={10}
-                          rows={6}
-                          placeholder="Schildern Sie uns kurz Ihre Situation, gewünschte Lage, Zeitrahmen ..."
-                          className="min-h-[160px] w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
-                        />
-                      </Field>
                     </div>
                     <WizardFooter
                       onBack={handleBack}
                       submitLabel={isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
                       submitIcon={<Send className="h-4 w-4" />}
-                      submitDisabled={isSubmitting || formData.message.trim().length < 10}
+                      submitDisabled={
+                        isSubmitting ||
+                        formData.firstName.trim().length === 0 ||
+                        formData.lastName.trim().length === 0 ||
+                        formData.email.trim().length === 0 ||
+                        formData.message.trim().length < 10
+                      }
                     />
                   </WizardPanel>
                 </form>

@@ -21,8 +21,16 @@ export function Impressum({ children }: ImpressumProps) {
         <DialogHeader>
           <DialogTitle className="text-2xl text-[#C2A878]">Impressum</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-6 text-gray-300">
+
+        <ImpressumContent />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function ImpressumContent() {
+  return (
+    <div className="space-y-6 text-gray-300">
           <section>
             <h3 className="text-[#6B4F3A] mb-2">Angaben gemäß § 5 TMG</h3>
             <p>Timo-Maximilian Konrad</p>
@@ -91,8 +99,6 @@ export function Impressum({ children }: ImpressumProps) {
           <section className="text-sm text-gray-400 pt-4 border-t border-white/10">
             <p>Quelle: <a href="https://www.e-recht24.de" target="_blank" rel="noopener noreferrer" className="hover:underline">e-recht24.de</a></p>
           </section>
-        </div>
-      </DialogContent>
-    </Dialog>
+    </div>
   );
 }

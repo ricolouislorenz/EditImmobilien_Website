@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { PropertyCard } from "./PropertyCard";
 import { ExposeRequestDialog } from "./ExposeRequestDialog";
 import { PropertyDetailDialog } from "./PropertyDetailDialog";
+import { Reveal } from "./Reveal";
 import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -181,14 +182,15 @@ function PaginatedGrid({
       ) : (
         <>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
-            {paginated.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                showExposeButton={showExposeButton}
-                onRequestExpose={onRequestExpose}
-                onSelect={onSelect}
-              />
+            {paginated.map((property, idx) => (
+              <Reveal key={property.id} delayMs={idx * 70} className="h-full">
+                <PropertyCard
+                  property={property}
+                  showExposeButton={showExposeButton}
+                  onRequestExpose={onRequestExpose}
+                  onSelect={onSelect}
+                />
+              </Reveal>
             ))}
           </div>
 

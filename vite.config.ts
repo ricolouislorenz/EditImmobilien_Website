@@ -5,7 +5,7 @@
   import path from 'path';
 
   export default defineConfig({
-    base: '/EditImmobilien_Website/',
+    base: '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],

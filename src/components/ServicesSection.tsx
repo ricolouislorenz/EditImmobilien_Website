@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { TEAM_FOTO } from "@/lib/assets";
+import { Reveal } from "./Reveal";
 
 const CALENDLY_URL = "https://calendly.com/kontakt-edit-immobilien/30min";
 
@@ -130,8 +131,8 @@ export function ServicesSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
+            <Reveal key={index} delayMs={index * 80} className="h-full">
             <div
-              key={index}
               onClick={() => setSelectedService(service)}
               className="group relative rounded-xl overflow-hidden cursor-pointer shadow-lg flex flex-col border-2 border-white/10 hover:border-[#C2A878] transition-all duration-300 hover:shadow-2xl hover:shadow-[#C2A878]/20"
               style={{ height: '380px' }}
@@ -178,6 +179,7 @@ export function ServicesSection() {
                 </span>
               </div>
             </div>
+            </Reveal>
           ))}
         </div>
 

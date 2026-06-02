@@ -82,12 +82,12 @@ export function DatenschutzContent() {
             <h2 className="text-xl text-[#6B4F3A] mb-4">2. Hosting</h2>
             <p className="mb-3">Wir hosten die Inhalte unserer Website bei folgendem Anbieter:</p>
             
-            <h3 className="text-[#C2A878] mb-2 mt-4">IONOS</h3>
+            <h3 className="text-[#C2A878] mb-2 mt-4">Cloudflare</h3>
             <p className="mb-3">
-              Anbieter ist die IONOS SE, Elgendorfer Str. 57, 56410 Montabaur (nachfolgend IONOS). Wenn Sie unsere Website besuchen, erfasst IONOS verschiedene Logfiles inklusive Ihrer IP-Adressen. Details entnehmen Sie der Datenschutzerklärung von IONOS: <a href="https://www.ionos.de/terms-gtc/terms-privacy" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://www.ionos.de/terms-gtc/terms-privacy <ExternalLink className="w-3 h-3" /></a>
+              Anbieter ist die Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA (nachfolgend „Cloudflare"). Cloudflare stellt unsere Website über ein weltweit verteiltes Content-Delivery-Network bereit. Dabei wird der Datenverkehr zwischen Ihrem Browser und unserer Website technisch über die Server von Cloudflare geleitet. Hierbei verarbeitet Cloudflare verschiedene Logfiles inklusive Ihrer IP-Adresse. Details entnehmen Sie der Datenschutzerklärung von Cloudflare: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://www.cloudflare.com/privacypolicy/ <ExternalLink className="w-3 h-3" /></a>
             </p>
             <p className="mb-3">
-              Die Verwendung von IONOS erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website. Sofern eine entsprechende Einwilligung abgefragt wurde, erfolgt die Verarbeitung ausschließlich auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG, soweit die Einwilligung die Speicherung von Cookies oder den Zugriff auf Informationen im Endgerät des Nutzers (z. B. Device-Fingerprinting) im Sinne des TDDDG umfasst. Die Einwilligung ist jederzeit widerrufbar.
+              Die Nutzung von Cloudflare erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen, sicheren und schnellen Darstellung unserer Website. Soweit personenbezogene Daten in die USA übermittelt werden, stützt sich die Übermittlung auf die Standardvertragsklauseln der EU-Kommission.
             </p>
 
             <h4 className="text-white mb-2 mt-3">Auftragsverarbeitung</h4>
@@ -202,17 +202,14 @@ export function DatenschutzContent() {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-xl text-[#6B4F3A] mb-4">5. Analyse-Tools und Werbung</h2>
-            
-            <h3 className="text-[#C2A878] mb-2 mt-4">IONOS WebAnalytics</h3>
+            <h2 className="text-xl text-[#6B4F3A] mb-4">5. Datenbank- und Speicherdienst</h2>
+
+            <h3 className="text-[#C2A878] mb-2 mt-4">Supabase</h3>
             <p className="mb-3">
-              Diese Website nutzt die Analysedienste von IONOS WebAnalytics (im Folgenden: IONOS). Anbieter ist die 1&1 IONOS SE, Elgendorfer Straße 57, D – 56410 Montabaur. Im Rahmen der Analysen mit IONOS können u. a. Besucherzahlen und –verhalten (z. B. Anzahl der Seitenaufrufe, Dauer eines Webseitenbesuchs, Absprungraten), Besucherquellen (d. h., von welcher Seite der Besucher kommt), Besucherstandorte sowie technische Daten (Browser- und Betriebssystemversionen) analysiert werden.
+              Zur Bereitstellung unserer Immobilienangebote (Objekttexte und -bilder) nutzen wir den Datenbank- und Speicherdienst Supabase. Anbieter ist die Supabase, Inc., USA. Beim Aufruf unserer Website lädt Ihr Browser die Immobiliendaten und -bilder direkt von den Servern von Supabase. Dabei wird Ihre IP-Adresse an Supabase übermittelt; dies ist technisch erforderlich, damit die Inhalte an Ihren Browser ausgeliefert werden können.
             </p>
             <p className="mb-3">
-              Die Datenerfassung erfolgt laut IONOS vollständig anonymisiert, sodass sie nicht zu einzelnen Personen zurückverfolgt werden kann. Cookies werden von IONOS WebAnalytics nicht gespeichert.
-            </p>
-            <p className="mb-3">
-              Weitere Informationen zur Datenerfassung und Verarbeitung durch IONOS WebAnalytics entnehmen Sie der Datenschutzerklärung von IONOS unter folgendem Link: <a href="https://www.ionos.de/terms-gtc/datenschutzerklaerung/" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://www.ionos.de/terms-gtc/datenschutzerklaerung/ <ExternalLink className="w-3 h-3" /></a>
+              Die Nutzung von Supabase erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer zuverlässigen Bereitstellung unserer Inhalte. Soweit personenbezogene Daten in ein Drittland (USA) übermittelt werden, stützt sich die Übermittlung auf die Standardvertragsklauseln der EU-Kommission. Weitere Informationen finden Sie in der Datenschutzerklärung von Supabase: <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://supabase.com/privacy <ExternalLink className="w-3 h-3" /></a>
             </p>
 
             <h4 className="text-white mb-2 mt-3">Auftragsverarbeitung</h4>
@@ -223,34 +220,19 @@ export function DatenschutzContent() {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-xl text-[#6B4F3A] mb-4">6. Plugins und Tools</h2>
-            
-            <h3 className="text-[#C2A878] mb-2 mt-4">Google Maps</h3>
+            <h2 className="text-xl text-[#6B4F3A] mb-4">6. E-Mail-Versand</h2>
+
+            <h3 className="text-[#C2A878] mb-2 mt-4">Resend</h3>
             <p className="mb-3">
-              Diese Seite nutzt den Kartendienst Google Maps. Anbieter ist die Google Ireland Limited („Google"), Gordon House, Barrow Street, Dublin 4, Irland.
+              Für den Versand von E-Mails (z. B. aus dem Kontaktformular und bei Exposé-Anfragen) nutzen wir den Dienst Resend. Anbieter ist die Resend, Inc., USA. Die von Ihnen in den Formularen eingegebenen Daten werden zum Zweck der Zustellung Ihrer Anfrage an Resend übermittelt und dort verarbeitet.
             </p>
             <p className="mb-3">
-              Zur Nutzung der Funktionen von Google Maps ist es notwendig, Ihre IP-Adresse zu speichern. Diese Informationen werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert. Der Anbieter dieser Seite hat keinen Einfluss auf diese Datenübertragung.
-            </p>
-            <p className="mb-3">
-              Die Nutzung von Google Maps erfolgt im Interesse einer ansprechenden Darstellung unserer Online-Angebote und an einer leichten Auffindbarkeit der von uns auf der Website angegebenen Orte. Dies stellt ein berechtigtes Interesse im Sinne von Art. 6 Abs. 1 lit. f DSGVO dar.
-            </p>
-            <p className="mb-3">
-              Mehr Informationen zum Umgang mit Nutzerdaten finden Sie in der Datenschutzerklärung von Google: <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://policies.google.com/privacy?hl=de <ExternalLink className="w-3 h-3" /></a>
-            </p>
-            <p className="mb-3">
-              Das Unternehmen verfügt über eine Zertifizierung nach dem „EU-US Data Privacy Framework" (DPF). Weitere Informationen hierzu erhalten Sie vom Anbieter unter folgendem Link: <a href="https://www.dataprivacyframework.gov/participant/5780" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://www.dataprivacyframework.gov/participant/5780 <ExternalLink className="w-3 h-3" /></a>
+              Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer effektiven Bearbeitung der an uns gerichteten Anfragen) bzw. Art. 6 Abs. 1 lit. a DSGVO, sofern eine Einwilligung abgefragt wurde. Soweit personenbezogene Daten in die USA übermittelt werden, stützt sich die Übermittlung auf die Standardvertragsklauseln der EU-Kommission. Weitere Informationen finden Sie in der Datenschutzerklärung von Resend: <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://resend.com/legal/privacy-policy <ExternalLink className="w-3 h-3" /></a>
             </p>
 
-            <h3 className="text-[#C2A878] mb-2 mt-4">Google reCAPTCHA</h3>
+            <h4 className="text-white mb-2 mt-3">Auftragsverarbeitung</h4>
             <p className="mb-3">
-              Wir nutzen „Google reCAPTCHA" (im Folgenden „reCAPTCHA") auf dieser Website. Anbieter ist die Google Ireland Limited („Google"), Gordon House, Barrow Street, Dublin 4, Irland.
-            </p>
-            <p className="mb-3">
-              Mit reCAPTCHA soll überprüft werden, ob die Dateneingabe auf dieser Website (z. B. in einem Kontaktformular) durch einen Menschen oder durch ein automatisiertes Programm erfolgt. Hierzu analysiert reCAPTCHA das Verhalten des Websitebesuchers anhand verschiedener Merkmale. Diese Analyse beginnt automatisch, sobald der Websitebesucher die Website betritt.
-            </p>
-            <p className="mb-3">
-              Weitere Informationen zu Google reCAPTCHA entnehmen Sie den Google-Datenschutzbestimmungen und den Google Nutzungsbedingungen unter folgenden Links: <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://policies.google.com/privacy?hl=de <ExternalLink className="w-3 h-3" /></a> und <a href="https://policies.google.com/terms?hl=de" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline inline-flex items-center gap-1">https://policies.google.com/terms?hl=de <ExternalLink className="w-3 h-3" /></a>
+              Wir haben einen Vertrag über Auftragsverarbeitung (AVV) zur Nutzung des oben genannten Dienstes geschlossen. Hierbei handelt es sich um einen datenschutzrechtlich vorgeschriebenen Vertrag, der gewährleistet, dass dieser die personenbezogenen Daten unserer Websitebesucher nur nach unseren Weisungen und unter Einhaltung der DSGVO verarbeitet.
             </p>
           </section>
 

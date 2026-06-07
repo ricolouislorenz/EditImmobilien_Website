@@ -8,6 +8,7 @@ import { useProperties } from "@/hooks/useProperties";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { SlidersHorizontal } from "lucide-react";
+import { PROPERTIES_PAGE_SIZE } from "@/lib/pagination";
 import type { Property } from "@/types";
 
 const PROPERTY_TYPES = [
@@ -29,7 +30,7 @@ interface FilterState {
 
 const EMPTY_FILTER: FilterState = { type: "", maxPrice: "", minArea: "" };
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = PROPERTIES_PAGE_SIZE;
 
 function parsePrice(price: string): number {
   const cleaned = price.replace(/[€\s]/g, "").replace(/\./g, "").replace(",", ".");
@@ -52,10 +53,8 @@ function applyFilter(properties: Property[], filter: FilterState): Property[] {
   });
 }
 
-function sortNewestFirst(properties: Property[]): Property[] {
-  return [...properties].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+function sortByOrder(properties: Property[]): Property[] {
+  return [...properties].sort((a, b) => a.sort_order - b.sort_order);
 }
 
 function isFilterActive(filter: FilterState): boolean {
@@ -261,7 +260,7 @@ export function PropertiesSection() {
   const { active, references, loading, error } = useProperties();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<{
-    id: string;
+    reference: string;
     title: string;
   } | null>(null);
   const [detailProperty, setDetailProperty] = useState<Property | null>(null);
@@ -271,8 +270,8 @@ export function PropertiesSection() {
   const [activeFilter, setActiveFilter] = useState<FilterState>(EMPTY_FILTER);
   const [filterResetKey, setFilterResetKey] = useState("");
 
-  const handleRequestExpose = (propertyId: string, propertyTitle: string) => {
-    setSelectedProperty({ id: propertyId, title: propertyTitle });
+  const handleRequestExpose = (propertyReference: string, propertyTitle: string) => {
+    setSelectedProperty({ reference: propertyReference, title: propertyTitle });
     setDialogOpen(true);
   };
 
@@ -281,9 +280,9 @@ export function PropertiesSection() {
     setDetailOpen(true);
   };
 
-  const handleDetailRequestExpose = (propertyId: string, propertyTitle: string) => {
+  const handleDetailRequestExpose = (propertyReference: string, propertyTitle: string) => {
     setDetailOpen(false);
-    handleRequestExpose(propertyId, propertyTitle);
+    handleRequestExpose(propertyReference, propertyTitle);
   };
 
   const handleApply = () => {
@@ -298,11 +297,11 @@ export function PropertiesSection() {
   };
 
   const filteredActive = useMemo(
-    () => sortNewestFirst(applyFilter(active, activeFilter)),
+    () => sortByOrder(applyFilter(active, activeFilter)),
     [active, activeFilter]
   );
   const filteredReferences = useMemo(
-    () => sortNewestFirst(applyFilter(references, activeFilter)),
+    () => sortByOrder(applyFilter(references, activeFilter)),
     [references, activeFilter]
   );
   const filterOn = isFilterActive(activeFilter);
@@ -450,7 +449,7 @@ export function PropertiesSection() {
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           propertyTitle={selectedProperty.title}
-          propertyId={selectedProperty.id}
+          propertyReference={selectedProperty.reference}
         />
       )}
 

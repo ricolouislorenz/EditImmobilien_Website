@@ -155,7 +155,7 @@ export function PropertyDetailDialog({
             {/* CTA */}
             {canExpose && (
               <Button
-                onClick={() => onRequestExpose?.(property.id, property.title)}
+                onClick={() => onRequestExpose?.(property.reference, property.title)}
                 className="h-11 w-full gap-2 bg-[#C2A878] text-sm font-medium text-[#111111] hover:bg-[#C2A878]/90 sm:text-base"
               >
                 <FileText className="h-5 w-5" />

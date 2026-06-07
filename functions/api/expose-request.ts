@@ -8,6 +8,7 @@ interface ExposePayload {
   name?: string;
   email?: string;
   phone?: string;
+  message?: string;
   property_id?: string;
   property_title?: string;
 }
@@ -53,6 +54,7 @@ export async function onRequestPost(context: {
   const name = (payload.name ?? "").trim();
   const email = (payload.email ?? "").trim();
   const phone = (payload.phone ?? "").trim();
+  const message = (payload.message ?? "").trim();
   const propertyId = (payload.property_id ?? "").trim();
   const propertyTitle = (payload.property_title ?? "").trim();
 
@@ -64,6 +66,9 @@ export async function onRequestPost(context: {
   }
   if (phone.length > 50) {
     return jsonResponse(400, { error: "Telefonnummer zu lang." });
+  }
+  if (message.length > 2000) {
+    return jsonResponse(400, { error: "Nachricht zu lang." });
   }
   if (!propertyId || propertyId.length > 100) {
     return jsonResponse(400, { error: "Immobilie fehlt oder ungültig." });
@@ -78,22 +83,24 @@ export async function onRequestPost(context: {
   const html = `
     <h2 style="font-family:Arial,sans-serif;color:#111111;">Neue Exposé-Anfrage</h2>
     <p style="font-family:Arial,sans-serif;color:#111111;"><strong>Immobilie:</strong> ${escapeHtml(propertyTitle)}</p>
-    <p style="font-family:Arial,sans-serif;color:#6B4F3A;font-size:12px;"><strong>Objekt-ID:</strong> ${escapeHtml(propertyId)}</p>
+    <p style="font-family:Arial,sans-serif;color:#6B4F3A;font-size:12px;"><strong>Immobilien-ID:</strong> ${escapeHtml(propertyId)}</p>
     <hr style="border:none;border-top:1px solid #E8E0D8;margin:16px 0;" />
     <p style="font-family:Arial,sans-serif;color:#111111;"><strong>Name:</strong> ${escapeHtml(name)}</p>
     <p style="font-family:Arial,sans-serif;color:#111111;"><strong>E-Mail:</strong> ${escapeHtml(email)}</p>
     ${phone ? `<p style="font-family:Arial,sans-serif;color:#111111;"><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ""}
+    ${message ? `<p style="font-family:Arial,sans-serif;color:#111111;"><strong>Nachricht:</strong><br/>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>` : ""}
   `;
 
   const text = [
     "Neue Exposé-Anfrage",
     "",
     `Immobilie: ${propertyTitle}`,
-    `Objekt-ID: ${propertyId}`,
+    `Immobilien-ID: ${propertyId}`,
     "",
     `Name: ${name}`,
     `E-Mail: ${email}`,
     phone ? `Telefon: ${phone}` : null,
+    message ? `Nachricht: ${message}` : null,
   ]
     .filter(Boolean)
     .join("\n");

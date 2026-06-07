@@ -12,19 +12,21 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { FileText, Loader2 } from "lucide-react";
+import { sendExposeRequest } from "@/lib/email";
 
 interface ExposeRequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   propertyTitle: string;
-  propertyId: string;
+  /** Objektnummer der Immobilie, z. B. "EI-005" */
+  propertyReference: string;
 }
 
 export function ExposeRequestDialog({
   open,
   onOpenChange,
   propertyTitle,
-  propertyId,
+  propertyReference,
 }: ExposeRequestDialogProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,29 +41,14 @@ export function ExposeRequestDialog({
     setLoading(true);
 
     try {
-      // TODO: Flowfact Mini API Integration
-      // Hier würde die echte Flowfact API-Anfrage erfolgen
-      // Beispiel-Endpoint: POST /api/flowfact/request-expose
-      
-      /* 
-      const response = await fetch('/api/flowfact/request-expose', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          propertyId: propertyId,
-          customerData: formData,
-        }),
+      await sendExposeRequest({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        property_id: propertyReference,
+        property_title: propertyTitle,
       });
-
-      if (!response.ok) throw new Error('Exposé-Anfrage fehlgeschlagen');
-      
-      const data = await response.json();
-      */
-
-      // Mock-Verzögerung für Demo
-      await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast.success("Exposé-Anfrage erfolgreich!", {
         description: `Wir senden Ihnen das Exposé für "${propertyTitle}" per E-Mail zu.`,
@@ -75,16 +62,6 @@ export function ExposeRequestDialog({
         message: "",
       });
       onOpenChange(false);
-
-      // HINWEIS: Für die echte Flowfact Mini Integration benötigen Sie:
-      // 1. Flowfact API-Credentials (API-Key, Secret)
-      // 2. Backend-Endpoint (z.B. Supabase Edge Function)
-      // 3. Flowfact API-Dokumentation für Exposé-Anfragen
-      // Beispiel API-Call:
-      // POST https://api.flowfact.com/expose/request
-      // Headers: { Authorization: Bearer YOUR_API_KEY }
-      // Body: { entityId: propertyId, contact: { name, email, phone } }
-
     } catch (error) {
       console.error("Fehler beim Anfordern des Exposés:", error);
       toast.error("Fehler bei der Anfrage", {

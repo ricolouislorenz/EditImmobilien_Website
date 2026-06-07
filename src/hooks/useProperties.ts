@@ -21,7 +21,7 @@ interface CachedProperties {
   ts: number;
 }
 
-const CACHE_KEY = "edit-properties-cache-v1";
+const CACHE_KEY = "edit-properties-cache-v2";
 
 /** Liest den zuletzt erfolgreich geladenen Stand aus dem localStorage. */
 function readCache(): CachedProperties | null {

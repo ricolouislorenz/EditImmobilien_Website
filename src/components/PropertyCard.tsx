@@ -110,7 +110,7 @@ export function PropertyCard({
             <Button
               onClick={(event) => {
                 event.stopPropagation();
-                onRequestExpose?.(property.id, property.title);
+                onRequestExpose?.(property.reference, property.title);
               }}
               className="h-10 w-full gap-2 bg-[#C2A878] text-sm text-[#111111] hover:bg-[#C2A878]/90"
             >

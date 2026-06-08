@@ -217,7 +217,13 @@ export function ServicesSection() {
             {/* Foto rechts */}
             <div className="relative overflow-hidden sm:w-60">
               <img
-                src={TEAM_FOTO}
+                src={TEAM_FOTO.src}
+                srcSet={TEAM_FOTO.srcSet}
+                sizes="(min-width: 640px) 240px, 100vw"
+                width={TEAM_FOTO.width}
+                height={TEAM_FOTO.height}
+                loading="lazy"
+                decoding="async"
                 alt="Edit Immobilien Team"
                 className="h-56 w-full object-cover object-top sm:h-full"
               />

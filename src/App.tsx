@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
@@ -9,14 +10,22 @@ import { Footer } from "./components/Footer";
 import { Toaster } from "./components/ui/sonner";
 import { SEOHead, StructuredData } from "./components/SEOHead";
 import { ImmobilienwertRechner } from "./components/ImmobilienwertRechner";
-import { DownloadsSection } from "./components/DownloadsSection";
 import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { CookieBanner } from "./components/CookieBanner";
 import { ScrollProgressBar } from "./components/ScrollProgressBar";
 import { MobileStickyCTA } from "./components/MobileStickyCTA";
-import { AdminApp } from "./admin/AdminApp";
 import { ImpressumPage, DatenschutzPage } from "./components/LegalPage";
+
+// Lazy geladen: zieht jsPDF + PDF-Generatoren erst bei Bedarf nach, nicht ins Initial-Bundle.
+const DownloadsSection = lazy(() =>
+  import("./components/DownloadsSection").then((m) => ({ default: m.DownloadsSection }))
+);
+
+// Lazy geladen: Admin-Panel inkl. Supabase-Auth-Logik gehört nicht ins öffentliche Bundle.
+const AdminApp = lazy(() =>
+  import("./admin/AdminApp").then((m) => ({ default: m.AdminApp }))
+);
 
 function GoldDivider() {
   return (
@@ -44,7 +53,9 @@ function MainSite() {
         <GoldDivider />
         <VerkaufsprozessTimeline />
         <GoldDivider />
-        <DownloadsSection />
+        <Suspense fallback={<div className="min-h-[400px]" aria-hidden="true" />}>
+          <DownloadsSection />
+        </Suspense>
         <GoldDivider />
         <ContactSection />
       </main>
@@ -60,7 +71,20 @@ function MainSite() {
 export default function App() {
   return (
     <Routes>
-      <Route path="admin/*" element={<AdminApp />} />
+      <Route
+        path="admin/*"
+        element={
+          <Suspense
+            fallback={
+              <div className="min-h-screen bg-[#111111] flex items-center justify-center">
+                <p className="text-gray-500">Laden...</p>
+              </div>
+            }
+          >
+            <AdminApp />
+          </Suspense>
+        }
+      />
       <Route path="impressum" element={<ImpressumPage />} />
       <Route path="datenschutz" element={<DatenschutzPage />} />
       <Route path="*" element={<MainSite />} />

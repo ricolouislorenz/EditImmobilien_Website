@@ -1,22 +1,39 @@
 /**
  * Zentrale Verwaltung aller statischen Website-Assets.
  *
- * Bild hinzufügen:
- *   1. Datei in public/images/ ablegen (z. B. public/images/team.jpg)
- *   2. Hier als Konstante eintragen
- *   3. In der Komponente aus dieser Datei importieren – nie Pfade direkt im JSX
+ * Foto ersetzen/hinzufügen (responsive Bilder):
+ *   1. Original (hohe Auflösung) in assets-source/ ablegen
+ *   2. Eintrag in scripts/optimize-images.cjs ergänzen
+ *   3. `npm run optimize:images` ausführen (erzeugt WebP-Varianten in public/images/<bereich>/)
+ *   4. Hier den passenden ResponsiveImage-Eintrag pflegen
+ *   5. In der Komponente aus dieser Datei importieren – nie Pfade direkt im JSX
  *
- * Bild ersetzen:
- *   – Gleicher Dateiname → Datei einfach überschreiben, kein Code nötig
- *   – Anderer Dateiname → Pfad hier anpassen, Änderung wirkt überall
+ * Einfache (nicht responsive) Assets wie Logo/SVG bleiben simple String-Pfade.
  */
 
-// Basis-URL aus Vite-Konfiguration (z. B. /EditImmobilien_Website/ in Produktion)
+// Basis-URL aus Vite-Konfiguration (z. B. / in Produktion)
 const base = import.meta.env.BASE_URL;
 
 /** Hilfsfunktion: lokale public/images/-Pfade korrekt mit BASE_URL prefixen */
 function publicImage(filename: string): string {
   return `${base}images/${filename}`;
+}
+
+/**
+ * Responsive Bildquelle: `src` als Standard, `srcSet`/Breiten für die
+ * Geräteklassen (Smartphone/Tablet/PC). `width`/`height` reservieren Platz
+ * und vermeiden Layout-Shift (CLS).
+ */
+export interface ResponsiveImage {
+  src: string;
+  srcSet: string;
+  width: number;
+  height: number;
+}
+
+/** Baut einen srcSet-String aus Dateiname-Schema `<prefix>-<breite>.webp`. */
+function srcSet(prefix: string, widths: number[]): string {
+  return widths.map((w) => `${publicImage(`${prefix}-${w}.webp`)} ${w}w`).join(", ");
 }
 
 // ─── Marke ───────────────────────────────────────────────────────────────────
@@ -27,37 +44,44 @@ export const LOGO = publicImage("logo.png");
 // ─── Hero ────────────────────────────────────────────────────────────────────
 
 /**
- * Hintergrundbild im Hero-Bereich.
- * Eigenes Bild unter public/images/hero-bg.jpg ablegen → Wert auf publicImage("hero-bg.jpg") setzen.
- * Empfohlene Größe: mind. 1920×1080px
+ * Hintergrundbild im Hero-Bereich (LCP-Element, eager geladen).
+ * Quelle: assets-source/hero.png → `npm run optimize:images`.
  */
-export const HERO_BG = publicImage("hero-bg.png");
+export const HERO_IMAGE: ResponsiveImage = {
+  src: publicImage("hero/hero-1456.webp"),
+  srcSet: srcSet("hero/hero", [768, 1100, 1456]),
+  width: 1456,
+  height: 816,
+};
+
+/** Raster-Fallback (JPG) des Hero-Bilds für Social-Scraper (og:image). */
+export const HERO_OG_IMAGE = publicImage("hero/hero.jpg");
 
 // ─── Team ────────────────────────────────────────────────────────────────────
 
-/**
- * Gruppen-Teamfoto (Über-uns-Sektion).
- * Platzhalter liegt unter public/images/team.svg.
- * Echtes Bild: public/images/team.jpg ablegen → Wert auf publicImage("team.jpg") setzen.
- * Empfohlene Größe: 800×600px
- */
-export const TEAM_FOTO = publicImage("team.jpg");
+/** Gruppen-Teamfoto (Leistungen-Sektion). Quelle: assets-source/team-group.jpg. */
+export const TEAM_FOTO: ResponsiveImage = {
+  src: publicImage("team/group-500.webp"),
+  srcSet: srcSet("team/group", [400, 500]),
+  width: 500,
+  height: 350,
+};
 
-/**
- * Porträtfoto Timo.
- * Platzhalter liegt unter public/images/team-timo.svg.
- * Echtes Bild: public/images/team-timo.jpg ablegen → Wert auf publicImage("team-timo.jpg") setzen.
- * Empfohlene Größe: 400×500px
- */
-export const TEAM_TIMO = publicImage("team-timo.jpg");
+/** Porträtfoto Timo. Quelle: assets-source/team-timo.jpg. */
+export const TEAM_TIMO: ResponsiveImage = {
+  src: publicImage("team/timo-480.webp"),
+  srcSet: srcSet("team/timo", [320, 480]),
+  width: 480,
+  height: 720,
+};
 
-/**
- * Porträtfoto Sarah.
- * Platzhalter liegt unter public/images/team-sarah.svg.
- * Echtes Bild: public/images/team-sarah.jpg ablegen → Wert auf publicImage("team-sarah.jpg") setzen.
- * Empfohlene Größe: 400×500px
- */
-export const TEAM_SARAH = publicImage("team-sarah.jpg");
+/** Porträtfoto Sarah. Quelle: assets-source/team-sarah.jpg. */
+export const TEAM_SARAH: ResponsiveImage = {
+  src: publicImage("team/sarah-480.webp"),
+  srcSet: srcSet("team/sarah", [320, 480]),
+  width: 480,
+  height: 720,
+};
 
 // ─── Immobilien ──────────────────────────────────────────────────────────────
 

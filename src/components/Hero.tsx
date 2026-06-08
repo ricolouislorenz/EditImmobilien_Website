@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./ImageWithFallback";
-import { HERO_BG } from "@/lib/assets";
+import { HERO_IMAGE } from "@/lib/assets";
 
 function fadeUp(visible: boolean, delayMs: number): {
   className: string;
@@ -48,7 +48,13 @@ export function Hero() {
       <div className="absolute inset-0">
         <div className="absolute inset-0 animate-ken-burns">
           <ImageWithFallback
-            src={HERO_BG}
+            src={HERO_IMAGE.src}
+            srcSet={HERO_IMAGE.srcSet}
+            sizes="100vw"
+            width={HERO_IMAGE.width}
+            height={HERO_IMAGE.height}
+            fetchPriority="high"
+            decoding="async"
             alt="Modernes Einfamilienhaus in Hamburg - Edit Immobilien vermittelt Traumhäuser in Hamburg, Wedel, Holm und Umgebung"
             className="w-full h-full object-cover"
           />

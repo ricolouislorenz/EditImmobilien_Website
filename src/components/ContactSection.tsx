@@ -328,9 +328,13 @@ export function ContactSection() {
                             required
                             minLength={10}
                             rows={6}
+                            aria-describedby="message-hint"
                             placeholder="Schildern Sie uns kurz Ihre Situation, gewünschte Lage, Zeitrahmen ..."
                             className="min-h-[160px] w-full rounded-xl border-white/10 bg-black/40 text-base text-white placeholder:text-gray-500 focus:border-[#C2A878] focus:ring-0"
                           />
+                          <p id="message-hint" className="text-xs text-gray-500">
+                            Bitte mindestens 10 Zeichen.
+                          </p>
                         </Field>
                       </div>
                     </div>
@@ -338,13 +342,7 @@ export function ContactSection() {
                       onBack={handleBack}
                       submitLabel={isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
                       submitIcon={<Send className="h-4 w-4" />}
-                      submitDisabled={
-                        isSubmitting ||
-                        formData.firstName.trim().length === 0 ||
-                        formData.lastName.trim().length === 0 ||
-                        formData.email.trim().length === 0 ||
-                        formData.message.trim().length < 10
-                      }
+                      submitDisabled={isSubmitting}
                     />
                   </WizardPanel>
                 </form>

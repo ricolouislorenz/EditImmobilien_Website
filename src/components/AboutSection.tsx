@@ -1,9 +1,9 @@
 import { Sparkles, Compass, Heart, type LucideIcon } from "lucide-react";
-import { TEAM_TIMO, TEAM_SARAH } from "@/lib/assets";
+import { TEAM_TIMO, TEAM_SARAH, type ResponsiveImage } from "@/lib/assets";
 import { CountUp } from "./CountUp";
 import { Reveal } from "./Reveal";
 
-const team: Array<{ name: string; photo: string; role: string; description: string }> = [
+const team: Array<{ name: string; photo: ResponsiveImage; role: string; description: string }> = [
   {
     name: "Timo Konrad",
     photo: TEAM_TIMO,
@@ -117,7 +117,13 @@ export function AboutSection() {
                   >
                     <div className="aspect-square w-32 shrink-0 overflow-hidden rounded-xl border border-[#C2A878]/20 sm:w-36">
                       <img
-                        src={member.photo}
+                        src={member.photo.src}
+                        srcSet={member.photo.srcSet}
+                        sizes="(min-width: 640px) 144px, 128px"
+                        width={member.photo.width}
+                        height={member.photo.height}
+                        loading="lazy"
+                        decoding="async"
                         alt={member.name}
                         className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
                       />

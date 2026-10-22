@@ -110,7 +110,7 @@ grant usage on sequence public.properties_reference_seq to authenticated, servic
 revoke execute on function public.next_property_reference() from public, anon;
 grant execute on function public.next_property_reference() to authenticated, service_role;
 
--- ÜBERGABE ADMIN-01 [OFFEN]: Umsortieren und Speichern sind weiterhin getrennte API-Aufrufe.
+-- ÜBERGABE ADMIN-01: Historische Schnittstelle für alte Clients; gemeinsames Speichern steht in 0004.
 -- Diese Funktion stellt die erwartete Schnittstelle bereit; sie umgeht keine RLS-Regeln.
 create or replace function public.shift_property_order(p_target integer, p_exclude uuid)
 returns void

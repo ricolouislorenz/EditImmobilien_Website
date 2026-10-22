@@ -1,101 +1,114 @@
+# Edit Immobilien – Bedienung und Übergabe
 
-# Edit Immobilien – Übergabe
+Die Website zeigt aktuelle Immobilien und Referenzen. Inhalte und Bilder werden unter `/admin` gepflegt. Die Website läuft auf **Cloudflare Pages**, Datenbank, Anmeldung und Bildspeicher auf **Supabase**. Kontakt- und Exposé-Anfragen gehen über **Resend** an das Büro.
 
-Die Website zeigt Immobilien und Referenzen. Unter `/admin` können angemeldete Personen Immobilien anlegen, bearbeiten und löschen. Inhalte und Bilder liegen bei Supabase. Kontakt- und Exposé-Anfragen werden über Cloudflare Pages Functions mit Resend an das Büro gemailt.
+Der Wechsel aus den persönlichen Konten in die Konten des neuen Betreibers steht in [Übergabe Schritt für Schritt](docs/UEBERGABE_ABLAUF.md). Die Kontoübertragungen wurden noch nicht bestätigt.
 
 ## Schnell zurechtfinden
 
-In VS Code öffnet **Strg+Shift+F** die projektweite Textsuche. Nach `ÜBERGABE` suchen, um alle Übergabekommentare zu finden. Mit einer Kennung wie `ADMIN-02` lässt sich ein bestimmter Befund finden. Die Kommentare erklären Problem, Auswirkung und nächsten Schritt direkt an der betreffenden Stelle.
+In VS Code öffnet **Strg + Shift + F** die projektweite Textsuche. Nach **`ÜBERGABE`** suchen, um kurze Erläuterungen im Code zu finden. Kennungen wie `ADMIN-03` führen direkt zu einem bestimmten offenen Punkt.
 
-| Gesucht | Datei / Ordner |
+| Thema | Einstieg |
 | --- | --- |
-| Anmeldung und Zugang zum Adminbereich | `src/admin/LoginPage.tsx`, `src/admin/AdminApp.tsx` |
-| Automatisches Abmelden und erneute Anmeldung desselben Kontos | [Admin-Sitzungen](docs/ADMIN_SITZUNGEN.md) – vor Veröffentlichung SQL-Einrichtung 0005 ausführen |
-| Immobilienübersicht und Löschen | `src/admin/PropertiesPage.tsx` |
-| Papierkorb, Wiederherstellung und ungenutzte Bilder | [Einrichtung und Bedienung](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md) – SQL 0006 und Kontrollwerte bestätigt; GitHub-Einrichtung noch ausstehend |
-| Immobilie bearbeiten, Bilder und Reihenfolge | `src/admin/PropertyFormPage.tsx` |
-| Sichtbare Plätze wählen und Immobilien verschieben | [Positionierung im Adminbereich](docs/POSITIONIERUNG.md), `src/admin/PropertyPositionPicker.tsx` |
-| Verhalten beim Speichern und bei Uploadfehlern | [Upload-Absicherung](docs/SPEICHERN_UND_UPLOADS.md) – lokal geprüft, Veröffentlichung steht aus |
-| Verbindung zu Datenbank und Bildspeicher | `src/lib/supabase.ts` |
-| Öffentliche Immobilienliste und Ersatzdaten bei Ausfall | `src/components/PropertiesSection.tsx`, `src/hooks/useProperties.ts` |
-| Kontaktformular / Exposé-Anfrage | `src/components/ContactSection.tsx`, `src/components/ExposeRequestDialog.tsx` |
-| Mailversand auf dem Server | `functions/api/contact.ts`, `functions/api/expose-request.ts` |
-| Spamschutz und benötigte Cloudflare-Einstellungen | [Turnstile einrichten](docs/TURNSTILE_EINRICHTUNG.md) – Kontaktformular nach Ladefix erfolgreich abgesendet; tatsächlicher Maileingang und Exposé-Live-Test unbestätigt |
-| Texte und Seitenabschnitte | `src/components/`, Zusammensetzung in `src/App.tsx` |
-| Impressum und Datenschutz | `src/components/Impressum.tsx`, `src/components/Datenschutz.tsx` |
-| Datenbankänderungen | `supabase/migrations/` |
-| Objektnummern, Sortierfunktion und bestätigte Funktionstests | [Einrichtung und Testergebnisse](supabase/setup/ADMIN_VORAUSSETZUNGEN.md) – in Supabase angewendet, per Nutzerbericht bestätigt |
-| Bestehende Supabase-Regeln und Uploadgrenzen prüfen (nur lesend) | [Anleitung Schritt 4](supabase/diagnostics/ANLEITUNG.md), [SQL-Abfrage](supabase/diagnostics/sicherheitspruefung.sql) |
-| Uploadgrenzen direkt in Supabase einstellen | [Anleitung und Kontrollabfrage](supabase/setup/BILDUPLOAD_GRENZEN.md) – Formate und 10 MiB serverseitig per Nutzerbericht bestätigt |
-| Weiterleitungen alter Webadressen | `public/_redirects` |
+| Website, Texte und Seitenabschnitte | `src/App.tsx`, `src/components/` |
+| Anmeldung und automatische Abmeldung | `src/admin/AdminApp.tsx`, [Admin-Sitzungen](docs/ADMIN_SITZUNGEN.md) |
+| Papierkorb und Wiederherstellung | `src/admin/PropertiesPage.tsx`, [Papierkorb und Bildbereinigung](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md) |
+| Immobilie, Bilder und Position bearbeiten | `src/admin/PropertyFormPage.tsx`, [Positionierung](docs/POSITIONIERUNG.md) |
+| Fehler beim Speichern oder Hochladen | [Speichern und Uploads](docs/SPEICHERN_UND_UPLOADS.md) |
+| Datenbank und Bildspeicher ansprechen | `src/lib/supabase.ts`, `src/hooks/useProperties.ts` |
+| Kontaktformular und Exposé-Anfragen | `functions/api/`, `server/`, [Turnstile einrichten](docs/TURNSTILE_EINRICHTUNG.md) |
+| Logo, Teamfotos und Titelbild austauschen | `src/lib/assets.ts`, `assets-source/`, `scripts/optimize-images.cjs` |
+| Suchmaschinen und Weiterleitungen | `index.html`, `src/components/SEOHead.tsx`, `public/robots.txt`, `public/sitemap.xml`, `public/_redirects` |
+| Ladezeit, Ratgeber-Downloads und Metadaten je Seite | [Ladeverhalten und SEO](docs/LADEVERHALTEN_UND_SEO.md), zentrale Texte in `src/lib/page-metadata.ts` |
+| Datenbankeinrichtung und Prüfungen | `supabase/migrations/`, `supabase/setup/`, [Sicherheitskontrolle](supabase/diagnostics/ANLEITUNG.md) |
+| Lizenzen und Bildquellen | [Attributions.md](src/Attributions.md) |
 
-## Wichtige offene Punkte
+## Immobilien pflegen
 
-Stand: 22.10.2026. Dies ist eine Prüfung des vorhandenen Quellcodes, keine vollständige Sicherheitsfreigabe. **SICHERHEIT-04 und ADMIN-02 sind im Quellcode behoben; die übrigen Befunde sind offen.** Wirksam auf der Website werden die Änderungen erst nach Veröffentlichung. „PRÜFEN“ bedeutet: Die tatsächliche Einstellung im externen Dienst ist aus dem Repository nicht feststellbar.
+1. `/admin` öffnen und mit einem bestehenden **Website-Admin-Konto** anmelden. Dieses Konto ist vom Supabase-Dashboard-Zugang getrennt. Kontoanlage, Passwortwiederherstellung und Zwei-Faktor-Anmeldung bietet die Websiteoberfläche nicht an.
+2. **Neue Immobilie** oder **Bearbeiten** wählen. Titel, PLZ, Ort, Preis, Kategorie und Bilder eintragen. Der vorgeschlagene Ort kann korrigiert werden.
+3. **Aktive Immobilien** erscheinen unter „Aktuell“, abgeschlossene Objekte unter „Referenzen“. Es gibt keinen Entwurfsmodus: Gespeicherte Inhalte können sofort öffentlich sichtbar sein.
+4. Bilder: **JPEG, PNG oder WebP**, je höchstens **10 MB**, insgesamt höchstens **20**. Das erste Bild ist das Titelbild.
+5. Ganz unten unter **Position auf der Website** den sichtbaren Platz auswählen oder über die Schaltflächen verschieben. Erst **Speichern** übernimmt die Änderung.
+6. Die öffentliche Anzeige kontrollieren. Die Objektnummer, etwa `EI-001`, wird automatisch vergeben und bleibt bei Bearbeitungen erhalten.
+7. **Löschen** verschiebt den Eintrag für **30 Tage in den Papierkorb**. Unten in der Übersicht lässt er sich wiederherstellen. Dabei erscheint er mit seinen Bildern und derselben Nummer am Ende seines Bereichs.
 
-| Suchkennung | Befund und Handlungsbedarf |
+Nach **28 Minuten ohne Bedienung** erscheint eine Warnung, nach **30 Minuten** wird abgemeldet. Ungespeicherte Änderungen gehen dabei verloren. Eine erneute Anmeldung **desselben Kontos** ersetzt die ältere Sitzung; andere Konten können parallel arbeiten. Bei unklarer Speicherung zuerst den gespeicherten Stand neu laden, statt wiederholt abzusenden.
+
+## Bestätigter Einrichtungsstand
+
+Stand: **22.10.2026**. „Bestätigt“ bedeutet: durch den Nutzer im richtigen Supabase-Projekt ausgeführt und anhand der Kontrollwerte geprüft. Lokale Tests ersetzen keine Live-Abnahme.
+
+| Einrichtung | Stand |
 | --- | --- |
-| `SICHERHEIT-01` | **Hoch, teilweise begrenzt:** Die öffentliche Selbstregistrierung wurde laut Nutzer in Supabase deaktiviert. Bestehende Konten behalten ihre bisherigen Rechte. Die Adminansicht unterscheidet weiterhin nur angemeldet/nicht angemeldet; eine Freigabe bestimmter Admin-Konten bleibt offen. |
-| `SICHERHEIT-02` | **Hoch, prüfen:** Regeln für Datenbank und Bildspeicher fehlen im Repository, ebenso das ursprüngliche Tabellenschema. Supabase-Regeln exportieren und prüfen: Gäste lesen nur öffentliche Inhalte; nur Admins ändern sie. Öffentliche Abfragen liefern sämtliche Spalten einschließlich der vermeintlich internen Objektnummer. |
-| `SICHERHEIT-03` | **Teilweise behoben:** Kontakt- und Exposé-Formular verlangen einen serverseitig geprüften Turnstile-Nachweis für die konfigurierte Domain und Formularaktion. Ohne erfolgreiche Prüfung wird keine Mail gesendet. Cloudflare-Einrichtung, Turnstile-Prüfung und erfolgreiches Absenden des Kontaktformulars nach Ladefix wurden vom Nutzer bestätigt; tatsächlicher Maileingang ist mangels Postfachzugriff unbestätigt. Exposé-Live-Test und zusätzliches Mengenlimit bleiben offen. [Einrichtung und Fehlerbehebung](docs/TURNSTILE_EINRICHTUNG.md). |
-| `SICHERHEIT-04` | **Im Code behoben:** Beide Mail-Endpunkte prüfen JSON-Struktur, Texttypen und Feldlängen vor der Verarbeitung. Maximal 64 KiB werden eingelesen, auch ohne verlässliche Längenangabe. Ungültige Anfragen erhalten 400, zu große 413, falsche Inhaltstypen 415. |
-| `SICHERHEIT-05` | **Teilweise behoben:** Im Adminbereich nur JPEG, PNG und WebP, maximal 10 MB pro Datei (10.000.000 Byte) und 20 Bilder insgesamt. Auswahl, Drag & Drop und Speichern prüfen die Grenzen; der Uploadhelfer prüft Formatangabe und Größe zusätzlich. Die Nutzer-Kontrollabfrage bestätigt dieselben Formate und 10 MiB (10.485.760 Byte) im Bucket; die Website ist etwas strenger. Ein erlaubter Bild-Upload wurde vom Nutzer erfolgreich getestet. [Einrichtung und Kontrolle](supabase/setup/BILDUPLOAD_GRENZEN.md). Die Ablehnung unzulässiger Uploads im Live-System und die serverseitige Begrenzung der Gesamtzahl bleiben offen. Die Browserprüfung beweist nicht den tatsächlichen Dateiinhalt. |
-| `ADMIN-01` | **Im Code abgesichert, SQL-Einrichtung und Kontrollwerte per Nutzerbericht bestätigt:** Reihenfolge und Datensatz werden gemeinsam gespeichert; bei Ablehnung wird beides zurückgenommen. Neue Bilddateien werden bei eindeutigen Fehlern zur Bereinigung angefordert. Bei unklarem Ergebnis bleiben Bilder erhalten und erneutes Speichern wird gesperrt. Veröffentlichung und Live-Test sind noch nicht bestätigt. [Einrichtung 0004](supabase/setup/ATOMARES_SPEICHERN.md), [Details und Grenzen](docs/SPEICHERN_UND_UPLOADS.md). Dauerhafte Restdatei-Bereinigung ist mit [0006 und GitHub-Lauf](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md) vorbereitet; Einrichtung und Aktivierung stehen aus. |
-| `ADMIN-02` | **Im Code behoben:** Alte Bilder werden erst nach bestätigter Speicherung gelöscht. Bei Löschfehlern bleibt die Immobilie gespeichert; die Adminübersicht weist auf die nötige Bereinigung des Bildspeichers hin. |
-| `ADMIN-03` | Zwei Personen können Änderungen gegenseitig überschreiben. Abgleich des Bearbeitungsstands ergänzen. |
-| `ADMIN-04` | **Im Code abgesichert, SQL 0006 und Kontrollwerte per Nutzerbericht bestätigt:** Bestätigtes Verschieben in einen Papierkorb mit 30 Tagen Wiederherstellungsfrist; Bilder bleiben dafür geschützt. Der vorbereitete Hintergrundlauf bereinigt unbenutzte Bilder ab 48 Stunden Alter. Veröffentlichung, [GitHub-Einrichtung](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md) und Live-Test sind noch nicht bestätigt; unabhängige Sicherungen bleiben erforderlich. |
-| `ADMIN-05` | Bei Datenbankausfall können unbegrenzt alte Angebote ohne Hinweis erscheinen. Ersatzdaten zeitlich begrenzen und kennzeichnen. |
-| `BETRIEB-01` | `VITE_`-Werte sind öffentlich. Dort niemals geheime Server-Schlüssel hinterlegen. Der öffentliche Supabase-Schlüssel ersetzt keine Zugriffsregeln. |
-| `BETRIEB-02` | **Hoch:** Anfragen werden nicht dauerhaft zwischengespeichert und bei Versandfehlern nicht automatisch erneut versendet. Ablage und Fehlerüberwachung fehlen. |
-| `BETRIEB-03` | Exposés werden nicht automatisch an Interessenten geschickt. Das Büro muss die Anfragen bearbeiten. `src/FLOWFACT_INTEGRATION.md` enthält historische Entwürfe, keine fertige Integration. |
+| `0003` – automatische Objektnummern und bisherige Sortierschnittstelle | SQL und Kontrollwerte bestätigt; Anlegen, Bearbeiten und Bildanzeige mit einer Testimmobilie bestätigt. [Details](supabase/setup/ADMIN_VORAUSSETZUNGEN.md) |
+| `0004` – Reihenfolge und Immobilie gemeinsam speichern (`ADMIN-01`) | SQL und Kontrollwerte bestätigt. [Details](supabase/setup/ATOMARES_SPEICHERN.md) |
+| `0005` – Inaktivitätsfrist und neueste Sitzung je Konto | SQL und Kontrollwerte bestätigt. [Details](docs/ADMIN_SITZUNGEN.md) |
+| `0006` – Papierkorb und Schutz verwendeter Bilder (`ADMIN-04`) | SQL und Kontrollwerte bestätigt. GitHub-Bereinigung noch nicht eingerichtet oder aktiviert. [Details](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md) |
+| Uploadgrenzen im Bucket `property-images` | JPEG/PNG/WebP und **10 MiB** serverseitig bestätigt; die Website ist mit 10 MB etwas strenger. [Details](supabase/setup/BILDUPLOAD_GRENZEN.md) |
+| Turnstile und Formularversand | Einrichtung und Absenden des Kontaktformulars bestätigt. Tatsächlicher Maileingang und separater Exposé-Live-Test noch unbestätigt. |
 
-## Bedienung des Adminbereichs
+Die Veröffentlichung und Live-Abnahme der neueren Änderungen ist noch nicht vollständig bestätigt. Der tägliche Hintergrundlauf für ungenutzte Bilder bleibt bis zur bewussten Einrichtung deaktiviert. Zuerst eine Vorschau ohne Löschung ausführen; erst nach Prüfung aktivieren.
 
-1. `/admin` öffnen und mit einem bestehenden Supabase-Konto anmelden. Kontoanlage, Passwortwiederherstellung und Zwei-Faktor-Anmeldung bietet diese Oberfläche nicht an; deren Verwaltung muss bei der Übergabe geklärt werden.
-2. Über **Neue Immobilie** ein Angebot anlegen oder bei einem bestehenden Eintrag **Bearbeiten** wählen.
-3. Titel, PLZ, Ort, Preis, Kategorie und Bilder pflegen. Der Ort wird anhand der PLZ vorgeschlagen und kann korrigiert werden.
-   Bilder: JPEG, PNG oder WebP, höchstens 10 MB pro Datei und insgesamt 20 Bilder einschließlich vorhandener Bilder. Bei gemischter Auswahl werden passende Dateien übernommen; abgelehnte Dateien erscheinen mit Begründung. Bei älteren Objekten mit mehr als 20 Bildern vor dem Speichern die Anzahl reduzieren.
-4. „Aktiv“ erscheint bei aktuellen Angeboten, „Verkauft“/„Vermietet“ bei Referenzen. Es gibt keinen Entwurfsstatus: Gespeicherte Inhalte können unmittelbar öffentlich erscheinen.
-5. Die Reihenfolge bestimmt die Position in der Liste. Die Objektnummer wie `EI-005` wird automatisch vergeben.
-6. Speichern und anschließend die öffentliche Seite kontrollieren. Möglichst nicht gleichzeitig dasselbe Objekt bearbeiten. Nach Einrichtung 0006 verschiebt Löschen den Eintrag für 30 Tage in den Papierkorb; unten in der Übersicht ist die Wiederherstellung möglich.
+Die Migrationen ergänzen eine **bestehende Datenbank**. Sie sind kein vollständiger Neuaufbau einer leeren Supabase-Instanz. `0001` und `0002` bleiben als historische Migrationsdateien erhalten; für die beschriebene Einrichtung ab `0003` die jeweilige Anleitung beachten. Bereits eingerichtete Projekte nicht ohne Anlass erneut migrieren.
 
-## Betrieb und Zugänge übergeben
+## Offene Punkte für den neuen Betreiber
 
-Der neue Verantwortliche benötigt Zugriff auf Repository, Domain/DNS, Cloudflare Pages, Supabase und Resend. Kontoinhaber, Abrechnung, Wiederherstellung und verantwortliches Postfach gemeinsam festhalten; Passwörter über einen Passwortmanager übergeben.
+| Suchkennung | Was noch fehlt |
+| --- | --- |
+| `SICHERHEIT-01` | Eine ausdrückliche Freigabe bestimmter Admin-Konten. Öffentliche Registrierung ist laut Nutzer deaktiviert; bestehende Konten behalten grundsätzlich ihre bisherigen Rechte. Sitzungsprüfung ersetzt keine Adminrolle. |
+| `SICHERHEIT-02` | Vollständiger Export der ursprünglichen Tabellen- und Storage-Regeln. `0005`/`0006` ergänzen Schutzregeln, bilden aber nicht sämtliche ursprünglichen Rechte ab. Öffentliche Immobilienabfragen liefern auch die Objektnummer. |
+| `SICHERHEIT-03` | Zusätzliche Mengenbegrenzung für Formularanfragen sowie bestätigter Maileingang und Exposé-Live-Test. |
+| `SICHERHEIT-05` | Serverseitiges Gesamtlimit von 20 Bildern je Immobilie, Prüfung des tatsächlichen Dateiinhalts und Live-Test unzulässiger Uploads. |
+| `ADMIN-03` | Konflikthinweis bei gleichzeitigen Änderungen verschiedener Konten. Bis dahin möglichst nicht dasselbe Objekt parallel bearbeiten. |
+| `ADMIN-05` | Zeitgrenze und sichtbarer Hinweis für zwischengespeicherte Angebote bei Datenbankausfall. Derzeit kann ein alter Stand unbegrenzt angezeigt werden. |
+| `BETRIEB-02` | Dauerhafte Zwischenablage, Wiederholungen und Überwachung bei Fehlern im Mailversand. |
+| `BETRIEB-03` | Automatischer Exposé-Versand ist nicht vorhanden. Die Anfrage wird dem Büro gemeldet; das Büro versendet das Exposé manuell. Eine Flowfact-Anbindung ist nicht implementiert. |
+| `BETRIEB-04` | Ratgeber werden direkt als PDF heruntergeladen. E-Mail-/Newsletter-Versand und dauerhafte Verarbeitung der abgefragten Angaben sind nicht eingerichtet; falsche Versandbestätigungen wurden entfernt. |
 
-- **Supabase:** Tabelle `properties`, Bildspeicher `property-images`, Benutzerkonten und Zugriffsregeln. Die SQL-Dateien ergänzen eine bestehende Datenbank; sie richten kein vollständiges neues System ein. Für fehlende Objektnummern und Sortierfunktion die [aktuelle Anleitung zu 0003](supabase/setup/ADMIN_VORAUSSETZUNGEN.md) verwenden. Datenbank und Bilder sichern und eine Wiederherstellung erproben.
-- **Cloudflare Pages:** Build-Befehl `npm run build`, Ausgabeordner `build`. Die Funktionen aus `functions/` müssen ebenfalls bereitgestellt werden; reines Hochladen der statischen Dateien reicht für Formulare nicht aus.
-- **Öffentliche Build-Einstellungen:** `VITE_SUPABASE_URL` und `VITE_SUPABASE_ANON_KEY`. `.env.production` ist versioniert; sie enthält nach den vorhandenen Variablennamen öffentliche Verbindungsdaten. Bestehende lokale Änderungen daran wurden bei dieser Dokumentation nicht verändert.
-- **Nur auf dem Server:** `RESEND_API_KEY`; optional `CONTACT_EMAIL` und `RESEND_FROM`. Standardempfänger ist `kontakt@edit-immobilien.de`. Absenderfreigabe und tatsächlichen Posteingang prüfen. Keine geheimen Werte in Git oder in `VITE_`-Variablen speichern.
-- **Spamschutz vor Veröffentlichung konfigurieren:** öffentlich `VITE_TURNSTILE_SITE_KEY`, nur auf dem Server `TURNSTILE_SECRET_KEY` und `TURNSTILE_ALLOWED_HOSTNAMES`. Ohne gültige Konfiguration sperrt die neue Codeversion den Formularversand. Siehe [Einrichtungsanleitung](docs/TURNSTILE_EINRICHTUNG.md).
-- **Kontrolle nach Veröffentlichung:** Anmeldung, öffentliche Angebote, Bilder sowie Kontakt- und Exposé-Anfrage mit eigenen Testdaten prüfen. Auch den Eingang im Büro kontrollieren; eine Erfolgsmeldung beweist keine Zustellung ins Postfach.
-- **Überwachung:** Fehler von Cloudflare/Resend und Supabase-Verfügbarkeit prüfen. `.github/workflows/keepalive.yml` führt nur einen regelmäßigen Datenbank-Leseaufruf aus und benötigt GitHub-Secrets; er ersetzt weder Ausfallüberwachung noch Sicherungen.
+Bereits im Code abgesichert: Prüfung von Formulargrößen und Feldtypen (`SICHERHEIT-04`), gemeinsames Speichern (`ADMIN-01`), Bestätigung vor dem Entfernen alter Bilder (`ADMIN-02`) sowie Papierkorb und kontrollierte Bereinigung (`ADMIN-04`). Unabhängige Sicherungen und die abschließende Live-Abnahme bleiben erforderlich.
 
-## Lokal starten – für die technische Betreuung
+## Betrieb und Zugänge
 
-Node.js mit npm installieren und im Projektordner ausführen:
+Der Betreiber benötigt Kontrolle über **GitHub, Cloudflare, Supabase, Resend, Domain/DNS und das empfangende Büro-Postfach**. Wiederherstellung und Abrechnung gehören ebenfalls zur Übergabe. Secrets über einen Passwortmanager übergeben, niemals in Git oder im Chat.
+
+| Cloudflare-Variable | Verwendung |
+| --- | --- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Öffentliche Verbindung zum bestehenden Supabase-Projekt |
+| `VITE_TURNSTILE_SITE_KEY` | Öffentlicher Turnstile-Schlüssel |
+| `RESEND_API_KEY` | Geheimes Server-Secret für den Mailversand |
+| `CONTACT_EMAIL`, gegebenenfalls `RESEND_FROM` | Empfänger und Absender; Standardempfänger ist `kontakt@edit-immobilien.de` |
+| `TURNSTILE_SECRET_KEY`, `TURNSTILE_ALLOWED_HOSTNAMES` | Serverseitige Sicherheitsprüfung und erlaubte Domains |
+
+**ÜBERGABE BETRIEB-01:** `VITE_`-Werte sind im Browser sichtbar. Dort ausschließlich öffentliche Werte hinterlegen. `.env.production` enthält öffentliche Verbindungsdaten; geheime Schlüssel gehören dort nicht hinein. Lokale `.env.local`-Dateien sind von Git ausgeschlossen.
+
+Cloudflare Pages baut mit **`npm run build`**, Ausgabeordner **`build`**. Die Cloudflare Functions aus `functions/` müssen mit bereitgestellt werden. Ein Upload nur der statischen Dateien stellt die Mailfunktionen nicht bereit. `public/_redirects` enthält die bisherigen Weiterleitungen und die Admin-Unterpfade. Andere React-Routen nutzen Pages' eingebauten SPA-Fallback ohne `404.html`; ein GitHub-Pages-Deployment ist nicht vorgesehen.
+
+Supabase enthält `properties`, den geschützten Papierkorb `property_trash`, private Sitzungs-/Bereinigungsdaten sowie den öffentlichen Bild-Bucket `property-images`. **Datenbank und tatsächliche Bilddateien getrennt sichern.** Ein Papierkorb ersetzt keine unabhängige Sicherung.
+
+Die GitHub-Workflows liegen unter `.github/workflows/`: Keep-Alive prüft lediglich die Erreichbarkeit; die Bildbereinigung benötigt eine eigene Einrichtung. Beide ersetzen keine vollständige Ausfallüberwachung. [Bereinigung einrichten](docs/PAPIERKORB_UND_BILDBEREINIGUNG.md).
+
+## Lokal arbeiten und prüfen
+
+Für Entwicklung und Tests **Node.js ab 22.18** mit npm verwenden:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Die Entwicklungsseite öffnet sich normalerweise unter `http://localhost:3000`. Öffentliche Supabase-Einstellungen in `.env.local` hinterlegen. `npm run dev` startet nur Vite und stellt die Cloudflare-Mailfunktionen nicht bereit. Für vollständige Formulartests eine passende Cloudflare-Testumgebung verwenden.
+Die lokale Website öffnet sich normalerweise unter `http://localhost:3000`. Vite startet die Cloudflare-Mailfunktionen nicht; vollständige Versandtests benötigen eine passende Cloudflare-Umgebung.
 
 ```sh
 npm run build
+npm run test:forms
+npm run test:property-save
+npm run test:image-upload
+npm run test:property-uploads
 ```
 
-Erstellt die veröffentlichbaren Website-Dateien in `build/`. Der Build ersetzt keine Prüfung der externen Zugriffsregeln und Mailfunktionen.
+Der Build erzeugt `build/` einschließlich der routebezogenen HTML-Metadaten neu. Die genannten Tests simulieren Maildienst, Datenbank und Storage; sie verändern keine echten Immobilien. Weitere Prüfungen für Sitzungen, Papierkorb, Bereinigung sowie [Ladeverhalten und SEO](docs/LADEVERHALTEN_UND_SEO.md) stehen bei den jeweiligen Anleitungen. Die SQL-Tests nutzen eine separat installierte lokale PostgreSQL-Testumgebung, die Oberflächentests eine separate DOM-Testumgebung. Es gibt derzeit keinen eigenen Lint- oder Typecheck-Befehl.
 
-`npm run test:forms` prüft beide Mail-Endpunkte mit gültigen und manipulierten Anfragen, Größenlimits und Übertragungsfehlern. Der Maildienst wird simuliert; es werden keine E-Mails versendet. Für diese Tests Node.js ab Version 22.18 verwenden.
+**Statische Fotos austauschen:** Originale in `assets-source/` ablegen, Aufträge in `scripts/optimize-images.cjs` anpassen, **`npm run optimize:images`** ausführen und Pfade/Bildgrößen in `src/lib/assets.ts` pflegen. Originale und responsive Varianten werden deshalb beide benötigt.
 
-`npm run test:property-save` prüft die Reihenfolge von Speicherung und Bildlöschung sowie Datenbank- und Löschfehler. Datenbank und Bildspeicher werden simuliert; echte Immobilien und Bilder werden nicht verändert. Ebenfalls Node.js ab Version 22.18 verwenden.
-
-`npm run test:image-upload` prüft Formate, Dateigrößen und die gemeinsame Anzahl vorhandener und neuer Bilder, auch bei gemischter oder wiederholter Auswahl. Keine echten Uploads; ebenfalls Node.js ab Version 22.18 verwenden.
-
-`npm run seed:properties` fügt **Beispielimmobilien direkt in die konfigurierte Datenbank** ein. Nur mit einer bewusst gewählten Testdatenbank verwenden. Ein dafür eingesetzter `SUPABASE_SERVICE_ROLE_KEY` gehört ausschließlich in die lokale Serverumgebung und niemals in die Website.
-
-## Fachliche Quellen zur Sicherheitsprüfung
-
-Die Bewertung der externen Zugriffskontrolle stützt sich auf die offiziellen Dokumentationen zu [Supabase-Datenbankregeln](https://supabase.com/docs/guides/database/postgres/row-level-security) und [Supabase-Bildspeicherregeln](https://supabase.com/docs/guides/storage/security/access-control). Die Sichtbarkeit der Build-Variablen beschreibt die [Vite-Dokumentation](https://v6.vite.dev/guide/env-and-mode).
+**Bereinigte Projektstruktur:** Ungenutzte UI-Bausteine, alte Entwurfstexte, doppelte Suchmaschinen-Dateien, Beispiel-Datenimport und der GitHub-Pages-Hilfsbuild wurden entfernt. Generierte Builds und lokale Logs gehören nicht ins Repository. Tests, Migrationshistorie, Bildoriginale und Lizenzhinweise bleiben Bestandteil der Übergabe.

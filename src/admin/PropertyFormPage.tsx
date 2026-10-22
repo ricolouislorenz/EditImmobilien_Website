@@ -412,7 +412,7 @@ export function PropertyFormPage() {
       propertyId = isNew ? (newPropertyId.current ??= crypto.randomUUID()) : id!;
       const savedPropertyId = propertyId;
 
-      // Die Immobilien-ID (reference) wird fortlaufend von der Datenbank vergeben
+      // Die Objektnummer (reference) wird fortlaufend von der Datenbank vergeben
       // und daher hier bewusst nicht mitgeschickt.
       const payload = {
         ...form,

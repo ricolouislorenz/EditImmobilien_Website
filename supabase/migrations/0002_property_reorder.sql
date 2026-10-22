@@ -6,8 +6,7 @@
 --
 -- Ausführen im Supabase SQL-Editor. Idempotent (create or replace).
 
--- ÜBERGABE ADMIN-01: Verschieben und anschließendes Speichern sind getrennte Vorgänge.
--- Für eine zuverlässige Reihenfolge gemeinsam in einer Datenbank-Transaktion ausführen.
+-- ÜBERGABE ADMIN-01: Historischer Ablauf mit getrennten Vorgängen; der aktuelle Code nutzt 0004.
 create or replace function shift_property_order(p_target int, p_exclude uuid)
 returns void
 language plpgsql

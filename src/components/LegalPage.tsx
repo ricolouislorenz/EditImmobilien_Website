@@ -13,12 +13,7 @@ interface LegalLayoutProps {
 /** Eigenständige, direkt verlinkbare Seite für die Rechtstexte. */
 function LegalLayout({ title, children }: LegalLayoutProps) {
   useEffect(() => {
-    const previous = document.title;
-    document.title = `${title} – Edit Immobilien`;
     window.scrollTo(0, 0);
-    return () => {
-      document.title = previous;
-    };
   }, [title]);
 
   return (

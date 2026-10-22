@@ -32,15 +32,6 @@ export function getImageUrl(path: string): string {
   return data.publicUrl;
 }
 
-/** Lädt eine Bilddatei in den Supabase-Storage hoch.
- *  Gibt den Storage-Pfad zurück, z. B. "property-abc123/bild.jpg". */
-export async function uploadImage(
-  file: File,
-  propertyId: string
-): Promise<string> {
-  return (await uploadImages([file], propertyId))[0];
-}
-
 /** Mehrfach-Upload mit eindeutigen Pfaden und Aufräumen nach Teilfehlern. */
 export function uploadImages(files: File[], propertyId: string): Promise<string[]> {
   return uploadPropertyImages(files, propertyId, {
@@ -49,22 +40,13 @@ export function uploadImages(files: File[], propertyId: string): Promise<string[
   });
 }
 
-/** Löscht ein Bild aus dem Supabase-Storage. */
-export async function deleteImage(path: string): Promise<void> {
-  const { error } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .remove([path]);
-
-  if (error) throw error;
-}
-
 // ---------------------------------------------------------------------------
 // Datenbank-Hilfsfunktionen
 // ---------------------------------------------------------------------------
 
 /** Alle aktiven Immobilien (für die öffentliche Seite). */
-// ÜBERGABE SICHERHEIT-02 [HOCH, PRÜFEN]: Datenbank- und Bild-Zugriffsregeln fehlen im Repository.
-// In Supabase prüfen: Gäste dürfen nur veröffentlichte Inhalte lesen, nur Admins schreiben/löschen.
+// ÜBERGABE SICHERHEIT-02 [PRÜFEN]: Migrationen 0005/0006 ergänzen Sitzungs- und Bildschutz.
+// Die ursprünglichen Tabellen-/Storage-Regeln sind nicht vollständig versioniert; beim Umzug mit sichern.
 // select("*") liefert auch die als intern bezeichnete Objektnummer; hier keine vertraulichen Felder ergänzen.
 export async function fetchActiveProperties(): Promise<Property[]> {
   const { data, error } = await supabase

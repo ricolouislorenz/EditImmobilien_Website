@@ -25,7 +25,7 @@ Die Vollseiten-Navigation bei unklarem Ergebnis verwirft den lokalen Formularsta
 
 ## Technische Grenzen
 
-Die unmittelbare Bereinigung läuft im Browser über die Supabase Storage API. Wird der Tab geschlossen oder fällt die Verbindung aus, können Restdateien verbleiben. Auch ein Upload mit abgebrochener Antwort kann serverseitig zeitversetzt fertig werden. Für solche Reste ist inzwischen ein [Hintergrundlauf mit SQL-Einrichtung 0006](PAPIERKORB_UND_BILDBEREINIGUNG.md) vorbereitet; Einrichtung und Aktivierung stehen noch aus. Er berücksichtigt gespeicherte und im Papierkorb benötigte Bilder sowie eine Schutzfrist von 48 Stunden.
+Die unmittelbare Bereinigung läuft im Browser über die Supabase Storage API. Wird der Tab geschlossen oder fällt die Verbindung aus, können Restdateien verbleiben. Auch ein Upload mit abgebrochener Antwort kann serverseitig zeitversetzt fertig werden. Für solche Reste ist ein [Hintergrundlauf mit SQL-Einrichtung 0006](PAPIERKORB_UND_BILDBEREINIGUNG.md) vorbereitet. Die SQL-Einrichtung wurde bestätigt; GitHub-Einrichtung und Aktivierung stehen noch aus. Er berücksichtigt gespeicherte und im Papierkorb benötigte Bilder sowie eine Schutzfrist von 48 Stunden.
 
 Die neue Funktion `save_property` fasst Umsortieren und Speichern in einer Transaktion zusammen. Eine Tabellensperre verhindert dazwischenliegende Schreibvorgänge; sie bricht nach fünf Sekunden Wartezeit ab. Bereits zuvor geladene Formulare können weiterhin veraltete Inhalte überschreiben. Der Schutz davor und die Beschränkung auf freigegebene Admin-Konten bleiben offen. Bilddateien liegen außerhalb der Datenbanktransaktion und werden weiterhin gesondert bereinigt.
 

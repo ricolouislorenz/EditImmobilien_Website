@@ -1,6 +1,6 @@
 # Automatisches Abmelden im Adminbereich
 
-ÜBERGABE ADMIN-SITZUNG: Im Code umgesetzt und lokal geprüft. SQL-Einrichtung, Veröffentlichung und Live-Test stehen noch aus.
+ÜBERGABE ADMIN-SITZUNG: Im Code umgesetzt und lokal geprüft. SQL-Einrichtung 0005 und korrekte Kontrollwerte wurden vom Nutzer bestätigt. Veröffentlichung und Live-Test sind noch nicht bestätigt.
 
 ## Verhalten für die Bedienung
 

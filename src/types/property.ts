@@ -12,7 +12,7 @@ export type PropertyType =
 
 export interface Property {
   id: string;
-  /** Fortlaufende, menschenlesbare Objektnummer, z. B. "EI-005". Nur intern/in Mails sichtbar. */
+  /** Fortlaufende Objektnummer, z. B. "EI-005". In Admin/Mails verwendet, auch per öffentlicher API lesbar. */
   reference: string;
   title: string;
   location: string;
@@ -25,7 +25,7 @@ export interface Property {
   area_label: string | null;
   type: PropertyType | string;
   status: PropertyStatus;
-  /** Array von Supabase-Storage-URLs */
+  /** Bildpfade im Supabase-Bucket; ältere Einträge können vollständige URLs enthalten. */
   images: string[];
   /** Manuelle Sortierreihenfolge */
   sort_order: number;

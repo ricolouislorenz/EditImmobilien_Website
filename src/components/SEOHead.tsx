@@ -1,87 +1,41 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { canonicalForPage, pageMetadataForPath, pageStructuredData } from "@/lib/page-metadata";
 
-/**
- * Default-Meta-Tags der Seite liegen statisch in `index.html`, damit Crawler
- * sie ohne JS sehen. Diese Komponente überschreibt die Werte nur, wenn
- * explizit Props übergeben werden (z. B. später für Detailseiten).
- *
- * Wenn die Defaults der gesamten Seite geändert werden sollen → `index.html`
- * editieren, nicht hier.
- */
-interface SEOHeadProps {
-  title?: string;
-  description?: string;
-  keywords?: string;
-  ogImage?: string;
-  canonicalUrl?: string;
-}
-
-function setMetaTag(name: string, content: string, isProperty = false): void {
-  const attribute = isProperty ? 'property' : 'name';
+function setMetaTag(name: string, content: string): void {
+  const attribute = name.startsWith("og:") ? "property" : "name";
   let element = document.querySelector(`meta[${attribute}="${name}"]`);
-
   if (!element) {
-    element = document.createElement('meta');
+    element = document.createElement("meta");
     element.setAttribute(attribute, name);
     document.head.appendChild(element);
   }
-
-  element.setAttribute('content', content);
+  element.setAttribute("content", content);
 }
 
-function setCanonical(url: string): void {
-  let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-  if (!canonical) {
-    canonical = document.createElement('link');
-    canonical.setAttribute('rel', 'canonical');
-    document.head.appendChild(canonical);
-  }
-  canonical.setAttribute('href', url);
-}
-
-export function SEOHead({
-  title,
-  description,
-  keywords,
-  ogImage,
-  canonicalUrl,
-}: SEOHeadProps) {
+/** ÜBERGABE SEO: Bei jeder Navigation auch Beschreibung, Vorschautexte und Canonical zurücksetzen. */
+export function SEOHead() {
+  const { pathname } = useLocation();
   useEffect(() => {
-    if (title !== undefined) {
-      document.title = title;
-      setMetaTag('og:title', title, true);
-      setMetaTag('twitter:title', title);
+    const metadata = pageMetadataForPath(pathname);
+    document.title = metadata.title;
+    for (const [name, content] of Object.entries({
+      description: metadata.description, robots: metadata.robots,
+      "og:title": metadata.title, "og:description": metadata.description, "og:url": canonicalForPage(metadata),
+      "twitter:title": metadata.title, "twitter:description": metadata.description,
+    })) setMetaTag(name, content);
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
     }
-    if (description !== undefined) {
-      setMetaTag('description', description);
-      setMetaTag('og:description', description, true);
-      setMetaTag('twitter:description', description);
+    canonical.setAttribute("href", canonicalForPage(metadata));
+    const structured = document.querySelector('script[type="application/ld+json"]');
+    if (structured?.textContent && metadata.path !== "/admin") {
+      try { structured.textContent = JSON.stringify(pageStructuredData(JSON.parse(structured.textContent), metadata)); }
+      catch { /* Die gültige statische HTML-Vorlage bleibt maßgeblich. */ }
     }
-    if (keywords !== undefined) {
-      setMetaTag('keywords', keywords);
-    }
-    if (ogImage !== undefined) {
-      setMetaTag('og:image', ogImage, true);
-      setMetaTag('twitter:image', ogImage);
-    }
-    if (canonicalUrl !== undefined) {
-      setMetaTag('og:url', canonicalUrl, true);
-      setCanonical(canonicalUrl);
-    }
-  }, [title, description, keywords, ogImage, canonicalUrl]);
-
-  return null;
-}
-
-/**
- * Strukturierte Daten (JSON-LD für RealEstateAgent / LocalBusiness / WebSite /
- * WebPage) liegen statisch in `index.html`, damit Crawler sie ohne
- * JS-Rendering sehen.
- *
- * Diese Komponente ist Platzhalter – falls später dynamische strukturierte
- * Daten nötig werden (z. B. für Immobilien-Detailseiten als `Product`/
- * `Offer`), kann sie hier ergänzt werden.
- */
-export function StructuredData() {
+  }, [pathname]);
   return null;
 }

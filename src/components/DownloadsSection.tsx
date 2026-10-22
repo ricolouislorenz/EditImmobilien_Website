@@ -1,42 +1,32 @@
-import { useState } from "react";
-import { Mail, Download } from "lucide-react";
+import { useRef, useState } from "react";
+import { Download } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { toast } from "sonner";
-import { generateHausverkaufChecklistePDF } from "./HausverkaufCheckliste";
-import { generateWertsteigerungRenovierungPDF } from "./WertsteigerungRenovierung";
-import { generateHaeufigsteFehlerPDF } from "./HaeufigsteFehler";
+import { generateDownloadPdf } from "@/lib/pdf-downloads";
 
 interface DownloadItem {
   title: string;
   description: string;
-  icon: string;
   filename: string;
-  hasRealPDF?: boolean;
 }
 
 const downloads: DownloadItem[] = [
   {
     title: "Checkliste: Haus verkaufen in 10 Schritten",
     description: "Der komplette Leitfaden vom ersten Gedanken bis zum erfolgreichen Verkauf. Mit Zeitplan und Tipps vom Profi.",
-    icon: "📋",
     filename: "checkliste-hausverkauf.pdf",
-    hasRealPDF: true,
   },
   {
     title: "Guide: Wertsteigerung durch Renovierung",
     description: "Erfahren Sie, welche Renovierungen sich wirklich lohnen und wie Sie den Wert Ihrer Immobilie optimal steigern.",
-    icon: "🔨",
     filename: "guide-wertsteigerung.pdf",
-    hasRealPDF: true,
   },
   {
     title: "Die 7 häufigsten Fehler beim Immobilienverkauf",
     description: "Vermeiden Sie teure Fehler! Diese Checkliste zeigt Ihnen, worauf Sie unbedingt achten sollten.",
-    icon: "⚠️",
     filename: "fehler-vermeiden.pdf",
-    hasRealPDF: true,
   },
 ];
 
@@ -45,7 +35,7 @@ export function DownloadsSection() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [agreedToNewsletter, setAgreedToNewsletter] = useState(false);
+  const submitting = useRef(false);
 
   const handleDownloadClick = (download: DownloadItem) => {
     setSelectedDownload(download);
@@ -53,76 +43,35 @@ export function DownloadsSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !name) {
+    if (submitting.current || !selectedDownload) return;
+    if (!email.trim() || !name.trim()) {
       toast.error("Bitte füllen Sie alle Felder aus");
       return;
     }
 
-    // Email validation
+    // ÜBERGABE BETRIEB-04: Direkter PDF-Download; E-Mail-/Newsletter-Anbindung fehlt.
+    // Die Angaben bleiben lokal und werden weder versendet noch in der Konsole protokolliert.
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast.error("Bitte geben Sie eine gültige E-Mail-Adresse ein");
       return;
     }
 
+    submitting.current = true;
     setIsSubmitting(true);
-
-    // Simulate API call - in production, this would save to database
-    setTimeout(() => {
-      // Generate actual PDF if available
-      if (selectedDownload?.hasRealPDF && selectedDownload.filename === "checkliste-hausverkauf.pdf") {
-        try {
-          generateHausverkaufChecklistePDF();
-          toast.success("PDF wurde heruntergeladen!", {
-            description: "Vielen Dank! Wir haben Ihnen den Download-Link auch per E-Mail zugeschickt.",
-          });
-        } catch (error) {
-          console.error("PDF generation error:", error);
-          toast.error("Fehler beim Generieren der PDF. Bitte versuchen Sie es erneut.");
-        }
-      } else if (selectedDownload?.hasRealPDF && selectedDownload.filename === "guide-wertsteigerung.pdf") {
-        try {
-          generateWertsteigerungRenovierungPDF();
-          toast.success("PDF wurde heruntergeladen!", {
-            description: "Vielen Dank! Wir haben Ihnen den Download-Link auch per E-Mail zugeschickt.",
-          });
-        } catch (error) {
-          console.error("PDF generation error:", error);
-          toast.error("Fehler beim Generieren der PDF. Bitte versuchen Sie es erneut.");
-        }
-      } else if (selectedDownload?.hasRealPDF && selectedDownload.filename === "fehler-vermeiden.pdf") {
-        try {
-          generateHaeufigsteFehlerPDF();
-          toast.success("PDF wurde heruntergeladen!", {
-            description: "Vielen Dank! Wir haben Ihnen den Download-Link auch per E-Mail zugeschickt.",
-          });
-        } catch (error) {
-          console.error("PDF generation error:", error);
-          toast.error("Fehler beim Generieren der PDF. Bitte versuchen Sie es erneut.");
-        }
-      } else {
-        toast.success(`Download gestartet! ${selectedDownload?.title} wird heruntergeladen.`, {
-          description: "Vielen Dank! Wir haben Ihnen den Download-Link auch per E-Mail zugeschickt.",
-        });
-      }
-      
-      // Reset form
+    try {
+      await generateDownloadPdf(selectedDownload.filename);
+      toast.success("PDF-Download gestartet!", { description: "Der Ratgeber wird direkt in Ihrem Browser heruntergeladen." });
       setEmail("");
       setName("");
-      setAgreedToNewsletter(false);
       setSelectedDownload(null);
+    } catch {
+      toast.error("Der Ratgeber konnte nicht erstellt werden. Bitte erneut versuchen.");
+      // Bei Ladefehlern den Dialog und die Eingaben für einen erneuten Versuch erhalten.
+    } finally {
+      submitting.current = false;
       setIsSubmitting(false);
-
-      // In production, this would save to database
-      console.log("Download requested:", {
-        name,
-        email,
-        download: selectedDownload?.filename,
-        newsletter: agreedToNewsletter,
-        timestamp: new Date().toISOString(),
-      });
-    }, 1000);
+    }
   };
 
   return (
@@ -173,6 +122,7 @@ export function DownloadsSection() {
                 {/* Button */}
                 <Button
                   onClick={() => handleDownloadClick(download)}
+                  disabled={isSubmitting}
                   className="w-full text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#6B4F3A]/30"
                   style={{ background: "linear-gradient(135deg, #6B4F3A 0%, #5A4230 100%)", border: "1px solid rgba(194,168,120,0.2)" }}
                 >
@@ -190,7 +140,7 @@ export function DownloadsSection() {
       </div>
 
       {/* Download Modal */}
-      <Dialog open={!!selectedDownload} onOpenChange={() => setSelectedDownload(null)}>
+      <Dialog open={!!selectedDownload} onOpenChange={(open) => { if (!open && !submitting.current) setSelectedDownload(null); }}>
         <DialogContent className="bg-[#1a1a1a] border-white/20 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl">
@@ -214,6 +164,7 @@ export function DownloadsSection() {
                 onChange={(e) => setName(e.target.value)}
                 className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -229,9 +180,10 @@ export function DownloadsSection() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
                 required
+                disabled={isSubmitting}
               />
               <p className="text-sm text-gray-400 mt-1">
-                Wir senden Ihnen den Download-Link per E-Mail zu.
+                Der Download startet direkt im Browser. Ein Versand per E-Mail ist hier nicht eingerichtet.
               </p>
             </div>
 
@@ -239,13 +191,12 @@ export function DownloadsSection() {
               <input
                 type="checkbox"
                 id="newsletter"
-                checked={agreedToNewsletter}
-                onChange={(e) => setAgreedToNewsletter(e.target.checked)}
+                checked={false}
+                disabled
                 className="mt-1 w-4 h-4 rounded border-white/20 bg-[#111111] text-[#6B4F3A] focus:ring-[#6B4F3A] focus:ring-offset-0"
               />
               <label htmlFor="newsletter" className="text-sm text-gray-300">
-                Ich möchte gerne weitere wertvolle Tipps rund um den Immobilienverkauf per
-                E-Mail erhalten (optional, jederzeit abbestellbar)
+                Eine Newsletter-Anmeldung ist derzeit nicht verfügbar.
               </label>
             </div>
 
@@ -254,6 +205,7 @@ export function DownloadsSection() {
                 type="button"
                 variant="outline"
                 onClick={() => setSelectedDownload(null)}
+                disabled={isSubmitting}
                 className="flex-1 border-white/20 text-gray-300 hover:bg-white/5"
               >
                 Abbrechen
@@ -266,11 +218,11 @@ export function DownloadsSection() {
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                    Wird gesendet...
+                    PDF wird erstellt...
                   </>
                 ) : (
                   <>
-                    <Mail className="w-4 h-4 mr-2" />
+                    <Download className="w-4 h-4 mr-2" />
                     Download anfordern
                   </>
                 )}

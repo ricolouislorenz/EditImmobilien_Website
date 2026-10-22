@@ -29,7 +29,7 @@ function escapeHtml(value: string): string {
 }
 
 // ÜBERGABE SICHERHEIT-03 [TEILWEISE BEHOBEN]: Turnstile ist vor dem Mailversand Pflicht.
-// Konfiguration und Veröffentlichung stehen noch aus; ein separates Mengenlimit bleibt offen.
+// Einrichtung und Kontaktversand wurden bestätigt; Maileingang und Mengenlimit siehe README.
 export async function onRequestPost(context: {
   request: Request;
   env: Env;

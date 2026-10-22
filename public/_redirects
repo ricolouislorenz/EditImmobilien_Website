@@ -1,6 +1,6 @@
 # 301-Weiterleitungen der alten WordPress-URLs auf den Onepager.
 # Erhält SEO-Wert und vermeidet 404s nach dem Umzug.
-# Reihenfolge: spezifische Regeln zuerst, SPA-Fallback zuletzt.
+# Reihenfolge: spezifische Regeln zuerst, Admin-Unterpfade zuletzt.
 
 # Inhaltsseiten -> passende Abschnitte
 /ueber-uns                          /#uber-uns      301
@@ -24,12 +24,15 @@
 /hello-world                        /               301
 /category/uncategorized             /               301
 
-# SPA-Fallback: alle übrigen Pfade liefern index.html, damit das Client-Routing
-# (React Router) Direktaufrufe und Reloads bedient – inkl. /admin samt
-# Unterrouten (/admin/properties/...), /impressum, /datenschutz.
-#
-# `200` ist ein Rewrite (die URL bleibt erhalten), KEIN Redirect. Da das Ziel
-# eine real existierende Datei ist, entsteht keine Endlosschleife. Statische
-# Assets (JS/CSS/Bilder) und /api/* (Pages Functions) werden vorher bedient und
-# sind daher nicht betroffen.
-/*                                  /index.html     200
+# ÜBERGABE SEO: Pages liefert impressum.html/datenschutz.html/admin.html automatisch
+# unter den gleichnamigen Pfaden ohne .html aus. Keine globale Proxy-Regel verwenden,
+# die diese Dateien oder JS-/Bilddateien durch die Startseite ersetzen würde.
+/impressum/                         /impressum       301
+/datenschutz/                       /datenschutz     301
+/admin/                             /admin           301
+
+# Admin-Unterpfade erhalten dieselbe Anwendung, bereits mit noindex im HTML.
+/admin/*                            /admin           200
+
+# Für übrige React-Routen greift Pages' eingebauter SPA-Fallback ohne 404.html.
+# API-Anfragen bleiben bei den eigenen Pages Functions unter functions/api/.

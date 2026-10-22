@@ -20,8 +20,8 @@ export function AdminApp() {
     );
   }
 
-  // ÜBERGABE SICHERHEIT-01 [HOCH]: Jedes angemeldete Konto erhält hier die Adminansicht.
-  // Eine Adminrolle fehlt; Schreibrechte müssen zusätzlich in Supabase auf berechtigte Personen begrenzt sein.
+  // ÜBERGABE SICHERHEIT-01: Anmeldung und aktive Sitzung werden geprüft, eine Admin-Freigabeliste fehlt.
+  // Bestehende Konten müssen zusätzlich über Datenbankrechte auf berechtigte Personen begrenzt werden.
   if (!user) return <LoginPage notice={logoutReason} />;
 
   return (

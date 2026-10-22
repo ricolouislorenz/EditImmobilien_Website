@@ -1,0 +1,7 @@
+# ÜBERGABE SEO: Verwaltungsseiten sollen nicht in Suchergebnissen erscheinen.
+/admin
+  X-Robots-Tag: noindex, nofollow
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+/admin.html
+  X-Robots-Tag: noindex, nofollow

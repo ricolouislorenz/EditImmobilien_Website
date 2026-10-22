@@ -8,7 +8,7 @@ import { AboutSection } from "./components/AboutSection";
 import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
 import { Toaster } from "./components/ui/sonner";
-import { SEOHead, StructuredData } from "./components/SEOHead";
+import { SEOHead } from "./components/SEOHead";
 import { ImmobilienwertRechner } from "./components/ImmobilienwertRechner";
 import { VerkaufsprozessTimeline } from "./components/VerkaufsprozessTimeline";
 import { WhatsAppButton } from "./components/WhatsAppButton";
@@ -17,7 +17,7 @@ import { ScrollProgressBar } from "./components/ScrollProgressBar";
 import { MobileStickyCTA } from "./components/MobileStickyCTA";
 import { ImpressumPage, DatenschutzPage } from "./components/LegalPage";
 
-// Lazy geladen: zieht jsPDF + PDF-Generatoren erst bei Bedarf nach, nicht ins Initial-Bundle.
+// Ratgeberoberfläche getrennt laden; die PDF-Generatoren folgen erst bei Download-Anforderung.
 const DownloadsSection = lazy(() =>
   import("./components/DownloadsSection").then((m) => ({ default: m.DownloadsSection }))
 );
@@ -36,8 +36,6 @@ function GoldDivider() {
 function MainSite() {
   return (
     <div className="min-h-screen">
-      <SEOHead />
-      <StructuredData />
       <ScrollProgressBar />
       <Header />
       <main className="pt-[73px]">
@@ -70,6 +68,8 @@ function MainSite() {
 
 export default function App() {
   return (
+    <>
+    <SEOHead />
     <Routes>
       <Route
         path="admin/*"
@@ -89,5 +89,6 @@ export default function App() {
       <Route path="datenschutz" element={<DatenschutzPage />} />
       <Route path="*" element={<MainSite />} />
     </Routes>
+    </>
   );
 }

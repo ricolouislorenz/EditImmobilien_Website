@@ -634,16 +634,6 @@ export function PropertyFormPage() {
         </FormSection>
 
         <FormSection
-          title="Position auf der Website"
-          description="Wähle den gewünschten Platz innerhalb von „Aktuell“ oder „Referenzen“."
-        >
-          <PropertyPositionPicker properties={siblings} status={form.status} title={form.title}
-            sortOrder={form.sort_order} onChange={(sort_order) => setForm((p) => ({ ...p, sort_order }))}
-            disabled={saving || Boolean(uncertainPropertyId)} loading={positionsLoading} error={positionsError}
-            onRetry={() => setPositionsReload((n) => n + 1)} />
-        </FormSection>
-
-        <FormSection
           title="Details"
           description="Optionale Angaben – leere Felder werden nicht angezeigt."
         >
@@ -814,6 +804,16 @@ export function PropertyFormPage() {
               </div>
             </div>
           )}
+        </FormSection>
+
+        <FormSection
+          title="Position auf der Website"
+          description="Wähle den gewünschten Platz innerhalb von „Aktuell“ oder „Referenzen“."
+        >
+          <PropertyPositionPicker properties={siblings} status={form.status}
+            sortOrder={form.sort_order} onChange={(sort_order) => setForm((p) => ({ ...p, sort_order }))}
+            disabled={saving || Boolean(uncertainPropertyId)} loading={positionsLoading} error={positionsError}
+            onRetry={() => setPositionsReload((n) => n + 1)} />
         </FormSection>
 
         {error && <p role="alert" className="text-sm text-red-400">{error}</p>}

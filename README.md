@@ -12,7 +12,7 @@ In VS Code öffnet **Strg+Shift+F** die projektweite Textsuche. Nach `ÜBERGABE`
 | Anmeldung und Zugang zum Adminbereich | `src/admin/LoginPage.tsx`, `src/admin/AdminApp.tsx` |
 | Immobilienübersicht und Löschen | `src/admin/PropertiesPage.tsx` |
 | Immobilie bearbeiten, Bilder und Reihenfolge | `src/admin/PropertyFormPage.tsx` |
-| Sichtbare Plätze wählen und Reihenfolge vorab prüfen | [Positionierung im Adminbereich](docs/POSITIONIERUNG.md), `src/admin/PropertyPositionPicker.tsx` |
+| Sichtbare Plätze wählen und Immobilien verschieben | [Positionierung im Adminbereich](docs/POSITIONIERUNG.md), `src/admin/PropertyPositionPicker.tsx` |
 | Verhalten beim Speichern und bei Uploadfehlern | [Upload-Absicherung](docs/SPEICHERN_UND_UPLOADS.md) – lokal geprüft, Veröffentlichung steht aus |
 | Verbindung zu Datenbank und Bildspeicher | `src/lib/supabase.ts` |
 | Öffentliche Immobilienliste und Ersatzdaten bei Ausfall | `src/components/PropertiesSection.tsx`, `src/hooks/useProperties.ts` |

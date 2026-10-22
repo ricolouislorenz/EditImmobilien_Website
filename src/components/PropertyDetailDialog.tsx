@@ -6,6 +6,7 @@ import { ImageWithFallback } from "./ImageWithFallback";
 import { MapPin, Bed, Bath, Maximize, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { getImageUrl } from "@/lib/supabase";
 import { PROPERTY_PLACEHOLDER } from "@/lib/assets";
+import { formatPropertyLocation } from "@/lib/property-location";
 import type { Property } from "@/types";
 
 interface PropertyDetailDialogProps {
@@ -43,7 +44,7 @@ export function PropertyDetailDialog({
   const imageUrl = resolveImageUrl(images[safeIndex] ?? "") || PROPERTY_PLACEHOLDER;
   const areaDisplay = property.area_label ?? (property.area != null ? `${property.area} m²` : null);
   const showStatusBadge = property.status !== "active";
-  const cleanLocation = property.location.replace(/(,?\s*Hamburg\s*,?\s*)/gi, "").trim();
+  const cleanLocation = formatPropertyLocation(property.location);
   const canExpose = property.status === "active" && onRequestExpose;
 
   const handlePrev = () => setImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));

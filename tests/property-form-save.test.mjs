@@ -120,7 +120,7 @@ const positionExamples = [
   { id: "b", title: "Wohnung im Zentrum", status: "active", sort_order: 30 },
 ];
 
-test("Sichtbare Plätze, Nachbarvorschau und Speichern stimmen trotz Sortierlücken überein", async (t) => {
+test("Sichtbare Platzauswahl und Speichern stimmen trotz Sortierlücken überein", async (t) => {
   const originalFetch = globalThis.fetch;
   t.after(() => { globalThis.fetch = originalFetch; });
   const f = await fixture(t, positionExamples);
@@ -129,10 +129,8 @@ test("Sichtbare Plätze, Nachbarvorschau und Speichern stimmen trotz Sortierlüc
   const down = [...document.querySelectorAll("button")].find((b) => b.textContent.includes("Einen Platz tiefer"));
   await act(async () => down.click());
   assert.match(document.body.textContent, /Platz 2 von 3/);
-  const rows = [...document.querySelectorAll('[aria-label="Vorschau der Reihenfolge"] li')];
-  assert.match(rows[0].textContent, /Haus am See/);
-  assert.equal(rows[1].getAttribute("aria-current"), "true");
-  assert.match(rows[2].textContent, /Wohnung im Zentrum/);
+  assert.equal(document.querySelector("#property-position").value, "2");
+  assert.match(document.querySelector('#property-position option:checked').textContent, /Wohnung im Zentrum/);
   assert.equal(f.savedIds.length, 0, "Positionswahl darf noch nichts speichern");
   f.actions.save = async () => ({ data: null, error: { code: "23502" } });
   await f.submit();
@@ -152,7 +150,7 @@ test("Anfang, Ende und Bereichswechsel zeigen nur die jeweilige Website-Liste", 
   assert.match(document.body.textContent, /Platz 1 von 3/);
   await act(async () => button("Referenzobjekt").click());
   assert.match(document.body.textContent, /Platz 1 von 2/);
-  const preview = document.querySelector('[aria-label="Vorschau der Reihenfolge"]');
-  assert.match(preview.textContent, /Verkauftes Haus/);
-  assert.doesNotMatch(preview.textContent, /Haus am See|Wohnung im Zentrum/);
+  const choices = document.querySelector("#property-position");
+  assert.match(choices.textContent, /Verkauftes Haus/);
+  assert.doesNotMatch(choices.textContent, /Haus am See|Wohnung im Zentrum/);
 });

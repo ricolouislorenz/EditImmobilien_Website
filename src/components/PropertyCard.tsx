@@ -5,6 +5,7 @@ import { ImageWithFallback } from "./ImageWithFallback";
 import { Button } from "./ui/button";
 import { getImageUrl } from "@/lib/supabase";
 import { PROPERTY_PLACEHOLDER } from "@/lib/assets";
+import { formatPropertyLocation } from "@/lib/property-location";
 import type { Property } from "@/types";
 
 interface PropertyCardProps {
@@ -36,7 +37,7 @@ export function PropertyCard({
   const imageUrl = resolveImageUrl(property.images[0] ?? "") || PROPERTY_PLACEHOLDER;
   const areaDisplay = property.area_label ?? (property.area != null ? `${property.area} m²` : null);
   const showStatusBadge = property.status !== "active";
-  const cleanLocation = property.location.replace(/(,?\s*Hamburg\s*,?\s*)/gi, "").trim();
+  const cleanLocation = formatPropertyLocation(property.location);
 
   const handleCardClick = () => onSelect?.(property);
   const handleCardKey = (event: React.KeyboardEvent<HTMLDivElement>) => {

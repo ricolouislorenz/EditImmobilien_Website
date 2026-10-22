@@ -1,0 +1,36 @@
+name: Immobilien-Bildspeicher bereinigen
+
+on:
+  workflow_dispatch:
+    inputs:
+      delete_unused:
+        description: 'Unbenutzte Bilder und abgelaufene Papierkorbeinträge endgültig entfernen (sonst nur Vorschau)'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '20 4 * * *'
+
+permissions:
+  contents: read
+concurrency:
+  group: property-image-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.event_name == 'workflow_dispatch' || vars.PROPERTY_IMAGE_CLEANUP_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Speicher prüfen und gegebenenfalls bereinigen
+        run: node scripts/cleanup-property-images.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CLEANUP_DELETE: ${{ (github.event_name == 'schedule' && vars.PROPERTY_IMAGE_CLEANUP_ENABLED == 'true') || inputs.delete_unused == true }}

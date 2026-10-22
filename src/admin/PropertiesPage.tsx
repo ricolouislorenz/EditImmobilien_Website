@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw } from "lucide-react";
+import { confirmPropertyAction, type TrashedProperty } from "@/lib/property-trash";
 import { supabase, fetchAllProperties } from "@/lib/supabase";
 import type { Property } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -34,12 +35,23 @@ export function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trash, setTrash] = useState<TrashedProperty[]>([]);
+  const [trashOpen, setTrashOpen] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const actionInFlight = useRef(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   async function load() {
     try {
       setLoading(true);
-      const data = await fetchAllProperties();
+      setError(null);
+      const [data, archived] = await Promise.all([
+        fetchAllProperties(),
+        supabase.from("property_trash").select("property_id, snapshot, deleted_at, expires_at").order("deleted_at", { ascending: false }),
+      ]);
+      if (archived.error) throw new Error("Der Papierkorb konnte nicht geladen werden. Bitte Anmeldung und Datenbankeinrichtung prüfen.");
       setProperties(data);
+      setTrash(archived.data ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Fehler beim Laden.");
     } finally {
@@ -53,20 +65,30 @@ export function PropertiesPage() {
   const sortedProperties = [...properties].sort((a, b) => a.sort_order - b.sort_order);
 
   async function handleDelete(property: Property) {
-    // ÜBERGABE ADMIN-04 [HOCH]: Endgültiges Löschen ohne Papierkorb; zugehörige Bilder bleiben im
-    // öffentlichen Speicher. Wiederherstellung und kontrollierte Bildlöschung vorsehen, Sicherung vorher prüfen.
-    if (!confirm(`"${property.title}" wirklich löschen?`)) return;
+    if (actionInFlight.current || !confirm(`„${property.title}“ in den Papierkorb verschieben?\nDer Eintrag verschwindet von der Website und kann 30 Tage lang wiederhergestellt werden.`)) return;
+    actionInFlight.current = true;
+    setBusy(property.id); setError(null); setNotice(null);
+    try {
+      await confirmPropertyAction(() => supabase.rpc("delete_property", {
+        p_id: property.id, p_expected_updated_at: property.updated_at,
+      }), property.id);
+      setNotice("Die Immobilie wurde in den Papierkorb verschoben. Sie kann 30 Tage lang wiederhergestellt werden.");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Löschung nicht bestätigt. Bitte neu laden und prüfen.");
+    } finally { actionInFlight.current = false; setBusy(null); }
+  }
 
-    const { error } = await supabase
-      .from("properties")
-      .delete()
-      .eq("id", property.id);
-
-    if (error) {
-      alert("Fehler beim Löschen: " + error.message);
-    } else {
-      setProperties((prev) => prev.filter((p) => p.id !== property.id));
-    }
+  async function handleRestore(property: TrashedProperty) {
+    if (actionInFlight.current || !confirm(`„${property.snapshot.title ?? "Immobilie"}“ wiederherstellen?\nSie wird wieder auf der Website angezeigt und am Ende ihres Bereichs eingeordnet.`)) return;
+    actionInFlight.current = true;
+    setBusy(property.property_id); setError(null); setNotice(null);
+    try {
+      await confirmPropertyAction(() => supabase.rpc("restore_property", { p_id: property.property_id }), property.property_id);
+      setNotice("Die Immobilie wurde wiederhergestellt und am Ende ihres Bereichs eingeordnet.");
+      await load();
+    } catch (err) { setError(err instanceof Error ? err.message : "Wiederherstellung nicht bestätigt."); }
+    finally { actionInFlight.current = false; setBusy(null); }
   }
 
   return (
@@ -96,7 +118,8 @@ export function PropertiesPage() {
           Bitte die technische Betreuung um Bereinigung bitten. Erneutes Speichern ist nicht nötig.
         </p>
       )}
-      {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+      {notice && <p role="status" className="mb-4 text-sm text-green-300">{notice}</p>}
+      {error && <p role="alert" className="mb-4 text-sm text-red-400">{error} <button type="button" disabled={Boolean(busy)} onClick={load} className="underline">Neu laden</button></p>}
 
       {loading ? (
         <p className="text-gray-500">Laden...</p>
@@ -146,6 +169,7 @@ export function PropertiesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(p)}
+                    disabled={Boolean(busy)}
                     aria-label={`${p.title} löschen`}
                     className="border-white/10 text-gray-400 hover:border-red-500/40 hover:text-red-400"
                   >
@@ -199,6 +223,7 @@ export function PropertiesPage() {
                           size="icon"
                           className="h-8 w-8 text-gray-400 hover:text-red-400"
                           onClick={() => handleDelete(p)}
+                          disabled={Boolean(busy)}
                           aria-label={`${p.title} löschen`}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -212,6 +237,29 @@ export function PropertiesPage() {
           </div>
         </>
       )}
+      {!loading && <section className="mt-8 rounded-xl border border-white/10 bg-[#1a1a1a] p-4 sm:p-5">
+        <button type="button" onClick={() => setTrashOpen((open) => !open)} aria-expanded={trashOpen}
+          aria-controls="property-trash" className="flex min-h-11 w-full items-center justify-between gap-3 text-left text-sm font-medium text-gray-200">
+          <span className="flex items-center gap-2"><Trash2 className="h-4 w-4" />Papierkorb ({trash.length})</span>
+          <span className="text-xs text-[#C2A878]">{trashOpen ? "Schließen" : "Öffnen"}</span>
+        </button>
+        {trashOpen && <div id="property-trash" className="mt-3 space-y-3">
+          <p className="text-xs text-gray-400">30 Tage wiederherstellbar. Danach werden die Einträge beim nächsten aktiven Bereinigungslauf endgültig entfernt. Bilder bleiben während der Frist erhalten.</p>
+          {trash.length === 0 ? <p className="text-sm text-gray-400">Der Papierkorb ist leer.</p> : <ul className="divide-y divide-white/10">
+            {trash.map((p) => {
+              const expired = new Date(p.expires_at).getTime() <= Date.now();
+              return <li key={p.property_id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <div className="min-w-0"><p className="break-words text-sm text-white">{p.snapshot.reference} · {p.snapshot.title ?? "Immobilie"}</p>
+                  <p className="mt-1 text-xs text-gray-400">{expired ? "Wiederherstellungsfrist abgelaufen" : `Wiederherstellbar bis ${new Date(p.expires_at).toLocaleString("de-DE")}`}</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" disabled={Boolean(busy) || expired} onClick={() => handleRestore(p)} className="border-white/10 text-gray-200">
+                  <RotateCcw className="mr-2 h-4 w-4" />Wiederherstellen
+                </Button>
+              </li>;
+            })}
+          </ul>}
+        </div>}
+      </section>}
     </div>
   );
 }

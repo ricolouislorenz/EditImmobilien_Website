@@ -10,6 +10,17 @@ const React = require("react");
 const { act } = React;
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+function unsupportedReady() {
+  throw new Error("Cloudflare lehnt ready() bei async/defer ab (3857)");
+}
+
+function cloudflareOnload(script = document.scripts[0]) {
+  const callbackName = new URL(script.src).searchParams.get("onload");
+  assert.ok(callbackName, "Cloudflare-onload-Callback muss im Skript-URL registriert sein");
+  assert.equal(typeof window[callbackName], "function");
+  window[callbackName]();
+}
+
 async function fixture(t, siteKey = "simulated-site-key") {
   const dom = new JSDOM('<div id="root"></div>', { url: "https://example.test" });
   globalThis.window = dom.window;
@@ -63,13 +74,15 @@ test("Dynamisches Laden, Tokenablauf, Erneuern und ignorierte alte Rückmeldunge
   const removed = [];
   await f.render();
   assert.equal(document.scripts.length, 1);
-  assert.equal(document.scripts[0].src, "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit");
+  const scriptUrl = new URL(document.scripts[0].src);
+  assert.equal(scriptUrl.origin + scriptUrl.pathname, "https://challenges.cloudflare.com/turnstile/v0/api.js");
+  assert.equal(scriptUrl.searchParams.get("render"), "explicit");
   window.turnstile = {
-    ready(callback) { callback(); },
+    ready: unsupportedReady,
     render(container, config) { options.push(config); return String(options.length); },
     remove(id) { removed.push(id); },
   };
-  await act(async () => document.scripts[0].dispatchEvent(new window.Event("load")));
+  await act(async () => cloudflareOnload());
   assert.equal(options[0].action, "contact");
   await act(async () => options[0].callback("first-token"));
   assert.equal(f.tokens.at(-1), "first-token");
@@ -97,8 +110,8 @@ test("Zwei Formulare teilen ein Skript; Ladefehler lässt erneuten Versuch zu", 
   await act(async () => document.querySelector("button").click());
   assert.equal(document.scripts.length, 1);
   let config;
-  window.turnstile = { ready(callback) { callback(); }, render(container, options) { config = options; return "widget"; }, remove() {} };
-  await act(async () => document.scripts[0].dispatchEvent(new window.Event("load")));
+  window.turnstile = { ready: unsupportedReady, render(container, options) { config = options; return "widget"; }, remove() {} };
+  await act(async () => cloudflareOnload());
   assert.equal(config.action, "contact");
   await act(async () => config.callback("verified"));
   assert.equal(f.tokens.at(-1), "verified");
@@ -112,7 +125,46 @@ test("Ein geschlossenes Formular wird nach verspätetem Skriptladen nicht mehr g
   await f.render();
   const script = document.scripts[0];
   await f.unmount();
-  window.turnstile = { ready(callback) { callback(); }, render() { assert.fail("Formular bereits geschlossen"); }, remove() {} };
-  await act(async () => script.dispatchEvent(new window.Event("load")));
+  window.turnstile = { ready: unsupportedReady, render() { assert.fail("Formular bereits geschlossen"); }, remove() {} };
+  await act(async () => cloudflareOnload(script));
   assert.ok(f.tokens.every((token) => token === ""));
+});
+
+test("Regression: async-Skript wird nur über Cloudflares Callback freigegeben, niemals mit ready()", async (t) => {
+  const f = await fixture(t);
+  await f.render();
+  const script = document.scripts[0];
+  let rendered = 0;
+  window.turnstile = {
+    ready: unsupportedReady,
+    render() { rendered++; return "widget"; },
+    remove() {},
+  };
+  assert.equal(script.async, true);
+  await act(async () => script.dispatchEvent(new window.Event("load")));
+  assert.equal(rendered, 0, "DOM-load allein darf die Cloudflare-Freigabe nicht ersetzen");
+  await act(async () => cloudflareOnload(script));
+  assert.equal(rendered, 1);
+  assert.equal(document.querySelector('[role="alert"]'), null);
+});
+
+test("Ein verspäteter Callback eines fehlgeschlagenen Ladevorgangs kann den neuen Versuch nicht freigeben", async (t) => {
+  const f = await fixture(t);
+  await f.render();
+  const oldScript = document.scripts[0];
+  const oldCallbackName = new URL(oldScript.src).searchParams.get("onload");
+  const oldCallback = window[oldCallbackName];
+  await act(async () => oldScript.dispatchEvent(new window.Event("error")));
+  assert.equal(window[oldCallbackName], undefined);
+  await act(async () => document.querySelector("button").click());
+  const newScript = document.scripts[0];
+  assert.notEqual(new URL(newScript.src).searchParams.get("onload"), oldCallbackName);
+  let rendered = 0;
+  window.turnstile = { ready: unsupportedReady, render() { rendered++; return "widget"; }, remove() {} };
+  await act(async () => oldCallback());
+  assert.equal(rendered, 0);
+  await act(async () => cloudflareOnload(newScript));
+  assert.equal(rendered, 1);
+  await act(async () => cloudflareOnload(newScript));
+  assert.equal(rendered, 1, "Mehrfache Callback-Aufrufe dürfen kein zweites Widget erzeugen");
 });

@@ -1,6 +1,12 @@
 # Spamschutz für Kontakt- und Exposé-Anfragen
 
-ÜBERGABE SICHERHEIT-03: Die Integration ist im Code vorbereitet und lokal getestet, noch nicht veröffentlicht oder im Cloudflare-Konto eingerichtet. Ein separates Mengenlimit bleibt offen. Turnstile reduziert automatisierten Missbrauch, garantiert aber keine vollständige Spamverhinderung.
+ÜBERGABE SICHERHEIT-03: Laut Nutzer sind die Cloudflare-Variablen eingerichtet und die erste Codeversion veröffentlicht. Der Live-Test meldete einen Fehler beim Laden des Widgets. Die nachfolgend beschriebene Korrektur ist lokal getestet; erneute Veröffentlichung und Live-Test stehen aus. Ein separates Mengenlimit bleibt offen. Turnstile reduziert automatisierten Missbrauch, garantiert aber keine vollständige Spamverhinderung.
+
+## Behobener Ladefehler (Cloudflare 3857)
+
+Die erste Integration kombinierte das asynchrone Laden von `api.js` mit `turnstile.ready()`. Cloudflare lehnt diese Kombination ab. Der korrigierte Code verwendet `render=explicit&onload=…` und wartet ausschließlich auf Cloudflares benannten Lade-Callback. Mehrere Formulare teilen denselben Ladevorgang; abgebrochene Versuche können keine späteren Versuche freigeben. Der Regressionstest bildet eine API nach, die bei `ready()` wie der echte Dienst einen Fehler auslöst.
+
+Nach erneutem Commit, Push und erfolgreichem Cloudflare-Build das Kontaktformular in einem neuen privaten Browserfenster testen. Die bestehenden Keys bleiben für diesen Codefix passend. Der Schutz vor Mailversand ohne serverseitig bestätigten Nachweis bleibt bestehen.
 
 ## Was außerhalb von VS Code nötig ist
 

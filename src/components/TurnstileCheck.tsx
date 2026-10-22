@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 interface TurnstileApi {
-  ready: (callback: () => void) => void;
   render: (container: HTMLElement, options: Record<string, unknown>) => string;
   remove: (widgetId: string) => void;
 }
@@ -12,37 +11,40 @@ declare global {
 
 const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined)?.trim();
 let scriptPromise: Promise<TurnstileApi> | null = null;
+let loadAttempt = 0;
 
 function loadTurnstile(): Promise<TurnstileApi> {
   if (scriptPromise) return scriptPromise;
-  if (window.turnstile) {
-    const api = window.turnstile;
-    return new Promise((resolve) => api.ready(() => resolve(api)));
-  }
   scriptPromise = new Promise<TurnstileApi>((resolve, reject) => {
     const script = document.createElement("script");
+    const callbackName = `__editImmobilienTurnstileLoaded${++loadAttempt}`;
+    const callbacks = window as unknown as Record<string, unknown>;
+    let settled = false;
     const timeout = window.setTimeout(fail, 15000);
     function fail() {
+      if (settled) return;
+      settled = true;
       window.clearTimeout(timeout);
-      script.onload = null;
       script.onerror = null;
+      delete callbacks[callbackName];
       script.remove();
       scriptPromise = null;
       reject(new Error("Sicherheitsprüfung konnte nicht geladen werden."));
     }
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    // ÜBERGABE: Bei async/defer kein turnstile.ready() aufrufen (Cloudflare-Fehler 3857).
+    // Cloudflares eigener onload-Callback bestätigt, dass render() verwendet werden darf.
+    callbacks[callbackName] = () => {
+      if (settled) return;
       const api = window.turnstile;
-      if (!api) return fail();
-      try {
-        api.ready(() => {
-          window.clearTimeout(timeout);
-          resolve(api);
-        });
-      } catch { fail(); }
+      if (!api || typeof api.render !== "function" || typeof api.remove !== "function") return fail();
+      settled = true;
+      window.clearTimeout(timeout);
+      script.onerror = null;
+      // Ein späterer erneuter Callback (z. B. API-Aktualisierung) bleibt wirkungslos.
+      resolve(api);
     };
+    script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=${callbackName}`;
+    script.async = true;
     script.onerror = fail;
     document.head.appendChild(script);
   });

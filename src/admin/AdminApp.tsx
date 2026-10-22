@@ -1,13 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminSession } from "@/hooks/useAdminSession";
+import { ADMIN_WARNING_MS } from "@/lib/admin-session";
 import { LoginPage } from "./LoginPage";
 import { PropertiesPage } from "./PropertiesPage";
 import { PropertyFormPage } from "./PropertyFormPage";
 import { Button } from "@/components/ui/button";
 
 export function AdminApp() {
-  const { user, loading, signOut } = useAuth();
+  const { user, session, loading, signOut, logoutReason } = useAuth();
+  const guard = useAdminSession(session?.access_token, signOut);
 
   if (loading) {
     return (
@@ -19,7 +22,7 @@ export function AdminApp() {
 
   // ÜBERGABE SICHERHEIT-01 [HOCH]: Jedes angemeldete Konto erhält hier die Adminansicht.
   // Eine Adminrolle fehlt; Schreibrechte müssen zusätzlich in Supabase auf berechtigte Personen begrenzt sein.
-  if (!user) return <LoginPage />;
+  if (!user) return <LoginPage notice={logoutReason} />;
 
   return (
     <div className="min-h-screen bg-[#111111]">
@@ -36,7 +39,7 @@ export function AdminApp() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={signOut}
+            onClick={() => { void signOut(); }}
             className="shrink-0 text-gray-400 hover:text-white"
           >
             <LogOut className="h-4 w-4 sm:mr-2" />
@@ -45,8 +48,22 @@ export function AdminApp() {
         </div>
       </header>
 
+      {guard.locked && <div role="alert" className="mx-auto max-w-6xl px-4 pt-5 text-sm text-amber-200 sm:px-6">
+        {guard.phase === "checking" ? "Anmeldung wird geprüft …" : <>
+          Die Anmeldung kann gerade nicht geprüft werden. Die Bearbeitung ist gesperrt; deine Eingaben bleiben erhalten.
+          <button type="button" onClick={guard.retry} className="ml-2 underline">Erneut prüfen</button>
+        </>}
+      </div>}
+      {!guard.locked && guard.remainingMs <= ADMIN_WARNING_MS && <div role="alert" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+          Du wirst in {Math.max(1, Math.ceil(guard.remainingMs / 1000))} Sekunden wegen Inaktivität abgemeldet. Bitte Änderungen rechtzeitig speichern.
+          <button type="button" onClick={guard.stay} className="ml-2 font-medium underline">Angemeldet bleiben</button>
+        </div>
+      </div>}
+
       {/* Inhalt */}
-      <main className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
+      <main ref={(element) => { if (element) element.inert = guard.locked; }}
+        aria-busy={guard.locked} className={`mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8 ${guard.locked ? "pointer-events-none opacity-40" : ""}`}>
         <Routes>
           <Route index element={<PropertiesPage />} />
           <Route path="properties/new" element={<PropertyFormPage />} />

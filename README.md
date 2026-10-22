@@ -10,6 +10,7 @@ In VS Code öffnet **Strg+Shift+F** die projektweite Textsuche. Nach `ÜBERGABE`
 | Gesucht | Datei / Ordner |
 | --- | --- |
 | Anmeldung und Zugang zum Adminbereich | `src/admin/LoginPage.tsx`, `src/admin/AdminApp.tsx` |
+| Automatisches Abmelden und erneute Anmeldung desselben Kontos | [Admin-Sitzungen](docs/ADMIN_SITZUNGEN.md) – vor Veröffentlichung SQL-Einrichtung 0005 ausführen |
 | Immobilienübersicht und Löschen | `src/admin/PropertiesPage.tsx` |
 | Immobilie bearbeiten, Bilder und Reihenfolge | `src/admin/PropertyFormPage.tsx` |
 | Sichtbare Plätze wählen und Immobilien verschieben | [Positionierung im Adminbereich](docs/POSITIONIERUNG.md), `src/admin/PropertyPositionPicker.tsx` |

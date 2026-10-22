@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginPage() {
+export function LoginPage({ notice }: { notice?: string | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +29,7 @@ export function LoginPage() {
           <p className="text-gray-500 text-sm">Edit Immobilien</p>
         </div>
 
+        {notice && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-gray-300">{notice}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email" className="text-gray-300">

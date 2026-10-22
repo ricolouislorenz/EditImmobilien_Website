@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { X, Upload, ImagePlus, Hash, Loader2, Home, CheckCircle2 } from "lucide-react";
 import { supabase, getImageUrl, uploadImage } from "@/lib/supabase";
+import { savePropertyWithImageCleanup } from "@/lib/property-save";
+import { IMAGE_ACCEPT, MAX_PROPERTY_IMAGES, selectImageFiles } from "@/lib/image-upload";
 import { PROPERTIES_PAGE_SIZE } from "@/lib/pagination";
 import type { Property, PropertyInput, PropertyStatus } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -203,6 +205,7 @@ export function PropertyFormPage() {
   const [plzLoading, setPlzLoading] = useState(false);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [imageErrors, setImageErrors] = useState<string[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
@@ -333,10 +336,14 @@ export function PropertyFormPage() {
 
   /** Nimmt neue Bilddateien an (Upload-Button oder Drag & Drop). */
   function addFiles(fileList: FileList | File[]) {
-    const files = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
-    if (files.length === 0) return;
-    setNewFiles((prev) => [...prev, ...files]);
-    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    if (saving) return;
+    // ÜBERGABE SICHERHEIT-05 [TEILWEISE BEHOBEN]: Klick und Drag & Drop nutzen
+    // dieselben Grenzen. Vorhandene und neu ausgewählte Bilder zählen zusammen.
+    const { accepted, errors } = selectImageFiles(Array.from(fileList), form.images.length + newFiles.length);
+    setImageErrors(errors);
+    if (accepted.length === 0) return;
+    setNewFiles((prev) => [...prev, ...accepted]);
+    setPreviews((prev) => [...prev, ...accepted.map((f) => URL.createObjectURL(f))]);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -351,6 +358,7 @@ export function PropertyFormPage() {
   }
 
   function removeExistingImage(path: string) {
+    if (saving) return;
     setForm((prev) => ({
       ...prev,
       images: prev.images.filter((img) => img !== path),
@@ -359,6 +367,7 @@ export function PropertyFormPage() {
   }
 
   function removeNewFile(index: number) {
+    if (saving) return;
     URL.revokeObjectURL(previews[index]);
     setNewFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
@@ -377,21 +386,26 @@ export function PropertyFormPage() {
       return;
     }
 
+    // Vor jedem Upload erneut prüfen; auch ältere Objekte dürfen insgesamt höchstens 20 Bilder haben.
+    const imageSelection = selectImageFiles(newFiles, form.images.length);
+    if (form.images.length + newFiles.length > MAX_PROPERTY_IMAGES || imageSelection.errors.length > 0) {
+      setImageErrors(imageSelection.errors);
+      setError("Bitte die Bildauswahl prüfen: maximal 20 Bilder, je höchstens 10 MB, nur JPEG, PNG oder WebP.");
+      return;
+    }
+
     setSaving(true);
 
     try {
       const propertyId = isNew ? crypto.randomUUID() : id!;
       const target = form.sort_order;
 
+      // ÜBERGABE ADMIN-01 [HOCH]: Bilder, Reihenfolge und Datensatz werden getrennt gespeichert.
+      // Scheitert ein späterer Schritt, bleiben neue Bilder oder verschobene Positionen zurück. Rückabwicklung ergänzen.
       // Neue Bilder hochladen
       const uploadedPaths = await Promise.all(
         newFiles.map((file) => uploadImage(file, propertyId))
       );
-
-      // Gelöschte Bilder aus Storage entfernen (im Hintergrund, kein Fehler wenn es scheitert)
-      if (removedImages.length > 0) {
-        await supabase.storage.from("property-images").remove(removedImages);
-      }
 
       // Nur umsortieren, wenn die Position neu vergeben oder tatsächlich geändert wurde.
       // Belegte Zielposition? Dann alle ab dieser Position um eins nach hinten schieben.
@@ -416,13 +430,18 @@ export function PropertyFormPage() {
         }),
       };
 
-      const { error: dbError } = isNew
-        ? await supabase.from("properties").insert(payload)
-        : await supabase.from("properties").update(payload).eq("id", propertyId);
+      // ÜBERGABE ADMIN-03: Gleichzeitige Bearbeitungen überschreiben sich ohne Warnung.
+      // Vor dem Ändern den zuletzt geladenen Stand (updated_at) abgleichen und Konflikte anzeigen.
+      // ÜBERGABE ADMIN-02 [BEHOBEN]: Die Datenbank muss den gespeicherten Datensatz
+      // zurückgeben, bevor alte Bilder gelöscht werden. Löschfehler erscheinen als separater Hinweis.
+      const { imageCleanupFailed } = await savePropertyWithImageCleanup({
+        save: () => isNew
+          ? supabase.from("properties").insert(payload).select("id").single()
+          : supabase.from("properties").update(payload).eq("id", propertyId).select("id").single(),
+        removeImages: (paths) => supabase.storage.from("property-images").remove(paths),
+      }, removedImages);
 
-      if (dbError) throw dbError;
-
-      navigate("/admin");
+      navigate("/admin", { state: { imageCleanupFailed } });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Fehler beim Speichern.");
     } finally {
@@ -675,7 +694,7 @@ export function PropertyFormPage() {
 
         <FormSection
           title="Bilder"
-          description="Per Klick auswählen oder Dateien direkt in den Bereich ziehen. Das erste Bild ist das Titelbild."
+          description="Per Klick auswählen oder Dateien direkt in den Bereich ziehen. Das erste Bild ist das Titelbild. Maximal 20 Bilder je Immobilie."
         >
           {/* Drag-&-Drop-Bereich */}
           <div
@@ -690,6 +709,7 @@ export function PropertyFormPage() {
             }}
             onDrop={handleDrop}
             role="button"
+            aria-disabled={saving}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -708,28 +728,39 @@ export function PropertyFormPage() {
               Bilder hierher ziehen oder{" "}
               <span className="text-[#C2A878] underline">auswählen</span>
             </p>
-            <p className="text-xs text-gray-500">JPG, PNG oder WebP</p>
+            <p className="text-xs text-gray-500">JPEG, PNG oder WebP · höchstens 10 MB je Datei · maximal 20 Bilder</p>
           </div>
 
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept={IMAGE_ACCEPT}
+            disabled={saving}
             multiple
             onChange={handleFileChange}
             className="hidden"
           />
 
+          {imageErrors.length > 0 && (
+            <div role="alert" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+              <p>Diese Dateien wurden nicht hinzugefügt:</p>
+              <ul className="mt-2 list-disc space-y-1 break-words pl-5">
+                {imageErrors.map((message, index) => <li key={index}>{message}</li>)}
+              </ul>
+            </div>
+          )}
+
           {totalImages > 0 && (
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs text-gray-500">
-                  {totalImages} {totalImages === 1 ? "Bild" : "Bilder"}
+                  {totalImages} / {MAX_PROPERTY_IMAGES} Bilder
                 </span>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
+                  disabled={saving || totalImages >= MAX_PROPERTY_IMAGES}
                   onClick={() => fileInputRef.current?.click()}
                   className="border-white/10 text-gray-300 hover:text-white"
                 >
@@ -749,6 +780,7 @@ export function PropertyFormPage() {
                     <button
                       type="button"
                       onClick={() => removeExistingImage(path)}
+                      disabled={saving}
                       aria-label="Bild entfernen"
                       className="absolute -right-2 -top-2 rounded-full bg-red-600 p-0.5 hover:bg-red-500"
                     >
@@ -771,6 +803,7 @@ export function PropertyFormPage() {
                     <button
                       type="button"
                       onClick={() => removeNewFile(i)}
+                      disabled={saving}
                       aria-label="Bild entfernen"
                       className="absolute -right-2 -top-2 rounded-full bg-red-600 p-0.5 hover:bg-red-500"
                     >

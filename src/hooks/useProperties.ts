@@ -88,6 +88,8 @@ export function useProperties(): UsePropertiesResult {
 
         // Fällt die DB aus (z. B. pausiertes Free-Tier-Projekt), wird der
         // letzte erfolgreich geladene Stand weiter angezeigt.
+        // ÜBERGABE ADMIN-05: Der Ersatzstand hat kein Ablaufdatum; die Website zeigt keinen Ausfallhinweis.
+        // Dadurch können längst gelöschte oder verkaufte Angebote weiter erscheinen. Alter begrenzen und sichtbar kennzeichnen.
         const fallback = readCache();
         if (fallback) {
           setActive(fallback.active);

@@ -1,4 +1,5 @@
 export interface ContactFormData {
+  turnstile_token: string;
   name: string;
   email: string;
   phone: string;
@@ -6,6 +7,7 @@ export interface ContactFormData {
 }
 
 export interface ExposeRequestData {
+  turnstile_token: string;
   name: string;
   email: string;
   phone: string;

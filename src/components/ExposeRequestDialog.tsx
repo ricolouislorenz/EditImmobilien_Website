@@ -13,6 +13,7 @@ import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { FileText, Loader2 } from "lucide-react";
 import { sendExposeRequest } from "@/lib/email";
+import { TurnstileCheck } from "./TurnstileCheck";
 
 interface ExposeRequestDialogProps {
   open: boolean;
@@ -29,6 +30,8 @@ export function ExposeRequestDialog({
   propertyReference,
 }: ExposeRequestDialogProps) {
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileRefresh, setTurnstileRefresh] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,10 +41,12 @@ export function ExposeRequestDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || !turnstileToken) return;
     setLoading(true);
 
     try {
       await sendExposeRequest({
+        turnstile_token: turnstileToken,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -50,6 +55,8 @@ export function ExposeRequestDialog({
         property_title: propertyTitle,
       });
 
+      // ÜBERGABE BETRIEB-03: Erfolg bestätigt nur die Mailannahme durch Resend.
+      // Das Exposé muss das Büro manuell versenden; ein automatischer Versand ist nicht implementiert.
       toast.success("Exposé-Anfrage erfolgreich!", {
         description: `Wir senden Ihnen das Exposé für "${propertyTitle}" per E-Mail zu.`,
       });
@@ -65,16 +72,18 @@ export function ExposeRequestDialog({
     } catch (error) {
       console.error("Fehler beim Anfordern des Exposés:", error);
       toast.error("Fehler bei der Anfrage", {
-        description: "Bitte versuchen Sie es später erneut.",
+        description: error instanceof Error ? error.message : "Bitte versuchen Sie es später erneut.",
       });
     } finally {
+      setTurnstileToken("");
+      setTurnstileRefresh((value) => value + 1);
       setLoading(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#111111] border-white/10 text-white sm:max-w-md">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto bg-[#111111] border-white/10 text-white sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <FileText className="w-6 h-6 text-[#C2A878]" />
@@ -130,6 +139,7 @@ export function ExposeRequestDialog({
               className="bg-[#111111] border-white/10 focus:border-[#C2A878] text-white min-h-20"
             />
           </div>
+          {open && <TurnstileCheck action="expose_request" refreshKey={turnstileRefresh} onTokenChange={setTurnstileToken} />}
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
@@ -142,7 +152,7 @@ export function ExposeRequestDialog({
             </Button>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || !turnstileToken}
               className="flex-1 bg-[#C2A878] hover:bg-[#C2A878]/90"
             >
               {loading ? (

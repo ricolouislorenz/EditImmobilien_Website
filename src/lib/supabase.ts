@@ -1,7 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Property } from "@/types";
+import { getImageValidationError } from "./image-upload";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+// ÜBERGABE BETRIEB-01: VITE-Werte sind im Browser sichtbar. Hier nur den öffentlichen
+// Supabase-Schlüssel verwenden; niemals Service-Role- oder Mail-Schlüssel eintragen.
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
@@ -35,6 +38,8 @@ export async function uploadImage(
   file: File,
   propertyId: string
 ): Promise<string> {
+  const validationError = getImageValidationError(file);
+  if (validationError) throw new Error(`${file.name}: ${validationError}`);
   const ext = file.name.split(".").pop();
   const path = `${propertyId}/${Date.now()}.${ext}`;
 
@@ -60,6 +65,9 @@ export async function deleteImage(path: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /** Alle aktiven Immobilien (für die öffentliche Seite). */
+// ÜBERGABE SICHERHEIT-02 [HOCH, PRÜFEN]: Datenbank- und Bild-Zugriffsregeln fehlen im Repository.
+// In Supabase prüfen: Gäste dürfen nur veröffentlichte Inhalte lesen, nur Admins schreiben/löschen.
+// select("*") liefert auch die als intern bezeichnete Objektnummer; hier keine vertraulichen Felder ergänzen.
 export async function fetchActiveProperties(): Promise<Property[]> {
   const { data, error } = await supabase
     .from("properties")

@@ -1,16 +1,10 @@
-interface Env {
+import { FormInputError, readFormFields } from "../../server/form-validation.ts";
+import { verifyTurnstile, type TurnstileEnv } from "../../server/turnstile.ts";
+
+interface Env extends TurnstileEnv {
   RESEND_API_KEY: string;
   CONTACT_EMAIL?: string;
   RESEND_FROM?: string;
-}
-
-interface ExposePayload {
-  name?: string;
-  email?: string;
-  phone?: string;
-  message?: string;
-  property_id?: string;
-  property_title?: string;
 }
 
 const DEFAULT_FROM = "Edit Immobilien <kontakt@edit-immobilien.de>";
@@ -34,6 +28,8 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#039;");
 }
 
+// ÜBERGABE SICHERHEIT-03 [TEILWEISE BEHOBEN]: Turnstile ist vor dem Mailversand Pflicht.
+// Konfiguration und Veröffentlichung stehen noch aus; ein separates Mengenlimit bleibt offen.
 export async function onRequestPost(context: {
   request: Request;
   env: Env;
@@ -44,19 +40,23 @@ export async function onRequestPost(context: {
     return jsonResponse(500, { error: "Mailversand nicht konfiguriert." });
   }
 
-  let payload: ExposePayload;
+  // ÜBERGABE SICHERHEIT-04 [BEHOBEN]: Begrenztes JSON und geprüfte Textfelder;
+  // fehlerhafte Anfragen werden vor dem Mailversand abgelehnt.
+  let fields: Record<string, string>;
   try {
-    payload = (await request.json()) as ExposePayload;
-  } catch {
-    return jsonResponse(400, { error: "Ungültiges JSON." });
+    fields = await readFormFields(request, {
+      name: 200, email: 200, phone: 50, message: 2000,
+      property_id: 100, property_title: 300,
+      turnstile_token: 2048,
+    });
+  } catch (error) {
+    if (error instanceof FormInputError) {
+      return jsonResponse(error.status, { error: error.message });
+    }
+    throw error;
   }
 
-  const name = (payload.name ?? "").trim();
-  const email = (payload.email ?? "").trim();
-  const phone = (payload.phone ?? "").trim();
-  const message = (payload.message ?? "").trim();
-  const propertyId = (payload.property_id ?? "").trim();
-  const propertyTitle = (payload.property_title ?? "").trim();
+  const { name, email, phone, message, property_id: propertyId, property_title: propertyTitle } = fields;
 
   if (!name || name.length > 200) {
     return jsonResponse(400, { error: "Name fehlt oder ist zu lang." });
@@ -75,6 +75,13 @@ export async function onRequestPost(context: {
   }
   if (!propertyTitle || propertyTitle.length > 300) {
     return jsonResponse(400, { error: "Immobilien-Titel fehlt oder zu lang." });
+  }
+
+  try {
+    await verifyTurnstile(fields.turnstile_token, env, "expose_request");
+  } catch (error) {
+    if (error instanceof FormInputError) return jsonResponse(error.status, { error: error.message });
+    throw error;
   }
 
   const to = env.CONTACT_EMAIL ?? DEFAULT_TO;
@@ -105,6 +112,8 @@ export async function onRequestPost(context: {
     .filter(Boolean)
     .join("\n");
 
+  // ÜBERGABE BETRIEB-02 [HOCH]: Nur Benachrichtigung an das Büro, kein Exposé-Versand an Interessenten
+  // und keine dauerhafte Ablage. Anfragen manuell bearbeiten; Fehlerüberwachung und Wiederholung fehlen.
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

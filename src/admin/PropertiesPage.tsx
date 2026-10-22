@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { supabase, fetchAllProperties } from "@/lib/supabase";
 import type { Property } from "@/types";
@@ -29,6 +29,8 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function PropertiesPage() {
+  const location = useLocation();
+  const imageCleanupFailed = location.state?.imageCleanupFailed === true;
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +53,8 @@ export function PropertiesPage() {
   const sortedProperties = [...properties].sort((a, b) => a.sort_order - b.sort_order);
 
   async function handleDelete(property: Property) {
+    // ÜBERGABE ADMIN-04 [HOCH]: Endgültiges Löschen ohne Papierkorb; zugehörige Bilder bleiben im
+    // öffentlichen Speicher. Wiederherstellung und kontrollierte Bildlöschung vorsehen, Sicherung vorher prüfen.
     if (!confirm(`"${property.title}" wirklich löschen?`)) return;
 
     const { error } = await supabase
@@ -85,6 +89,13 @@ export function PropertiesPage() {
         </Button>
       </div>
 
+      {imageCleanupFailed && (
+        <p role="status" className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+          Die Immobilie wurde gespeichert. Entfernte Bilder konnten jedoch nicht vollständig aus dem
+          Bildspeicher gelöscht werden und sind möglicherweise noch über ihre bisherigen Links abrufbar.
+          Bitte die technische Betreuung um Bereinigung bitten. Erneutes Speichern ist nicht nötig.
+        </p>
+      )}
       {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
 
       {loading ? (

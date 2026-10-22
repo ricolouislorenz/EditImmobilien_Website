@@ -3,6 +3,15 @@ import type { ContactFormData, ExposeRequestData } from "@/types";
 const CONTACT_ENDPOINT = "/api/contact";
 const EXPOSE_ENDPOINT = "/api/expose-request";
 
+async function assertEmailResponse(res: Response): Promise<void> {
+  if (res.ok) return;
+  const body: unknown = await res.json().catch(() => null);
+  if (body && typeof body === "object" && "error" in body && typeof body.error === "string") {
+    throw new Error(body.error);
+  }
+  throw new Error("Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.");
+}
+
 /** Sendet das allgemeine Kontaktformular an die Cloudflare Function. */
 export async function sendContactEmail(data: ContactFormData): Promise<void> {
   const res = await fetch(CONTACT_ENDPOINT, {
@@ -11,10 +20,7 @@ export async function sendContactEmail(data: ContactFormData): Promise<void> {
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`E-Mail konnte nicht gesendet werden: ${body}`);
-  }
+  await assertEmailResponse(res);
 }
 
 /** Sendet eine Exposé-Anfrage für eine bestimmte Immobilie. */
@@ -27,8 +33,5 @@ export async function sendExposeRequest(
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Exposé-Anfrage konnte nicht gesendet werden: ${body}`);
-  }
+  await assertEmailResponse(res);
 }

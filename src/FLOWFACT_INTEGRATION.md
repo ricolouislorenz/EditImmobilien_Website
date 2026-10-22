@@ -1,5 +1,10 @@
 # Flowfact Mini Integration - Anleitung
 
+> ÜBERGABE BETRIEB-03: Historische Entwurfsskizze, keine Beschreibung des laufenden Systems.
+> Tatsächlich senden `functions/api/expose-request.ts` und Resend eine Anfrage an das Büro.
+> Flowfact-Anbindung, automatischer Exposé-Versand und der unten erwähnte Mock-Modus sind dort nicht implementiert.
+> Die folgenden API-Beispiele sind keine geprüfte Einrichtungsanleitung. Aktueller Einstieg: `README.md`.
+
 ## Übersicht
 Die Exposé-Anforderungs-Funktion ist bereits im Frontend implementiert. Um die vollständige Integration mit Flowfact Mini zu aktivieren, benötigen Sie ein Backend.
 

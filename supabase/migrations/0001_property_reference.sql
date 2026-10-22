@@ -1,4 +1,6 @@
 -- Fortlaufende, menschenlesbare Objektnummer für Immobilien (z. B. "EI-005").
+-- ÜBERGABE: Historischer Stand. Für die aktuelle Einrichtung stattdessen 0003 verwenden;
+-- dort bleiben vorhandene Nummern bei erneutem Ausführen erhalten, auch ab EI-1000.
 -- Wird nur intern (Admin-Panel) und in Exposé-Mails verwendet, nicht im Frontend.
 --
 -- Ausführen im Supabase SQL-Editor (Projekt -> SQL Editor -> New query).

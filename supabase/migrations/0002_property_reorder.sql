@@ -1,10 +1,13 @@
 -- Einfügen an einer bestimmten Position in der Sortier-Reihenfolge.
+-- ÜBERGABE: Historischer Stand. Die aktuelle Einrichtung einschließlich Aufrufrechten steht in 0003.
 -- Wird die Reihenfolge einer Immobilie auf eine bereits belegte Position gesetzt,
 -- rücken alle Immobilien an/ab dieser Position um eins nach hinten.
 -- Beispiel: Ziel = 3, vorhanden 3..10  ->  diese werden zu 4..11, die aktuelle bleibt auf 3.
 --
 -- Ausführen im Supabase SQL-Editor. Idempotent (create or replace).
 
+-- ÜBERGABE ADMIN-01: Verschieben und anschließendes Speichern sind getrennte Vorgänge.
+-- Für eine zuverlässige Reihenfolge gemeinsam in einer Datenbank-Transaktion ausführen.
 create or replace function shift_property_order(p_target int, p_exclude uuid)
 returns void
 language plpgsql

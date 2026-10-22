@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { sendContactEmail } from "@/lib/email";
+import { TurnstileCheck } from "./TurnstileCheck";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -83,6 +84,8 @@ export function ContactSection() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileRefresh, setTurnstileRefresh] = useState(0);
   const [prefilledInquiryTitle, setPrefilledInquiryTitle] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
@@ -163,6 +166,7 @@ export function ContactSection() {
 
   const handleDetailsSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting || !turnstileToken) return;
     setIsSubmitting(true);
 
     const name = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
@@ -179,6 +183,7 @@ export function ContactSection() {
 
     try {
       await sendContactEmail({
+        turnstile_token: turnstileToken,
         name,
         email: formData.email.trim(),
         phone: "",
@@ -197,8 +202,10 @@ export function ContactSection() {
       setStep("inquiry");
     } catch (error) {
       console.error(error);
-      toast.error("Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.");
+      toast.error(error instanceof Error ? error.message : "Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.");
     } finally {
+      setTurnstileToken("");
+      setTurnstileRefresh((value) => value + 1);
       setIsSubmitting(false);
     }
   };
@@ -338,11 +345,12 @@ export function ContactSection() {
                         </Field>
                       </div>
                     </div>
+                    <TurnstileCheck action="contact" refreshKey={turnstileRefresh} onTokenChange={setTurnstileToken} />
                     <WizardFooter
                       onBack={handleBack}
                       submitLabel={isSubmitting ? "Wird gesendet..." : "Nachricht senden"}
                       submitIcon={<Send className="h-4 w-4" />}
-                      submitDisabled={isSubmitting}
+                      submitDisabled={isSubmitting || !turnstileToken}
                     />
                   </WizardPanel>
                 </form>

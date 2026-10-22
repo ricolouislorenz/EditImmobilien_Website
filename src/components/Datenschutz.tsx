@@ -186,6 +186,18 @@ export function DatenschutzContent() {
               Die Erfassung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Der Websitebetreiber hat ein berechtigtes Interesse an der technisch fehlerfreien Darstellung und der Optimierung seiner Website – hierzu müssen die Server-Log-Files erfasst werden. Die Server-Log-Dateien werden maximal 90 Tage gespeichert.
             </p>
 
+            <h3 className="text-[#C2A878] mb-2 mt-4">Spamschutz mit Cloudflare Turnstile</h3>
+            <p className="mb-3">
+              Zum Schutz des Kontaktformulars und der Exposé-Anfragen vor automatisiertem Missbrauch nutzen wir
+              Cloudflare Turnstile. Die Sicherheitsprüfung wird beim Öffnen des jeweiligen Formulars geladen.
+              Cloudflare verarbeitet dabei technische Informationen wie IP-Adresse, Browserinformationen und die
+              aufgerufene Domain. Vor dem Mailversand prüft unser Server den von Turnstile erzeugten Nachweis.
+              Weitere Informationen finden Sie in den{' '}
+              <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank" rel="noopener noreferrer" className="text-[#C2A878] hover:underline">
+                Datenschutzhinweisen zu Cloudflare Turnstile
+              </a>.
+            </p>
+
             <h3 className="text-[#C2A878] mb-2 mt-4">Kontaktformular</h3>
             <p className="mb-3">
               Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.

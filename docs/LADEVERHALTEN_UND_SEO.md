@@ -6,16 +6,16 @@
 
 - **Titelbild:** Wird weiterhin früh und mit hoher Priorität geladen. Die vorhandenen responsiven WebP-Varianten bleiben erhalten.
 - **Immobilienkarten:** Bilder verwenden jetzt `loading="lazy"` und asynchrones Dekodieren. Der Browser entscheidet anhand der Nähe zum sichtbaren Bereich, wann er lädt. Die vorhandene feste Bildfläche verhindert, dass die Karten beim Nachladen ihre Höhe ändern.
-- **Ratgeber:** Die Texte, Karten und das Formular bleiben wie bisher früh verfügbar. Die PDF-Generatoren und jsPDF werden erst nach einer gültigen Download-Anforderung importiert. Vorher werden sie weder zum Anzeigen der Karten noch zum bloßen Öffnen des Formulars benötigt.
+- **Ratgeber:** Texte und Karten sind früh verfügbar. Ein Klick auf „PDF herunterladen“ erstellt und lädt den jeweiligen Ratgeber direkt herunter, ohne Formular. Die PDF-Generatoren und jsPDF werden erst nach diesem Klick importiert.
 - **Admin und Turnstile:** Die vorhandene Trennung bleibt erhalten; diese Funktionen wurden in diesem Schritt nicht umgebaut.
 
-Im lokalen Produktionsbuild sank der Ratgeber-Oberflächencode von rund **427 kB auf 7,3 kB** vor Komprimierung. Die PDF-Bibliothek wird später separat geladen. Das sind Buildgrößen, keine gemessenen Ladezeiten auf einem echten Mobilgerät. Große Originalfotos können weiterhin relevant sein; automatisch erzeugte kleine Immobilien-Vorschaubilder sind nicht Teil dieses Schritts.
+Die PDF-Bibliothek wird separat vom Ratgeber-Oberflächencode geladen. Zuvor enthielt dieser rund 427 kB einschließlich PDF-Code vor Komprimierung. Das sind Buildgrößen, keine gemessenen Ladezeiten auf einem echten Mobilgerät. Große Originalfotos können weiterhin relevant sein; automatisch erzeugte kleine Immobilien-Vorschaubilder sind nicht Teil dieses Schritts.
 
 ## Downloads bei langsamer Verbindung oder Fehlern
 
-Während der PDF-Erzeugung ist mehrfaches Absenden gesperrt. Schlägt das Laden oder Erstellen fehl, bleiben Formular und Eingaben für einen neuen Versuch erhalten. Eine Erfolgsmeldung erscheint erst nach erfolgreichem Generatoraufruf. Die drei bestehenden PDF-Inhalte und Dateinamen bleiben erhalten.
+Während der PDF-Erzeugung zeigt der gewählte Button „PDF wird erstellt...“. Alle Download-Buttons sind vorübergehend gesperrt, damit keine doppelten Downloads starten. Schlägt das Laden oder Erstellen fehl, erscheint eine Fehlermeldung und ein erneuter Klick ist möglich. Eine Erfolgsmeldung erscheint erst nach erfolgreichem Generatoraufruf. Die drei bestehenden PDF-Inhalte und Dateinamen bleiben erhalten.
 
-ÜBERGABE BETRIEB-04: Der bisherige Ratgeberablauf enthielt eine simulierte Wartezeit und behauptete einen E-Mail-Versand. Es gibt dort keine entsprechende Serveranbindung. Der Download startet weiterhin direkt im Browser; die falschen Versandbestätigungen und das Protokollieren von Name/E-Mail wurden entfernt. Die bestehende Eingabeabfrage bleibt erhalten. Die bisher ebenfalls nicht angeschlossene Newsletter-Option ist sichtbar als nicht verfügbar gekennzeichnet und deaktiviert. Eine echte Lead-, Mail- oder Newsletter-Anbindung wäre ein eigener Schritt.
+ÜBERGABE BETRIEB-04: Die Ratgeber werden direkt im Browser heruntergeladen. Name und E-Mail-Adresse werden dafür weder abgefragt noch verarbeitet. Das bisherige Anforderungsformular und die nicht angeschlossene Newsletter-Option wurden entfernt. Eine Mail- oder Newsletter-Anbindung gehört nicht zu dieser Download-Funktion.
 
 Die PDF-Dateien enthalten bislang einen externen Profilbild-Platzhalter. Dessen Verhalten wurde durch das verzögerte Laden nicht geändert. Der lokale PDF-Test ersetzt dieses externe Bild durch ein kleines lokales Testbild und führt keine Netzwerkaufrufe aus.
 
@@ -42,8 +42,8 @@ node --test --test-isolation=none tests/loading-seo-ui.test.mjs
 npm run build
 ```
 
-Für die DOM-Testumgebung siehe [Turnstile-Testanleitung](TURNSTILE_EINRICHTUNG.md). Die Tests prüfen getrenntes Laden, echte lokale PDF-Erzeugung ohne Dateidownload, Fehler und Wiederholung im Formular, Schutz vor Doppelabsenden sowie statische und beim Navigieren gesetzte Metadaten.
+Für die DOM-Testumgebung siehe [Turnstile-Testanleitung](TURNSTILE_EINRICHTUNG.md). Die Tests prüfen getrenntes Laden, echte lokale PDF-Erzeugung ohne Dateidownload, direkte Downloads aller drei Ratgeber, Fehler und Wiederholung, Schutz vor gleichzeitigen Downloads sowie statische und beim Navigieren gesetzte Metadaten.
 
-Nach Veröffentlichung direkt `/`, `/impressum`, `/datenschutz` und `/admin` öffnen und neu laden. Im Seitenquelltext die jeweils passende Canonical-Adresse prüfen. Danach zur Startseite zurücknavigieren und alle drei Ratgeber herunterladen. In den Entwicklertools sollten die PDF-Chunks erst bei der Download-Anforderung erscheinen. Kontakt- und Exposé-Formular sowie Admin-Anmeldung ebenfalls kurz prüfen, damit die Cloudflare-Routen nach dem Deployment bestätigt sind.
+Nach Veröffentlichung direkt `/`, `/impressum`, `/datenschutz` und `/admin` öffnen und neu laden. Im Seitenquelltext die jeweils passende Canonical-Adresse prüfen. Danach zur Startseite zurücknavigieren und alle drei Ratgeber herunterladen. In den Entwicklertools sollten die PDF-Chunks erst beim Klick auf „PDF herunterladen“ erscheinen. Kontakt- und Exposé-Formular sowie Admin-Anmeldung ebenfalls kurz prüfen, damit die Cloudflare-Routen nach dem Deployment bestätigt sind.
 
 Grundlagen: [Google zu Metadaten](https://developers.google.com/search/docs/crawling-indexing/special-tags), [Google zum verzögerten Laden](https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading), [Cloudflare-Seiten und SPA-Fallback](https://developers.cloudflare.com/pages/configuration/serving-pages/), [Cloudflare-Weiterleitungen](https://developers.cloudflare.com/pages/configuration/redirects/).

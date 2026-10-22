@@ -1,4 +1,4 @@
-/** ÜBERGABE LADEVERHALTEN: PDF-Bibliotheken erst nach einer bestätigten Download-Anforderung laden. */
+/** ÜBERGABE LADEVERHALTEN: PDF-Bibliotheken erst nach einem Klick auf „PDF herunterladen“ laden. */
 export async function generateDownloadPdf(filename: string): Promise<void> {
   switch (filename) {
     case "checkliste-hausverkauf.pdf":

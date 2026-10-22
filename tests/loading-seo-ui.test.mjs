@@ -58,27 +58,37 @@ async function downloadsFixture(t) {
   } }]);
   await act(async () => f.root.render(React.createElement(f.exports.DownloadsSection)));
   assert.deepEqual(probe.loaded, [], 'Beim Rendern keine PDF-Bibliothek laden');
-  await act(async () => [...document.querySelectorAll('button')].find(b => b.textContent.includes('Jetzt herunterladen')).click());
-  assert.deepEqual(probe.loaded, [], 'Auch das reine Öffnen des Dialogs lädt noch keinen PDF-Code');
-  await act(async () => {
-    f.Simulate.change(document.querySelector('#name'), { target: { value: 'Erika Muster' } });
-    f.Simulate.change(document.querySelector('#email'), { target: { value: 'erika@example.test' } });
-  });
-  return { probe, submit: async () => { await act(async () => document.querySelector('form').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }))); } };
+  assert.equal(document.querySelector('form, input, [role="dialog"]'), null, 'Direkter Download ohne Datenabfrage');
+  const buttons = () => [...document.querySelectorAll('#ratgeber button')];
+  return { probe, buttons, download: async (index = 0) => { await act(async () => buttons()[index].click()); } };
 }
 
-test('Downloadfehler erhält Eingaben und erlaubt Wiederholung; Erfolg behauptet keinen E-Mail-Versand', async (t) => {
+test('Direkter Download erlaubt nach einem Fehler Wiederholung ohne Datenabfrage', async (t) => {
   const f = await downloadsFixture(t); f.probe.generate = async () => { throw new Error('Ladefehler'); };
-  await f.submit(); assert.equal(f.probe.errors.length, 1); assert.equal(f.probe.successes.length, 0);
-  assert.equal(document.querySelector('#email').value, 'erika@example.test');
-  f.probe.generate = async () => {}; await f.submit();
+  await f.download(); assert.equal(f.probe.errors.length, 1); assert.equal(f.probe.successes.length, 0);
+  assert.ok(f.buttons().every(button => !button.disabled));
+  f.probe.generate = async () => {}; await f.download();
   assert.equal(f.probe.successes.length, 1); assert.doesNotMatch(JSON.stringify(f.probe.successes), /E-Mail|zugeschickt/);
-  assert.equal(document.querySelector('form'), null);
+  assert.equal(document.querySelector('form, input, [role="dialog"]'), null);
+  assert.deepEqual(f.probe.loaded, ['HausverkaufCheckliste']);
 });
 
-test('Offene PDF-Anforderung lässt sich nicht doppelt absenden oder vorzeitig schließen', async (t) => {
+test('Laufender Download zeigt Ladezustand und verhindert gleichzeitige Downloads', async (t) => {
   const f = await downloadsFixture(t); let finish; f.probe.generate = () => new Promise(resolve => { finish = resolve; });
-  await f.submit(); await f.submit(); assert.equal(f.probe.calls.length, 1);
-  assert.equal([...document.querySelectorAll('button')].find(b => b.textContent === 'Abbrechen').disabled, true);
+  await f.download(); await f.download(); await f.download(1); assert.equal(f.probe.calls.length, 1);
+  assert.ok(f.buttons().every(button => button.disabled));
+  assert.match(f.buttons()[0].textContent, /PDF wird erstellt/);
+  assert.equal(f.buttons()[0].getAttribute('aria-busy'), 'true');
+  assert.equal(f.probe.successes.length, 0);
   await act(async () => finish()); assert.equal(f.probe.successes.length, 1);
+  assert.ok(f.buttons().every(button => !button.disabled));
+  assert.equal(f.buttons()[0].getAttribute('aria-busy'), 'false');
+});
+
+test('Alle drei Ratgeber starten mit einem Klick den passenden PDF-Download', async (t) => {
+  const f = await downloadsFixture(t);
+  for (let index = 0; index < 3; index++) await f.download(index);
+  assert.deepEqual(f.probe.calls, ['HausverkaufCheckliste', 'WertsteigerungRenovierung', 'HaeufigsteFehler']);
+  assert.equal(f.probe.successes.length, 3);
+  assert.equal(f.probe.errors.length, 0);
 });

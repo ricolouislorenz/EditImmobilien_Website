@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { toast } from "sonner";
 import { generateDownloadPdf } from "@/lib/pdf-downloads";
 
@@ -31,46 +29,22 @@ const downloads: DownloadItem[] = [
 ];
 
 export function DownloadsSection() {
-  const [selectedDownload, setSelectedDownload] = useState<DownloadItem | null>(null);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeDownload, setActiveDownload] = useState<string | null>(null);
   const submitting = useRef(false);
 
-  const handleDownloadClick = (download: DownloadItem) => {
-    setSelectedDownload(download);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (submitting.current || !selectedDownload) return;
-    if (!email.trim() || !name.trim()) {
-      toast.error("Bitte füllen Sie alle Felder aus");
-      return;
-    }
-
-    // ÜBERGABE BETRIEB-04: Direkter PDF-Download; E-Mail-/Newsletter-Anbindung fehlt.
-    // Die Angaben bleiben lokal und werden weder versendet noch in der Konsole protokolliert.
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error("Bitte geben Sie eine gültige E-Mail-Adresse ein");
-      return;
-    }
-
+  // ÜBERGABE BETRIEB-04: Ein Klick lädt die PDF herunter, ohne persönliche Angaben.
+  const handleDownloadClick = async (download: DownloadItem) => {
+    if (submitting.current) return;
     submitting.current = true;
-    setIsSubmitting(true);
+    setActiveDownload(download.filename);
     try {
-      await generateDownloadPdf(selectedDownload.filename);
+      await generateDownloadPdf(download.filename);
       toast.success("PDF-Download gestartet!", { description: "Der Ratgeber wird direkt in Ihrem Browser heruntergeladen." });
-      setEmail("");
-      setName("");
-      setSelectedDownload(null);
     } catch {
       toast.error("Der Ratgeber konnte nicht erstellt werden. Bitte erneut versuchen.");
-      // Bei Ladefehlern den Dialog und die Eingaben für einen erneuten Versuch erhalten.
     } finally {
       submitting.current = false;
-      setIsSubmitting(false);
+      setActiveDownload(null);
     }
   };
 
@@ -122,12 +96,21 @@ export function DownloadsSection() {
                 {/* Button */}
                 <Button
                   onClick={() => handleDownloadClick(download)}
-                  disabled={isSubmitting}
+                  type="button"
+                  disabled={activeDownload !== null}
+                  aria-label={`${download.title} als PDF herunterladen`}
+                  aria-busy={activeDownload === download.filename}
                   className="w-full text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#6B4F3A]/30"
                   style={{ background: "linear-gradient(135deg, #6B4F3A 0%, #5A4230 100%)", border: "1px solid rgba(194,168,120,0.2)" }}
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Jetzt herunterladen
+                  {activeDownload === download.filename ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" aria-hidden="true" />
+                  )}
+                  <span aria-live="polite">
+                    {activeDownload === download.filename ? "PDF wird erstellt..." : "PDF herunterladen"}
+                  </span>
                 </Button>
               </div>
 
@@ -139,102 +122,6 @@ export function DownloadsSection() {
 
       </div>
 
-      {/* Download Modal */}
-      <Dialog open={!!selectedDownload} onOpenChange={(open) => { if (!open && !submitting.current) setSelectedDownload(null); }}>
-        <DialogContent className="bg-[#1a1a1a] border-white/20 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">
-              Download starten
-            </DialogTitle>
-            <DialogDescription className="text-gray-400">
-              {selectedDownload?.title}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div>
-              <label htmlFor="name" className="text-sm text-gray-300 mb-2 block">
-                Ihr Name
-              </label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Max Mustermann"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="text-sm text-gray-300 mb-2 block">
-                Ihre E-Mail-Adresse
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="ihre@email.de"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-[#111111] border-white/10 text-white placeholder:text-gray-500 focus:border-[#C2A878]"
-                required
-                disabled={isSubmitting}
-              />
-              <p className="text-sm text-gray-400 mt-1">
-                Der Download startet direkt im Browser. Ein Versand per E-Mail ist hier nicht eingerichtet.
-              </p>
-            </div>
-
-            <div className="flex items-start gap-3 bg-[#C2A878]/10 p-4 rounded-lg">
-              <input
-                type="checkbox"
-                id="newsletter"
-                checked={false}
-                disabled
-                className="mt-1 w-4 h-4 rounded border-white/20 bg-[#111111] text-[#6B4F3A] focus:ring-[#6B4F3A] focus:ring-offset-0"
-              />
-              <label htmlFor="newsletter" className="text-sm text-gray-300">
-                Eine Newsletter-Anmeldung ist derzeit nicht verfügbar.
-              </label>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setSelectedDownload(null)}
-                disabled={isSubmitting}
-                className="flex-1 border-white/20 text-gray-300 hover:bg-white/5"
-              >
-                Abbrechen
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-[#6B4F3A] hover:bg-[#5A4230] text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                    PDF wird erstellt...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download anfordern
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <p className="text-sm text-gray-400 text-center">
-              Ihre Daten werden vertraulich behandelt und nicht an Dritte weitergegeben.
-            </p>
-          </form>
-        </DialogContent>
-      </Dialog>
     </section>
   );
 }

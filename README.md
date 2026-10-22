@@ -64,7 +64,7 @@ Die Migrationen ergänzen eine **bestehende Datenbank**. Sie sind kein vollstän
 | `ADMIN-05` | Zeitgrenze und sichtbarer Hinweis für zwischengespeicherte Angebote bei Datenbankausfall. Derzeit kann ein alter Stand unbegrenzt angezeigt werden. |
 | `BETRIEB-02` | Dauerhafte Zwischenablage, Wiederholungen und Überwachung bei Fehlern im Mailversand. |
 | `BETRIEB-03` | Automatischer Exposé-Versand ist nicht vorhanden. Die Anfrage wird dem Büro gemeldet; das Büro versendet das Exposé manuell. Eine Flowfact-Anbindung ist nicht implementiert. |
-| `BETRIEB-04` | Ratgeber werden direkt als PDF heruntergeladen. E-Mail-/Newsletter-Versand und dauerhafte Verarbeitung der abgefragten Angaben sind nicht eingerichtet; falsche Versandbestätigungen wurden entfernt. |
+| `BETRIEB-04` | Ratgeber werden mit einem Klick als PDF heruntergeladen, ohne Name oder E-Mail-Adresse abzufragen. Eine Mail-/Newsletter-Funktion gehört nicht zu diesen Downloads. |
 
 Bereits im Code abgesichert: Prüfung von Formulargrößen und Feldtypen (`SICHERHEIT-04`), gemeinsames Speichern (`ADMIN-01`), Bestätigung vor dem Entfernen alter Bilder (`ADMIN-02`) sowie Papierkorb und kontrollierte Bereinigung (`ADMIN-04`). Unabhängige Sicherungen und die abschließende Live-Abnahme bleiben erforderlich.
 

@@ -1,6 +1,6 @@
 # Spamschutz für Kontakt- und Exposé-Anfragen
 
-ÜBERGABE SICHERHEIT-03: Laut Nutzer sind die Cloudflare-Variablen eingerichtet und die erste Codeversion veröffentlicht. Der Live-Test meldete einen Fehler beim Laden des Widgets. Die nachfolgend beschriebene Korrektur ist lokal getestet; erneute Veröffentlichung und Live-Test stehen aus. Ein separates Mengenlimit bleibt offen. Turnstile reduziert automatisierten Missbrauch, garantiert aber keine vollständige Spamverhinderung.
+ÜBERGABE SICHERHEIT-03: Laut Nutzer sind die Cloudflare-Variablen eingerichtet und die korrigierte Codeversion veröffentlicht. Am 22.10.2026 bestätigte der Nutzer die Turnstile-Prüfung und das erfolgreiche Absenden des Kontaktformulars nach dem Ladefix. Der Nutzer hat keinen Postfachzugriff; die tatsächliche Zustellung ist daher nicht bestätigt und muss durch die zuständige Person geprüft werden. Der Live-Test des separaten Exposé-Endpunkts und die Ablehnung ungültiger Nachweise im Live-System sind noch offen; lokal werden beide Endpunkte mit simulierten Antworten geprüft. Ein separates Mengenlimit bleibt offen. Turnstile reduziert automatisierten Missbrauch, garantiert aber keine vollständige Spamverhinderung.
 
 ## Behobener Ladefehler (Cloudflare 3857)
 

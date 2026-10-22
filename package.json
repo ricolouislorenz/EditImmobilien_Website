@@ -63,6 +63,7 @@
             "test:forms": "node --test tests/form-endpoints.test.mjs",
             "test:property-save": "node --test tests/property-save.test.mjs",
             "test:image-upload": "node --test tests/image-upload.test.mjs",
+            "test:property-uploads": "node --test tests/property-uploads.test.mjs",
             "dev": "vite",
             "build": "vite build && node scripts/copy-404.cjs",
             "optimize:images": "node scripts/optimize-images.cjs",

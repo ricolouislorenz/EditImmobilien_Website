@@ -12,11 +12,13 @@ In VS Code öffnet **Strg+Shift+F** die projektweite Textsuche. Nach `ÜBERGABE`
 | Anmeldung und Zugang zum Adminbereich | `src/admin/LoginPage.tsx`, `src/admin/AdminApp.tsx` |
 | Immobilienübersicht und Löschen | `src/admin/PropertiesPage.tsx` |
 | Immobilie bearbeiten, Bilder und Reihenfolge | `src/admin/PropertyFormPage.tsx` |
+| Sichtbare Plätze wählen und Reihenfolge vorab prüfen | [Positionierung im Adminbereich](docs/POSITIONIERUNG.md), `src/admin/PropertyPositionPicker.tsx` |
+| Verhalten beim Speichern und bei Uploadfehlern | [Upload-Absicherung](docs/SPEICHERN_UND_UPLOADS.md) – lokal geprüft, Veröffentlichung steht aus |
 | Verbindung zu Datenbank und Bildspeicher | `src/lib/supabase.ts` |
 | Öffentliche Immobilienliste und Ersatzdaten bei Ausfall | `src/components/PropertiesSection.tsx`, `src/hooks/useProperties.ts` |
 | Kontaktformular / Exposé-Anfrage | `src/components/ContactSection.tsx`, `src/components/ExposeRequestDialog.tsx` |
 | Mailversand auf dem Server | `functions/api/contact.ts`, `functions/api/expose-request.ts` |
-| Spamschutz und benötigte Cloudflare-Einstellungen | [Turnstile einrichten](docs/TURNSTILE_EINRICHTUNG.md) – laut Nutzer eingerichtet; Korrektur des Ladefehlers lokal getestet, erneute Veröffentlichung steht aus |
+| Spamschutz und benötigte Cloudflare-Einstellungen | [Turnstile einrichten](docs/TURNSTILE_EINRICHTUNG.md) – Kontaktformular nach Ladefix erfolgreich abgesendet; tatsächlicher Maileingang und Exposé-Live-Test unbestätigt |
 | Texte und Seitenabschnitte | `src/components/`, Zusammensetzung in `src/App.tsx` |
 | Impressum und Datenschutz | `src/components/Impressum.tsx`, `src/components/Datenschutz.tsx` |
 | Datenbankänderungen | `supabase/migrations/` |
@@ -31,12 +33,12 @@ Stand: 22.10.2026. Dies ist eine Prüfung des vorhandenen Quellcodes, keine voll
 
 | Suchkennung | Befund und Handlungsbedarf |
 | --- | --- |
-| `SICHERHEIT-01` | **Hoch:** Die Adminansicht unterscheidet nur angemeldet/nicht angemeldet. Adminrolle und Schreibrechte für ausdrücklich berechtigte Konten durchsetzen. |
+| `SICHERHEIT-01` | **Hoch, teilweise begrenzt:** Die öffentliche Selbstregistrierung wurde laut Nutzer in Supabase deaktiviert. Bestehende Konten behalten ihre bisherigen Rechte. Die Adminansicht unterscheidet weiterhin nur angemeldet/nicht angemeldet; eine Freigabe bestimmter Admin-Konten bleibt offen. |
 | `SICHERHEIT-02` | **Hoch, prüfen:** Regeln für Datenbank und Bildspeicher fehlen im Repository, ebenso das ursprüngliche Tabellenschema. Supabase-Regeln exportieren und prüfen: Gäste lesen nur öffentliche Inhalte; nur Admins ändern sie. Öffentliche Abfragen liefern sämtliche Spalten einschließlich der vermeintlich internen Objektnummer. |
-| `SICHERHEIT-03` | **Teilweise im Code behoben:** Kontakt- und Exposé-Formular verlangen einen serverseitig geprüften Turnstile-Nachweis für die konfigurierte Domain und Formularaktion. Ohne erfolgreiche Prüfung wird keine Mail gesendet. Cloudflare-Einrichtung wurde vom Nutzer bestätigt; nach einem Ladefehler steht die erneute Veröffentlichung der lokalen Korrektur samt Live-Test aus. [Einrichtung und Fehlerbehebung](docs/TURNSTILE_EINRICHTUNG.md). Ein zusätzliches Mengenlimit bleibt offen. |
+| `SICHERHEIT-03` | **Teilweise behoben:** Kontakt- und Exposé-Formular verlangen einen serverseitig geprüften Turnstile-Nachweis für die konfigurierte Domain und Formularaktion. Ohne erfolgreiche Prüfung wird keine Mail gesendet. Cloudflare-Einrichtung, Turnstile-Prüfung und erfolgreiches Absenden des Kontaktformulars nach Ladefix wurden vom Nutzer bestätigt; tatsächlicher Maileingang ist mangels Postfachzugriff unbestätigt. Exposé-Live-Test und zusätzliches Mengenlimit bleiben offen. [Einrichtung und Fehlerbehebung](docs/TURNSTILE_EINRICHTUNG.md). |
 | `SICHERHEIT-04` | **Im Code behoben:** Beide Mail-Endpunkte prüfen JSON-Struktur, Texttypen und Feldlängen vor der Verarbeitung. Maximal 64 KiB werden eingelesen, auch ohne verlässliche Längenangabe. Ungültige Anfragen erhalten 400, zu große 413, falsche Inhaltstypen 415. |
 | `SICHERHEIT-05` | **Teilweise behoben:** Im Adminbereich nur JPEG, PNG und WebP, maximal 10 MB pro Datei (10.000.000 Byte) und 20 Bilder insgesamt. Auswahl, Drag & Drop und Speichern prüfen die Grenzen; der Uploadhelfer prüft Formatangabe und Größe zusätzlich. Die Nutzer-Kontrollabfrage bestätigt dieselben Formate und 10 MiB (10.485.760 Byte) im Bucket; die Website ist etwas strenger. Ein erlaubter Bild-Upload wurde vom Nutzer erfolgreich getestet. [Einrichtung und Kontrolle](supabase/setup/BILDUPLOAD_GRENZEN.md). Die Ablehnung unzulässiger Uploads im Live-System und die serverseitige Begrenzung der Gesamtzahl bleiben offen. Die Browserprüfung beweist nicht den tatsächlichen Dateiinhalt. |
-| `ADMIN-01` | **Hoch:** Bild-Upload, Umsortieren und Speichern sind nicht als gemeinsamer Vorgang abgesichert. Fehler können ungenutzte Bilder oder eine veränderte Reihenfolge hinterlassen. Rückabwicklung und gemeinsame Datenbank-Transaktion ergänzen. |
+| `ADMIN-01` | **Im Code abgesichert, SQL-Einrichtung und Kontrollwerte per Nutzerbericht bestätigt:** Reihenfolge und Datensatz werden gemeinsam gespeichert; bei Ablehnung wird beides zurückgenommen. Neue Bilddateien werden bei eindeutigen Fehlern zur Bereinigung angefordert. Bei unklarem Ergebnis bleiben Bilder erhalten und erneutes Speichern wird gesperrt. Veröffentlichung und Live-Test sind noch nicht bestätigt. [Einrichtung 0004](supabase/setup/ATOMARES_SPEICHERN.md), [Details und Grenzen](docs/SPEICHERN_UND_UPLOADS.md); dauerhafte Restdatei-Bereinigung bleibt offen. |
 | `ADMIN-02` | **Im Code behoben:** Alte Bilder werden erst nach bestätigter Speicherung gelöscht. Bei Löschfehlern bleibt die Immobilie gespeichert; die Adminübersicht weist auf die nötige Bereinigung des Bildspeichers hin. |
 | `ADMIN-03` | Zwei Personen können Änderungen gegenseitig überschreiben. Abgleich des Bearbeitungsstands ergänzen. |
 | `ADMIN-04` | **Hoch:** Löschen ist endgültig; Bilder bleiben im öffentlichen Speicher. Wiederherstellung, Sicherung und Bildbereinigung klären. |

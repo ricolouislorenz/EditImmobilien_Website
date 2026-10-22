@@ -36,7 +36,7 @@ Die vollständige Einrichtung kann erneut ausgeführt werden. Vorhandene Nummern
 
 Bei einer späteren Neueinrichtung die Adminseite neu laden und die Objektnummern kontrollieren. Einen echten Anlege-/Bearbeitungstest anschließend abstimmen; die Kontrollabfrage selbst legt keine Testimmobilie an. Ein kurzzeitig veralteter API-Schemacache kann einen erneuten Seitenaufruf erfordern; das Skript fordert dessen Aktualisierung an.
 
-Offen bleiben die gemeinsame Absicherung von Umsortieren und Speichern, die Admin-Freigabeliste und der Schutz vor gegenseitigem Überschreiben. Diese Einrichtung behebt ausschließlich die fehlenden Datenbankvoraussetzungen.
+Diese Einrichtung behebt ausschließlich die fehlenden Datenbankvoraussetzungen. Die gemeinsame Absicherung von Umsortieren und Speichern ist im nächsten Schritt [0004](ATOMARES_SPEICHERN.md) vorbereitet und muss vor Veröffentlichung des neuen Admincodes eingerichtet werden. Die Admin-Freigabeliste und der Schutz vor gegenseitigem Überschreiben bleiben offen.
 
 Fachliche Grundlagen: [Supabase-Datenbankfunktionen und Aufrufrechte](https://supabase.com/docs/guides/database/functions), [PostgreSQL-Sequenzen und transaktionaler Neustart](https://www.postgresql.org/docs/17/sql-altersequence.html).
 

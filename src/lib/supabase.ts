@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Property } from "@/types";
-import { getImageValidationError } from "./image-upload";
+import { uploadPropertyImages } from "./property-uploads";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 // ÜBERGABE BETRIEB-01: VITE-Werte sind im Browser sichtbar. Hier nur den öffentlichen
@@ -38,17 +38,15 @@ export async function uploadImage(
   file: File,
   propertyId: string
 ): Promise<string> {
-  const validationError = getImageValidationError(file);
-  if (validationError) throw new Error(`${file.name}: ${validationError}`);
-  const ext = file.name.split(".").pop();
-  const path = `${propertyId}/${Date.now()}.${ext}`;
+  return (await uploadImages([file], propertyId))[0];
+}
 
-  const { error } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .upload(path, file, { upsert: false });
-
-  if (error) throw error;
-  return path;
+/** Mehrfach-Upload mit eindeutigen Pfaden und Aufräumen nach Teilfehlern. */
+export function uploadImages(files: File[], propertyId: string): Promise<string[]> {
+  return uploadPropertyImages(files, propertyId, {
+    upload: (path, file) => supabase.storage.from(STORAGE_BUCKET).upload(path, file, { upsert: false }),
+    remove: (paths) => supabase.storage.from(STORAGE_BUCKET).remove(paths),
+  });
 }
 
 /** Löscht ein Bild aus dem Supabase-Storage. */

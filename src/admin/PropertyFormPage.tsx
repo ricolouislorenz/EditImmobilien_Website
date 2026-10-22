@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { X, Upload, ImagePlus, Hash, Loader2, Home, CheckCircle2 } from "lucide-react";
-import { supabase, getImageUrl, uploadImage } from "@/lib/supabase";
-import { savePropertyWithImageCleanup } from "@/lib/property-save";
+import { supabase, getImageUrl, uploadImages } from "@/lib/supabase";
+import { PropertySaveUncertainError, savePropertyWithUploads } from "@/lib/property-save";
+import { persistPropertyAtomically } from "@/lib/property-persistence";
 import { IMAGE_ACCEPT, MAX_PROPERTY_IMAGES, selectImageFiles } from "@/lib/image-upload";
-import { PROPERTIES_PAGE_SIZE } from "@/lib/pagination";
+import { PropertyPositionPicker } from "./PropertyPositionPicker";
+import type { PositionProperty } from "@/lib/property-position";
 import type { Property, PropertyInput, PropertyStatus } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -190,16 +192,16 @@ export function PropertyFormPage() {
     };
   });
   const [reference, setReference] = useState<string | null>(null);
-  const initialSortOrder = useRef<number | null>(null);
   // Zuletzt gewählter Referenz-Status, um beim Umschalten Aktiv -> Referenz sinnvoll zu starten.
   const lastReferenceStatus = useRef<PropertyStatus>(
     isNew && readStoredNewStatus() !== "active"
       ? readStoredNewStatus()
       : DEFAULT_REFERENCE_STATUS
   );
-  const [siblings, setSiblings] = useState<
-    { status: string; sort_order: number }[]
-  >([]);
+  const [siblings, setSiblings] = useState<PositionProperty[]>([]);
+  const [positionsLoading, setPositionsLoading] = useState(true);
+  const [positionsError, setPositionsError] = useState(false);
+  const [positionsReload, setPositionsReload] = useState(0);
   const [plz, setPlz] = useState("");
   const [ort, setOrt] = useState("");
   const [plzLoading, setPlzLoading] = useState(false);
@@ -209,6 +211,9 @@ export function PropertyFormPage() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const saveInFlight = useRef(false);
+  const newPropertyId = useRef<string | null>(null);
+  const [uncertainPropertyId, setUncertainPropertyId] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -234,7 +239,6 @@ export function PropertyFormPage() {
           } = data as Property;
           setReference(ref);
           setForm(input);
-          initialSortOrder.current = input.sort_order;
           const parsed = parseLocation(input.location);
           setPlz(parsed.plz);
           setOrt(parsed.ort);
@@ -243,26 +247,30 @@ export function PropertyFormPage() {
       });
   }, [id, isNew]);
 
-  // Geschwister-Immobilien für die Seitenberechnung laden.
+  // ÜBERGABE ADMIN-POSITION: Sichtbare Plätze je Website-Bereich, keine internen Sortierzahlen.
   useEffect(() => {
     let cancelled = false;
-
-    supabase
-      .from("properties")
-      .select("id, status, sort_order")
-      .then(({ data }) => {
-        if (cancelled || !data) return;
-        setSiblings(
-          (data as { id: string; status: string; sort_order: number }[])
-            .filter((p) => p.id !== id)
-            .map(({ status, sort_order }) => ({ status, sort_order }))
-        );
-      });
+    setPositionsLoading(true);
+    setPositionsError(false);
+    async function loadPositions() {
+      try {
+        const { data, error } = await supabase
+          .from("properties")
+          .select("id, title, status, sort_order");
+        if (error || !data) throw error ?? new Error("Reihenfolge nicht verfügbar");
+        if (!cancelled) setSiblings((data as PositionProperty[]).filter((p) => p.id !== id));
+      } catch {
+        if (!cancelled) setPositionsError(true);
+      } finally {
+        if (!cancelled) setPositionsLoading(false);
+      }
+    }
+    loadPositions();
 
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, positionsReload]);
 
   /** Ort über die PLZ ermitteln (manuell überschreibbar). */
   async function lookupOrt(code: string) {
@@ -336,7 +344,7 @@ export function PropertyFormPage() {
 
   /** Nimmt neue Bilddateien an (Upload-Button oder Drag & Drop). */
   function addFiles(fileList: FileList | File[]) {
-    if (saving) return;
+    if (saveInFlight.current) return;
     // ÜBERGABE SICHERHEIT-05 [TEILWEISE BEHOBEN]: Klick und Drag & Drop nutzen
     // dieselben Grenzen. Vorhandene und neu ausgewählte Bilder zählen zusammen.
     const { accepted, errors } = selectImageFiles(Array.from(fileList), form.images.length + newFiles.length);
@@ -358,7 +366,7 @@ export function PropertyFormPage() {
   }
 
   function removeExistingImage(path: string) {
-    if (saving) return;
+    if (saveInFlight.current) return;
     setForm((prev) => ({
       ...prev,
       images: prev.images.filter((img) => img !== path),
@@ -367,7 +375,7 @@ export function PropertyFormPage() {
   }
 
   function removeNewFile(index: number) {
-    if (saving) return;
+    if (saveInFlight.current) return;
     URL.revokeObjectURL(previews[index]);
     setNewFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
@@ -375,6 +383,7 @@ export function PropertyFormPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (saveInFlight.current || uncertainPropertyId) return;
     setError(null);
 
     if (!/^\d{5}$/.test(plz)) {
@@ -394,57 +403,46 @@ export function PropertyFormPage() {
       return;
     }
 
+    saveInFlight.current = true;
     setSaving(true);
+    let uncertain = false;
+    let propertyId: string | undefined;
 
     try {
-      const propertyId = isNew ? crypto.randomUUID() : id!;
-      const target = form.sort_order;
-
-      // ÜBERGABE ADMIN-01 [HOCH]: Bilder, Reihenfolge und Datensatz werden getrennt gespeichert.
-      // Scheitert ein späterer Schritt, bleiben neue Bilder oder verschobene Positionen zurück. Rückabwicklung ergänzen.
-      // Neue Bilder hochladen
-      const uploadedPaths = await Promise.all(
-        newFiles.map((file) => uploadImage(file, propertyId))
-      );
-
-      // Nur umsortieren, wenn die Position neu vergeben oder tatsächlich geändert wurde.
-      // Belegte Zielposition? Dann alle ab dieser Position um eins nach hinten schieben.
-      if (isNew || target !== initialSortOrder.current) {
-        const { error: shiftError } = await supabase.rpc("shift_property_order", {
-          p_target: target,
-          p_exclude: propertyId,
-        });
-        if (shiftError) throw shiftError;
-      }
+      propertyId = isNew ? (newPropertyId.current ??= crypto.randomUUID()) : id!;
+      const savedPropertyId = propertyId;
 
       // Die Immobilien-ID (reference) wird fortlaufend von der Datenbank vergeben
       // und daher hier bewusst nicht mitgeschickt.
       const payload = {
         ...form,
         location: `${plz} ${ort.trim()}`,
-        images: [...form.images, ...uploadedPaths],
-        updated_at: new Date().toISOString(),
-        ...(isNew && {
-          id: propertyId,
-          created_at: new Date().toISOString(),
-        }),
       };
 
       // ÜBERGABE ADMIN-03: Gleichzeitige Bearbeitungen überschreiben sich ohne Warnung.
       // Vor dem Ändern den zuletzt geladenen Stand (updated_at) abgleichen und Konflikte anzeigen.
       // ÜBERGABE ADMIN-02 [BEHOBEN]: Die Datenbank muss den gespeicherten Datensatz
       // zurückgeben, bevor alte Bilder gelöscht werden. Löschfehler erscheinen als separater Hinweis.
-      const { imageCleanupFailed } = await savePropertyWithImageCleanup({
-        save: () => isNew
-          ? supabase.from("properties").insert(payload).select("id").single()
-          : supabase.from("properties").update(payload).eq("id", propertyId).select("id").single(),
+      // ÜBERGABE ADMIN-01 [IM CODE BEHOBEN]: Reihenfolge und Datensatz werden gemeinsam
+      // durch save_property gespeichert. SQL-Einrichtung 0004 muss vor Veröffentlichung ausgeführt sein.
+      const { imageCleanupFailed } = await savePropertyWithUploads({
+        upload: () => uploadImages(newFiles, savedPropertyId),
+        save: (uploadedPaths) => {
+          const data = { ...payload, images: [...form.images, ...uploadedPaths] };
+          return persistPropertyAtomically((name, args) => supabase.rpc(name, args), savedPropertyId, isNew, data);
+        },
         removeImages: (paths) => supabase.storage.from("property-images").remove(paths),
       }, removedImages);
 
       navigate("/admin", { state: { imageCleanupFailed } });
     } catch (err) {
+      if (err instanceof PropertySaveUncertainError) {
+        uncertain = true;
+        setUncertainPropertyId(propertyId ?? null);
+      }
       setError(err instanceof Error ? err.message : "Fehler beim Speichern.");
     } finally {
+      saveInFlight.current = uncertain;
       setSaving(false);
     }
   }
@@ -455,14 +453,6 @@ export function PropertyFormPage() {
 
   const category: "active" | "reference" =
     form.status === "active" ? "active" : "reference";
-
-  // Auf welcher Seite der öffentlichen Liste erscheint die Immobilie?
-  const isActiveTab = form.status === "active";
-  const sameTab = siblings.filter((s) => (s.status === "active") === isActiveTab);
-  const rank = sameTab.filter((s) => s.sort_order < form.sort_order).length + 1;
-  const placementPage = Math.floor((rank - 1) / PROPERTIES_PAGE_SIZE) + 1;
-  const totalInTab = sameTab.length + 1;
-  const tabLabel = isActiveTab ? "Aktuell" : "Referenzen";
 
   return (
     <div className="max-w-3xl">
@@ -644,6 +634,16 @@ export function PropertyFormPage() {
         </FormSection>
 
         <FormSection
+          title="Position auf der Website"
+          description="Wähle den gewünschten Platz innerhalb von „Aktuell“ oder „Referenzen“."
+        >
+          <PropertyPositionPicker properties={siblings} status={form.status} title={form.title}
+            sortOrder={form.sort_order} onChange={(sort_order) => setForm((p) => ({ ...p, sort_order }))}
+            disabled={saving || Boolean(uncertainPropertyId)} loading={positionsLoading} error={positionsError}
+            onRetry={() => setPositionsReload((n) => n + 1)} />
+        </FormSection>
+
+        <FormSection
           title="Details"
           description="Optionale Angaben – leere Felder werden nicht angezeigt."
         >
@@ -709,7 +709,7 @@ export function PropertyFormPage() {
             }}
             onDrop={handleDrop}
             role="button"
-            aria-disabled={saving}
+            aria-disabled={saving || Boolean(uncertainPropertyId)}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -735,7 +735,7 @@ export function PropertyFormPage() {
             ref={fileInputRef}
             type="file"
             accept={IMAGE_ACCEPT}
-            disabled={saving}
+            disabled={saving || Boolean(uncertainPropertyId)}
             multiple
             onChange={handleFileChange}
             className="hidden"
@@ -760,7 +760,7 @@ export function PropertyFormPage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  disabled={saving || totalImages >= MAX_PROPERTY_IMAGES}
+                  disabled={saving || Boolean(uncertainPropertyId) || totalImages >= MAX_PROPERTY_IMAGES}
                   onClick={() => fileInputRef.current?.click()}
                   className="border-white/10 text-gray-300 hover:text-white"
                 >
@@ -780,7 +780,7 @@ export function PropertyFormPage() {
                     <button
                       type="button"
                       onClick={() => removeExistingImage(path)}
-                      disabled={saving}
+                      disabled={saving || Boolean(uncertainPropertyId)}
                       aria-label="Bild entfernen"
                       className="absolute -right-2 -top-2 rounded-full bg-red-600 p-0.5 hover:bg-red-500"
                     >
@@ -803,7 +803,7 @@ export function PropertyFormPage() {
                     <button
                       type="button"
                       onClick={() => removeNewFile(i)}
-                      disabled={saving}
+                      disabled={saving || Boolean(uncertainPropertyId)}
                       aria-label="Bild entfernen"
                       className="absolute -right-2 -top-2 rounded-full bg-red-600 p-0.5 hover:bg-red-500"
                     >
@@ -816,38 +816,18 @@ export function PropertyFormPage() {
           )}
         </FormSection>
 
-        <FormSection
-          title="Sortierung"
-          description="Niedrigere Zahl = weiter oben. Wird eine belegte Position gewählt, rücken die übrigen Immobilien automatisch nach hinten."
-        >
-          <div>
-            <Label className="text-gray-300">Reihenfolge</Label>
-            <StepperField
-              value={form.sort_order}
-              step={1}
-              onChange={(v) => setForm((p) => ({ ...p, sort_order: v ?? 0 }))}
-              className="mt-1 w-32"
-            />
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-[#111111] px-4 py-3 text-sm">
-            <p className="text-gray-300">
-              Erscheint im Tab <span className="text-[#C2A878]">„{tabLabel}"</span> auf{" "}
-              <span className="font-medium text-white">Seite {placementPage}</span>
-            </p>
-            <p className="mt-1 text-xs text-gray-500">
-              Position {rank} von {totalInTab} · {PROPERTIES_PAGE_SIZE} pro Seite · ohne aktive Besucher-Filter
-            </p>
-          </div>
-        </FormSection>
-
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
+        {uncertainPropertyId && (
+          <a className="inline-block text-sm text-[#C2A878] underline" href={`/admin/properties/${uncertainPropertyId}`}>
+            Gespeicherten Stand neu laden und prüfen
+          </a>
+        )}
 
         {/* Aktionsleiste */}
         <div className="sticky bottom-0 -mx-1 flex gap-3 border-t border-white/10 bg-[#111111]/95 px-1 py-4 backdrop-blur">
           <Button
             type="submit"
-            disabled={saving}
+            disabled={saving || Boolean(uncertainPropertyId)}
             className="h-11 flex-1 sm:h-10 sm:flex-none sm:min-w-32"
           >
             {saving ? "Speichern..." : "Speichern"}
@@ -856,9 +836,10 @@ export function PropertyFormPage() {
             type="button"
             variant="outline"
             className="h-11 flex-1 border-white/10 text-gray-300 hover:text-white sm:h-10 sm:flex-none"
+            disabled={saving}
             onClick={() => navigate("/admin")}
           >
-            Abbrechen
+            {uncertainPropertyId ? "Zur Übersicht" : "Abbrechen"}
           </Button>
         </div>
       </form>
